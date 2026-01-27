@@ -5,6 +5,7 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { Cell } from "./Cell";
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
+import { ArrowLeft, ZoomOut } from "lucide-react";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -76,14 +77,30 @@ export const MandalartGrid = () => {
       <div
         key={blockIndex}
         className={cn(
-          "grid grid-cols-3 gap-1 p-1 rounded-xl transition-all duration-300",
+          "grid grid-cols-3 gap-1 p-1 rounded-xl transition-all duration-300 relative",
           isZoomedView
             ? "w-full h-full gap-2 p-4 bg-white dark:bg-slate-900 shadow-none border-0"
             : isCenterBlock
               ? "bg-white dark:bg-slate-900 shadow-xl z-10 scale-[1.02] ring-1 ring-slate-200 dark:ring-slate-700"
-              : "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50",
+              : "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 cursor-pointer group/block",
         )}
+        onClick={() => {
+          // New Interaction 1: Click Outer Block to Zoom In
+          if (!isZoomedView && !isCenterBlock && centerNode) {
+            setZoomedNodeId(centerNode.id);
+          }
+        }}
       >
+        {/* Hover Hint for Outer Blocks */}
+        {!isZoomedView && !isCenterBlock && centerNode && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity pointer-events-none z-20">
+            <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
+              <ZoomOut size={12} className="rotate-180" /> {/* Zoom In iconish */}
+              확대하기
+            </div>
+          </div>
+        )}
+
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((cellPos) => {
           const isCellCenter = cellPos === 4;
           let node: Node | undefined;
@@ -96,17 +113,11 @@ export const MandalartGrid = () => {
 
           const isSelected = node && node.id === selectedNodeId;
 
-          // Handle Zoom Logic
-          const canZoom =
-            !isZoomedView &&
-            ((isCenterBlock && !isCellCenter && node) || // Sub Goal in Center Block
-              (!isCenterBlock && isCellCenter && node)); // Sub Goal in Outer Block
-
           const handleZoom = () => {
             if (isZoomedView) {
               setZoomedNodeId(null);
-            } else {
-              if (node) setZoomedNodeId(node.id);
+            } else if (node) {
+              setZoomedNodeId(node.id);
             }
           };
 
@@ -118,21 +129,42 @@ export const MandalartGrid = () => {
               isCenter={isCellCenter}
               isActive={!!isSelected}
               onZoom={
-                (!isZoomedView && canZoom) || (isZoomedView && isCellCenter)
+                // Show Zoom Icon logic...
+                (!isZoomedView &&
+                  ((isCenterBlock && !isCellCenter) || (!isCenterBlock && isCellCenter))) ||
+                (isZoomedView && isCellCenter)
                   ? handleZoom
                   : undefined
               }
               isZoomed={isZoomedView}
-              onClick={() => {
-                if (node) setSelectedNodeId(node.id);
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation(); // Essential!
+
+                if (isZoomedView) {
+                  if (node) setSelectedNodeId(node.id);
+                } else {
+                  if (isCenterBlock) {
+                    if (isCellCenter) {
+                      if (node) setSelectedNodeId(node.id);
+                    } else {
+                      if (node) setZoomedNodeId(node.id);
+                    }
+                  } else {
+                    // For outer blocks, we generally want to Zoom In on click anywhere,
+                    // but if they clicked a specific cell that has content, wait..
+                    // Actually, UX-wise, clicking ANYWHERE in an Outer Block (Overview) should Zoom In first.
+                    // Editing directly from Overview is too small.
+                    if (centerNode) setZoomedNodeId(centerNode.id);
+                  }
+                }
               }}
               className={cn(
-                // Style adjustments for nested grids
-                isCenterBlock && isCellCenter && "bg-primary text-black font-black text-sm", // Core Goal
-                isCenterBlock && !isCellCenter && "font-bold", // Sub Goals in Center
-                !isCenterBlock && isCellCenter && "font-bold bg-slate-100 dark:bg-slate-800", // Sub Goals in Outer
-                isZoomedView && "text-sm sm:text-base", // Larger text in zoomed view
-                isZoomedView && isCellCenter && "text-lg sm:text-xl", // Much larger center text
+                // Style adjustments
+                isCenterBlock && isCellCenter && "bg-primary text-black font-black text-sm",
+                isCenterBlock && !isCellCenter && "font-bold",
+                !isCenterBlock && isCellCenter && "font-bold bg-slate-100 dark:bg-slate-800",
+                isZoomedView && "text-sm sm:text-base",
+                isZoomedView && isCellCenter && "text-lg sm:text-xl",
               )}
             />
           );
@@ -142,25 +174,36 @@ export const MandalartGrid = () => {
   };
 
   return (
-    <div className="w-full max-w-[800px] aspect-square mx-auto p-2 sm:p-4">
-      {/* Main 3x3 Grid of Blocks */}
+    <div className="w-full h-full flex flex-col items-center justify-center relative overscroll-none">
+      {/* Zoom Mode Header (Floating) */}
+      {zoomedBlockIndex !== null && (
+        <div className="absolute top-4 z-20 flex justify-center w-full pointer-events-none">
+          <button
+            onClick={() => setZoomedNodeId(null)}
+            className="pointer-events-auto flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur shadow-lg rounded-full text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all animate-in slide-in-from-top-4 fade-in"
+          >
+            <ArrowLeft size={16} />
+            전체 보기
+          </button>
+        </div>
+      )}
+
+      {/* Main Container */}
       {zoomedBlockIndex !== null ? (
-        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+        // Zoomed View: Fit to screen, no scroll needed usually
+        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-4">
           <div className="w-full aspect-square max-w-[500px]">
             {renderBlock(zoomedBlockIndex, true)}
           </div>
-          <div className="text-center mt-6 text-sm text-slate-400">
-            <button
-              onClick={() => setZoomedNodeId(null)}
-              className="underline hover:text-primary transition-colors"
-            >
-              전체 보기로 돌아가기
-            </button>
-          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full h-full">
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
+        // Overview: Scrollable on mobile
+        <div className="w-full h-full overflow-auto flex items-center lg:justify-center p-4 custom-scrollbar">
+          <div className="min-w-[600px] min-h-[600px] w-full max-w-[800px] aspect-square mx-auto relative">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full h-full">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
+            </div>
+          </div>
         </div>
       )}
     </div>

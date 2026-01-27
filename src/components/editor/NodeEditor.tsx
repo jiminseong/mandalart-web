@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
-import { X, Save, Sparkles, Trash2, CheckCircle2, Circle } from "lucide-react";
+import { X, Save, Sparkles, CheckCircle2, Circle } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 export const NodeEditor = () => {
@@ -11,10 +11,15 @@ export const NodeEditor = () => {
   const getNode = useMandalartStore((state) => state.getNode);
   const updateNodeContent = useMandalartStore((state) => state.updateNodeContent);
   const updateNodeStatus = useMandalartStore((state) => state.updateNodeStatus);
+  const nodes = useMandalartStore((state) => state.nodes);
 
   // Local state for smooth typing
   const [content, setContent] = useState("");
   const [note, setNote] = useState("");
+
+  // AI State
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const node = selectedNodeId ? getNode(selectedNodeId) : null;
 
@@ -22,6 +27,7 @@ export const NodeEditor = () => {
     if (node) {
       setContent(node.content || "");
       setNote(node.note || "");
+      setSuggestions([]); // Reset suggestions on node change
     }
   }, [node?.id]); // Only reset when selected node changes
 
@@ -36,6 +42,40 @@ export const NodeEditor = () => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSave();
+    }
+  };
+
+  const handleAiSuggest = async () => {
+    setIsAiLoading(true);
+    try {
+      // Prepare Context
+      const core = nodes.find((n) => n.level === 0);
+      const parent = node.parent_id ? nodes.find((n) => n.id === node.parent_id) : null;
+
+      const context = {
+        coreGoal: core?.content || "미정",
+        subGoal: parent?.content || "미정",
+      };
+
+      const response = await fetch("/api/ai/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          context,
+          goalLevel: node.level,
+          currentContent: content,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.suggestions) {
+        setSuggestions(data.suggestions);
+      }
+    } catch (e) {
+      console.error(e);
+      setSuggestions(["AI 연결에 실패했습니다."]);
+    } finally {
+      setIsAiLoading(false);
     }
   };
 
@@ -85,8 +125,8 @@ export const NodeEditor = () => {
         {/* Body */}
         <div className="space-y-6">
           {/* Content Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <div className="space-y-4">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
               목표 내용
             </label>
             <input
@@ -95,14 +135,14 @@ export const NodeEditor = () => {
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="목표를 입력하세요"
-              className="w-full text-lg p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-300"
+              className="w-full text-lg p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400 text-slate-900 dark:text-white"
               autoFocus
             />
           </div>
 
           {/* Note Textarea */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <div className="space-y-4">
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
               상세 메모 (선택)
             </label>
             <textarea
@@ -110,32 +150,8 @@ export const NodeEditor = () => {
               onChange={(e) => setNote(e.target.value)}
               placeholder="구체적인 실천 방법이나 메모를 남기세요."
               rows={4}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-300"
+              className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400 text-slate-900 dark:text-white"
             />
-          </div>
-
-          {/* Status Selection (Only for Action Nodes usually, but fine for all for now) */}
-          <div className="flex gap-2">
-            {(["todo", "in_progress", "done"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => {
-                  updateNodeStatus(node.id, s);
-                  // Update local state is not needed as it's just a trigger, but button style update relies on store subscription which is fine
-                }}
-                className={cn(
-                  "flex-1 py-3 rounded-xl border font-bold text-sm flex items-center justify-center gap-2 transition-all",
-                  node.status === s
-                    ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-lg"
-                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800",
-                )}
-              >
-                {s === "todo" && <Circle size={16} />}
-                {s === "in_progress" && <Sparkles size={16} />}
-                {s === "done" && <CheckCircle2 size={16} />}
-                {s === "todo" ? "할 일" : s === "in_progress" ? "진행 중" : "완료"}
-              </button>
-            ))}
           </div>
 
           {/* AI Coach Teaser */}
@@ -145,9 +161,40 @@ export const NodeEditor = () => {
             </div>
             <div>
               <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-1">AI 코칭</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
-                목표 설정이 막 막하신가요? AI가 적절한 목표를 추천해드립니다.
-              </p>
+              {!isAiLoading && suggestions.length === 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                    목표 설정이 막막하신가요? AI가 적절한 목표를 추천해드립니다.
+                  </p>
+                  <button
+                    onClick={handleAiSuggest}
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                  >
+                    추천 받기
+                  </button>
+                </div>
+              )}
+
+              {isAiLoading && (
+                <div className="text-xs text-slate-500 animate-pulse">열심히 고민 중입니다...</div>
+              )}
+
+              {suggestions.length > 0 && (
+                <div className="space-y-2 mt-2 w-full">
+                  <p className="text-xs text-slate-500 mb-1">마음에 드는 목표를 클릭하세요:</p>
+                  <div className="flex flex-col gap-2">
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setContent(s)}
+                        className="text-left text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

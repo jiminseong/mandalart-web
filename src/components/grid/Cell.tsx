@@ -3,16 +3,6 @@ import { Database } from "@/types/supabase";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
-interface CellProps {
-  node?: Node;
-  position: number;
-  isCenter?: boolean;
-  isActive?: boolean; // Highlighted
-  isPlaceholder?: boolean; // Empty state
-  onClick?: () => void;
-  className?: string;
-}
-
 import { Maximize2, Minimize2 } from "lucide-react";
 
 interface CellProps {
@@ -21,7 +11,7 @@ interface CellProps {
   isCenter?: boolean;
   isActive?: boolean;
   isPlaceholder?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   onZoom?: () => void; // New prop for zoom action
   isZoomed?: boolean; // To show zoom-out icon instead
   className?: string;
