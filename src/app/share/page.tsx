@@ -166,7 +166,7 @@ export default function SharePage() {
               </div>
 
               <div className="mt-8 text-right">
-                <span className="text-xs font-bold opacity-30">Created with Mandalart Planner</span>
+                <span className="text-xs font-bold opacity-30">Created with mandalart.life</span>
               </div>
             </div>
           </div>
