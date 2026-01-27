@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "about": "Learn about Mandalart",
+    "home": "Back to Home",
+    "login": "Login",
+    "editor": "Back to Editor"
+  },
+  "home": {
+    "badge": "Mandalart 2026",
+    "title": "Start with small goals",
+    "titleHighlight": "step by step ☁️",
+    "description": "Create your own Mandalart.",
+    "descriptionSub": "Clear your mind and focus on what matters.",
+    "cta": "Get Started"
+  },
+  "about": {
+    "title": "What is\nMandalart?",
+    "description": "A combination of 'Manda(essence)' + 'la(achievement)' + 'Art(technique)',\nit means a specific technique to achieve goals.",
+    "step1Title": "Core Goal",
+    "step1Desc": "Write down one big dream\nyou want to achieve at the center.",
+    "step2Title": "8 Sub Goals",
+    "step2Desc": "Find 8 essential elements\nneeded to achieve your core goal.",
+    "step3Title": "64 Action Plans",
+    "step3Desc": "Set specific action plans\nto achieve each sub goal.",
+    "ohtaniTitle": "Shohei Ohtani's\nSecret to Monster Growth",
+    "ohtaniDesc": "As a high school freshman, to achieve his dream of being the #1 draft pick,\nhe filled out 64 specific action plans without any gaps.\nNow it's your turn.",
+    "ctaCreate": "Create My Mandalart"
+  },
+  "editor": {
+    "title": "Mandalart 2026",
+    "save": "Save",
+    "aiCoach": "AI Coach",
+    "share": "Share",
+    "feedback": "Feedback"
+  },
+  "share": {
+    "title": "Export & Share Mandalart",
+    "preview": "Preview",
+    "settings": "Settings",
+    "showTitle": "Show Title/Date",
+    "darkMode": "Background Style (Dark/Light)",
+    "downloadPng": "Download PNG",
+    "shareButton": "Share",
+    "highQuality": "High Quality PNG"
+  },
+  "feedback": {
+    "title": "Mandalart 2026",
+    "thankYou": "Thank you for participating",
+    "thankYouDesc": "Your valuable feedback will greatly help improve our service.",
+    "backToEditor": "Back to Editor",
+    "copyLink": "Copy Link"
+  }
+}

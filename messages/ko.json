@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "about": "만다라트에 대해 알아보기",
+    "home": "홈으로",
+    "login": "로그인",
+    "editor": "에디터로 돌아가기"
+  },
+  "home": {
+    "badge": "만다라트 2026",
+    "title": "작은 목표부터",
+    "titleHighlight": "차근차근 ☁️",
+    "description": "나만의 만다라트를 만들어보세요.",
+    "descriptionSub": "복잡한 생각은 비우고, 중요한 것에 집중해요.",
+    "cta": "지금 시작하기"
+  },
+  "about": {
+    "title": "만다라트가\n무엇인가요?",
+    "description": "'Manda(본질)' + 'la(달성)' + 'Art(기술)'의 합성어로,\n목표를 달성하기 위한 구체적인 기술을 의미합니다.",
+    "step1Title": "핵심 목표",
+    "step1Desc": "가장 중심에 이루고 싶은\n하나의 큰 꿈을 적습니다.",
+    "step2Title": "8개의 세부 목표",
+    "step2Desc": "핵심 목표를 이루기 위해\n필요한 8가지 요소를 찾습니다.",
+    "step3Title": "64개의 실행 계획",
+    "step3Desc": "세부 목표를 달성하기 위한\n구체적인 행동 계획을 세웁니다.",
+    "ohtaniTitle": "오타니 쇼헤이의\n괴물 같은 성장의 비밀",
+    "ohtaniDesc": "고등학교 1학년 때, 8구단 드래프트 1순위라는 꿈을 이루기 위해\n그는 64개의 구체적인 실행 계획을 빈틈없이 채웠습니다.\n이제 당신의 차례입니다.",
+    "ctaCreate": "나만의 만다라트 만들기"
+  },
+  "editor": {
+    "title": "만다라트 2026",
+    "save": "저장",
+    "aiCoach": "AI 코치",
+    "share": "공유하기",
+    "feedback": "피드백"
+  },
+  "share": {
+    "title": "만다라트 내보내기 및 공유",
+    "preview": "미리보기",
+    "settings": "설정",
+    "showTitle": "제목/날짜 표시",
+    "darkMode": "배경 스타일 (Dark/Light)",
+    "downloadPng": "PNG 저장",
+    "shareButton": "공유하기",
+    "highQuality": "고화질 PNG"
+  },
+  "feedback": {
+    "title": "만다라트 2026",
+    "thankYou": "참여해 주셔서 감사합니다",
+    "thankYouDesc": "작성해주신 소중한 의견은 서비스 개선에 큰 힘이 됩니다.",
+    "backToEditor": "에디터로 돌아가기",
+    "copyLink": "링크 복사"
+  }
+}
