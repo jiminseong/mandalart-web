@@ -4,6 +4,7 @@ import { Database } from "@/types/supabase";
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 import { Maximize2, Minimize2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface CellProps {
   node?: Node;
@@ -27,6 +28,8 @@ export const Cell = ({
   isZoomed,
   className,
 }: CellProps) => {
+  const t = useTranslations("editor");
+
   return (
     <div
       onClick={onClick}
@@ -47,11 +50,10 @@ export const Cell = ({
       )}
     >
       <span className={cn("line-clamp-3", !node?.content && "text-[10px] opacity-50")}>
-        {node?.content?.replace("Sub Goal", "세부 목표").replace("Action", "실천") ||
-          (isPlaceholder ? "" : "")}
+        {node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || ""}
       </span>
 
-      {/* Zoom Action Button (Visible only on Center cells of Outer blocks, or Core cell) */}
+      {/* Zoom Action Button */}
       {onZoom && node?.content && (
         <button
           onClick={(e) => {
@@ -59,7 +61,7 @@ export const Cell = ({
             onZoom();
           }}
           className="absolute top-1 right-1 p-1 rounded-full bg-white/80 dark:bg-black/50 text-slate-500 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity"
-          title={isZoomed ? "전체 보기" : "확대해서 보기"}
+          title={isZoomed ? t("viewAll") : t("zoomIn")}
         >
           {isZoomed ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
         </button>

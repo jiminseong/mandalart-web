@@ -12,8 +12,8 @@ export default async function EditorPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
-      <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10 h-16">
-        <div className="flex items-center">
+      <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10 h-20">
+        <div className="flex items-center flex-1">
           <Link
             href="/"
             className="p-2 -ml-2 text-slate-400 hover:text-slate-900 transition-colors"
@@ -27,8 +27,9 @@ export default async function EditorPage() {
 
         <ProgressBar />
 
-        {/* Placeholder to maintain flex layout if needed, or just let ProgressBar center */}
-        <div className="w-10 sm:w-20" />
+        <div className="flex-1 flex justify-end">
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main className="w-full flex-1 flex flex-col items-center justify-center relative">

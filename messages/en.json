@@ -3,7 +3,8 @@
     "about": "Learn about Mandalart",
     "home": "Back to Home",
     "login": "Login",
-    "editor": "Back to Editor"
+    "editor": "Back to Editor",
+    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file."
   },
   "home": {
     "badge": "Mandalart 2026",
@@ -31,7 +32,14 @@
     "save": "Save",
     "aiCoach": "AI Coach",
     "share": "Share",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "coreGoal": "Core Goal",
+    "subGoal": "Sub Goal",
+    "actionPlan": "Action Plan",
+    "progress": "Progress",
+    "freeAiRemaining": "Free AI: {count} left",
+    "zoomIn": "Zoom In",
+    "viewAll": "View All"
   },
   "share": {
     "title": "Export & Share Mandalart",
@@ -41,7 +49,13 @@
     "darkMode": "Background Style (Dark/Light)",
     "downloadPng": "Download PNG",
     "shareButton": "Share",
-    "highQuality": "High Quality PNG"
+    "highQuality": "High Quality PNG",
+    "mandalartTitle": "Mandalart 2026",
+    "createdWith": "Created with mandalart.life",
+    "defaultCore": "Mandalart",
+    "defaultSub": "Sub Goal",
+    "defaultAction": "Action",
+    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file."
   },
   "feedback": {
     "title": "Mandalart 2026",

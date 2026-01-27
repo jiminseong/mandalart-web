@@ -157,24 +157,21 @@ export default function SharePage() {
                         Let's Try importing it first.
                     */}
               <div className="pointer-events-none">
-                {/* We need a 'ReadOnly' version or just the grid. 
-                             Since MandalartGrid is complex, let's create a simplified visual-only grid here for best export results.
-                             Wait, creating a wholly new renderer is duplicate code. 
-                             
-                             Let's assume for this turn, I will create a `MandalartCanvas` component that purely renders data. 
-                             Actually, I'll allow the user to see the actual component but wrapped.
-                         */}
-                <ExportGrid nodes={nodes} isDarkMode={isDarkMode} />
+                <ExportGrid nodes={nodes} isDarkMode={isDarkMode} t={t} />
               </div>
 
-              <div className="mt-8 text-right">
-                <span className="text-xs font-bold opacity-30">Created with mandalart.life</span>
+              {/* Branding Footer */}
+              <div
+                className={cn(
+                  "absolute bottom-8 right-8 text-[10px] font-bold opacity-30 italic",
+                  isDarkMode ? "text-white" : "text-slate-900",
+                )}
+              >
+                {t("createdWith")}
               </div>
             </div>
           </div>
-          <p className="text-center text-xs text-slate-400">
-            생성된 미리보기는 실제 다운로드 파일과 약간 다를 수 있습니다.
-          </p>
+          <p className="text-center text-xs text-slate-400">{t("previewDisclaimer")}</p>
         </div>
 
         {/* Settings Section */}
@@ -259,48 +256,44 @@ function Switch({
 
 // Simplified Grid Renderer for Export (Crucial for clean export)
 // Simplified Grid Renderer for Export (Crucial for clean export)
-function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }) {
+function ExportGrid({ nodes, isDarkMode, t }: { nodes: any[]; isDarkMode: boolean; t: any }) {
   // HTML2Canvas limitation fixes:
   // 1. Avoid 'display: contents' -> Use nested grids
   // 2. Avoid modern color spaces (lab, oklch) -> Use Explicit HEX via inline styles
   // 3. Avoid 'gap' if possible or ensure it works -> explicit margin/padding is safer but grid gap usually works in recent versions if container has size.
 
   const renderCell = (content: string, type: "core" | "sub" | "action", isCenter: boolean) => {
-    let bgColor = "#ffffff";
-    let textColor = "#64748b"; // slate-500
-    let fontWeight = 400;
+    let bgColor = isDarkMode ? "#1e293b" : "#ffffff";
+    let textColor = isDarkMode ? "#f8fafc" : "#1e293b";
+    let fontWeight = isCenter ? "900" : "500";
 
-    // Color Logic
     if (type === "core") {
-      if (isCenter) {
-        bgColor = "#3b82f6"; // Primary Blue 500
-        textColor = "#ffffff";
-        fontWeight = 900;
-      } else {
-        bgColor = "#f1f5f9"; // Slate 100
-        textColor = "#0f172a"; // Slate 900
-        fontWeight = 700;
-      }
+      bgColor = isDarkMode ? "#2563eb" : "#3b82f6";
+      textColor = "#ffffff";
     } else if (type === "sub") {
-      if (isCenter) {
-        bgColor = "#f1f5f9"; // Slate 100
-        textColor = "#0f172a"; // Slate 900
-        fontWeight = 700;
-      } else {
-        bgColor = "#ffffff";
-        textColor = "#64748b"; // Slate 500
-        fontWeight = 500;
-      }
+      bgColor = isDarkMode ? "#334155" : "#f1f5f9";
+      textColor = isDarkMode ? "#e2e8f0" : "#475569";
     }
 
-    // Dark Mode Overrides
+    if (type === "action" && isDarkMode) {
+      bgColor = "#0f172a";
+      textColor = "#94a3b8";
+    }
+
+    // Dark Mode Overrides (some colors were not correctly overridden initially)
     if (isDarkMode) {
-      if (bgColor === "#ffffff") {
-        bgColor = "#1e293b"; // Slate 800
-        textColor = "#cbd5e1"; // Slate 300
+      if (bgColor === "#3b82f6") {
+        // Original light mode core blue
+        bgColor = "#2563eb"; // Dark mode core blue
+        textColor = "#ffffff";
+      } else if (bgColor === "#f8fafc") {
+        // Original light mode default text color
+        bgColor = "#1e293b"; // Dark mode default background
+        textColor = "#cbd5e1"; // Dark mode default text color
       } else if (bgColor === "#f1f5f9") {
-        bgColor = "#334155"; // Slate 700
-        textColor = "#e2e8f0"; // Slate 200
+        // Original light mode sub background
+        bgColor = "#334155"; // Dark mode sub background
+        textColor = "#e2e8f0"; // Dark mode sub text color
       }
     }
 
@@ -309,9 +302,9 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
     if (!displayContent) {
       displayContent = "";
     } else {
-      if (displayContent.startsWith("Sub Goal")) displayContent = "세부 목표";
-      if (displayContent.startsWith("Action")) displayContent = "실천";
-      if (displayContent === "Mandalart") displayContent = "만다라트";
+      if (displayContent.startsWith("Sub Goal")) displayContent = t("defaultSub");
+      if (displayContent.startsWith("Action")) displayContent = t("defaultAction");
+      if (displayContent === "Mandalart") displayContent = t("defaultCore");
     }
 
     return (
@@ -349,11 +342,9 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
       .filter((n) => n.level === 1 && n.parent_id === coreNode.id)
       .sort((a, b) => a.position - b.position);
 
-    let blockCenterNode: any = null;
     let cellNodes: any[] = [];
 
     if (isCoreBlock) {
-      blockCenterNode = coreNode;
       const getSubNodeAt = (pos: number) => subNodes.find((n) => n.position === pos);
       cellNodes = [
         getSubNodeAt(0),
@@ -369,7 +360,7 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
     } else {
       let subPos = blockIdx;
       if (blockIdx > 4) subPos = blockIdx - 1;
-      blockCenterNode = subNodes.find((n) => n.position === subPos);
+      const blockCenterNode = subNodes.find((n) => n.position === subPos);
 
       if (blockCenterNode) {
         const actions = nodes.filter((n) => n.level === 2 && n.parent_id === blockCenterNode?.id);
@@ -378,7 +369,7 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
           return actions.find((n) => n.position === p);
         });
       } else {
-        cellNodes = Array(9).fill(null);
+        cellNodes = Array.from({ length: 9 }, () => null); // Fix: Use Array.from for proper initialization
       }
     }
 

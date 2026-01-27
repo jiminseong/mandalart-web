@@ -6,6 +6,7 @@ import { Cell } from "./Cell";
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
 import { ArrowLeft, ZoomOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -19,6 +20,7 @@ const getNodesByPosition = (nodes: Node[]) => {
 };
 
 export const MandalartGrid = () => {
+  const t = useTranslations("editor");
   const nodes = useMandalartStore((state) => state.nodes);
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
@@ -95,8 +97,8 @@ export const MandalartGrid = () => {
         {!isZoomedView && !isCenterBlock && centerNode && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity pointer-events-none z-20">
             <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
-              <ZoomOut size={12} className="rotate-180" /> {/* Zoom In iconish */}
-              확대하기
+              <ZoomOut size={12} className="rotate-180" />
+              {t("zoomIn")}
             </div>
           </div>
         )}

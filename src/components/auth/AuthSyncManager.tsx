@@ -14,14 +14,15 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
+import { createDefaultNodes } from "@/utils/mandalart";
+
 export const AuthSyncManager = () => {
   const supabase = createClient();
   const setProject = useMandalartStore((state) => state.setProject);
   const setNodes = useMandalartStore((state) => state.setNodes);
   const nodes = useMandalartStore((state) => state.nodes);
-  const project = useMandalartStore((state) => state.project); // Might be null
+  const project = useMandalartStore((state) => state.project);
 
-  // Using refs to access latest state inside effects/timeouts without triggering re-runs
   const nodesRef = useRef(nodes);
   const projectRef = useRef(project);
 
@@ -35,11 +36,35 @@ export const AuthSyncManager = () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
+      const currentNodes = nodesRef.current;
+
+      // Case 0: No User and No Nodes -> Create defaults locally
+      if (!user && currentNodes.length === 0) {
+        console.log("AuthSync: New anonymous user, initializing default grid...");
+        const newProjectId = crypto.randomUUID();
+        const defaultNodes = createDefaultNodes(newProjectId);
+
+        // Create a dummy project for state
+        setProject({
+          id: newProjectId,
+          user_id: "", // None
+          title: "나의 만다라트",
+          is_public: false,
+          progress: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          theme: null,
+        } as any);
+
+        setNodes(defaultNodes);
+        return;
+      }
+
       if (!user) return;
 
       console.log("AuthSync: User found", user.id);
 
-      // 1. Check if user has a project in DB
       const { data: existingProjects } = await supabase
         .from("projects")
         .select("*")
@@ -50,16 +75,13 @@ export const AuthSyncManager = () => {
       const remoteProject = existingProjects?.[0];
 
       if (remoteProject) {
-        // Case A: Remote Data Exists -> Pull Logic
         console.log("AuthSync: Found remote project, syncing down...", remoteProject.id);
-
-        // Fetch Nodes
         const { data: remoteNodes } = await supabase
           .from("nodes")
           .select("*")
           .eq("project_id", remoteProject.id);
 
-        if (remoteNodes) {
+        if (remoteNodes && remoteNodes.length > 0) {
           setProject(remoteProject);
           setNodes(remoteNodes);
           console.log("AuthSync: Download complete.");
@@ -71,31 +93,25 @@ export const AuthSyncManager = () => {
         if (localNodes.length > 0) {
           console.log("AuthSync: No remote project, pushing local data...");
 
-          // We need a proper project ID.
-          // If local nodes have a project_id, we try to use it, or generate new if conflict/invalid.
-          // Ideally we create a new Project record first.
-
-          const projectId = localNodes[0].project_id; // Assume all share same project_id
+          const projectId = projectRef.current?.id || crypto.randomUUID();
 
           const newProject = {
             id: projectId,
             user_id: user.id,
-            title: "나의 만다라트", // Default title, maybe extract from core node
+            title: "나의 만다라트",
             is_public: false,
             progress: 0,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           };
 
-          // Insert Project
           const { error: projError } = await supabase.from("projects").insert(newProject);
 
           if (!projError) {
             setProject(newProject as any);
-
-            // Insert Nodes
-            // Clean nodes for insertion (remove extra props if any, though Type should match)
-            const { error: nodeError } = await supabase.from("nodes").upsert(localNodes);
+            const { error: nodeError } = await supabase
+              .from("nodes")
+              .upsert(localNodes.map((n) => ({ ...n, project_id: projectId })));
 
             if (!nodeError) {
               console.log("AuthSync: Upload initialization complete.");
@@ -110,7 +126,7 @@ export const AuthSyncManager = () => {
     };
 
     initSync();
-  }, []); // Run once on mount
+  }, [supabase, setNodes, setProject]);
 
   // 2. Auto-Save Logic (Subscribe to changes)
   useEffect(() => {

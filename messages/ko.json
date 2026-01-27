@@ -3,7 +3,8 @@
     "about": "만다라트에 대해 알아보기",
     "home": "홈으로",
     "login": "로그인",
-    "editor": "에디터로 돌아가기"
+    "editor": "에디터로 돌아가기",
+    "previewDisclaimer": "생성된 미리보기는 실제 다운로드 파일과 약간 다를 수 있습니다."
   },
   "home": {
     "badge": "만다라트 2026",
@@ -31,7 +32,14 @@
     "save": "저장",
     "aiCoach": "AI 코치",
     "share": "공유하기",
-    "feedback": "피드백"
+    "feedback": "피드백",
+    "coreGoal": "핵심 목표",
+    "subGoal": "세부 목표",
+    "actionPlan": "실행 계획",
+    "progress": "진행도",
+    "freeAiRemaining": "무료 AI 잔여 {count}회",
+    "zoomIn": "확대하기",
+    "viewAll": "전체 보기"
   },
   "share": {
     "title": "만다라트 내보내기 및 공유",
@@ -41,7 +49,13 @@
     "darkMode": "배경 스타일 (Dark/Light)",
     "downloadPng": "PNG 저장",
     "shareButton": "공유하기",
-    "highQuality": "고화질 PNG"
+    "highQuality": "고화질 PNG",
+    "mandalartTitle": "만다라트 2026",
+    "createdWith": "Created with mandalart.life",
+    "defaultCore": "만다라트",
+    "defaultSub": "세부 목표",
+    "defaultAction": "실천",
+    "previewDisclaimer": "생성된 미리보기는 실제 다운로드 파일과 약간 다를 수 있습니다."
   },
   "feedback": {
     "title": "만다라트 2026",
