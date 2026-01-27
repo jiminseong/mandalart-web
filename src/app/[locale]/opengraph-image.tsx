@@ -9,127 +9,187 @@ export default async function Image({ params }: { params: { locale: string } }) 
   const locale = params.locale;
   const isKo = locale === "ko";
 
-  // Minimalist Blue (Professional Blue)
-  const primaryBlue = "#3b82f6";
-  const bgWhite = "#ffffff";
-  const textSlate = "#1e293b";
+  const blue = "#3b82f6";
+  const black = "#000000";
 
   return new ImageResponse(
     <div
       style={{
-        height: "100%",
-        width: "100%",
+        height: "630px",
+        width: "1200px",
         display: "flex",
-        flexDirection: "column",
+        backgroundColor: "#ffffff",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: bgWhite,
         position: "relative",
-        padding: "0 80px",
+        margin: 0,
+        padding: 0,
       }}
     >
-      {/* Minimal Grid Background Accent */}
+      {/* Left: Text - Using absolute positioning for maximum Satori reliability */}
       <div
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "1000px",
-          height: "1000px",
-          backgroundImage: `radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%)`,
-          zIndex: 0,
-        }}
-      />
-
-      <div
-        style={{
+          left: "80px",
+          top: "0",
+          bottom: "0",
           display: "flex",
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "space-between",
-          zIndex: 10,
+          flexDirection: "column",
+          justifyContent: "center",
+          width: "600px",
         }}
       >
-        {/* Text Side */}
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <div
-            style={{
-              fontSize: "84px",
-              fontWeight: "900",
-              color: textSlate,
-              lineHeight: "1.1",
-              marginBottom: "16px",
-              letterSpacing: "-2px",
-            }}
-          >
-            {isKo ? "만다라트" : "Mandalart"} <span style={{ color: primaryBlue }}>2026</span>
-          </div>
-
-          <div
-            style={{
-              fontSize: "36px",
-              fontWeight: "500",
-              color: "#64748b",
-              marginTop: "10px",
-            }}
-          >
-            {isKo ? "성공을 위한 64개의 실행 계획" : "64 Action Plans for Your Success"}
-          </div>
-        </div>
-
-        {/* Minimalist Visual (Simple 3x3 Grid Outline) */}
         <div
           style={{
             display: "flex",
-            width: "360px",
-            height: "360px",
-            flexWrap: "wrap",
-            gap: "8px",
-            padding: "12px",
-            backgroundColor: "rgba(59, 130, 246, 0.05)",
-            borderRadius: "32px",
-            border: "1px solid rgba(59, 130, 246, 0.1)",
+            fontSize: "100px",
+            fontWeight: "900",
+            lineHeight: "1",
+            color: black,
           }}
         >
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: "106px",
-                height: "106px",
-                backgroundColor: i === 4 ? primaryBlue : "white",
-                borderRadius: "12px",
-                border: i === 4 ? "none" : "1px solid rgba(59, 130, 246, 0.1)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {i === 4 && (
-                <div
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    background: "white",
-                    borderRadius: "6px",
-                    opacity: 0.8,
-                  }}
-                />
-              )}
-            </div>
-          ))}
+          {isKo ? "만다라트" : "Mandalart"}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: "120px",
+            fontWeight: "900",
+            lineHeight: "1",
+            color: blue,
+          }}
+        >
+          2026
+        </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: "36px",
+            fontWeight: "500",
+            color: "#64748b",
+            marginTop: "40px",
+          }}
+        >
+          {isKo ? "더 나은 미래를 향한 첫 걸음" : "The first step towards a better future"}
         </div>
       </div>
 
-      {/* Bottom Domain */}
+      {/* Right: Grid Visual */}
       <div
         style={{
           position: "absolute",
-          bottom: "60px",
+          right: "80px",
+          top: "115px",
+          width: "400px",
+          height: "400px",
+          display: "flex",
+          flexWrap: "wrap",
+          background: "#f8fafc",
+          padding: "20px",
+          borderRadius: "40px",
+          border: "1px solid #e2e8f0",
+        }}
+      >
+        {/* Manually placed 9 boxes to avoid ANY render logic issues */}
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: blue,
+            borderRadius: "12px",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+        <div
+          style={{
+            width: "113px",
+            height: "113px",
+            margin: "3px",
+            background: "#ffffff",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+          }}
+        />
+      </div>
+
+      {/* Branding Footer */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "50px",
           left: "80px",
-          color: "rgba(0,0,0,0.15)",
           fontSize: "20px",
+          color: "#cbd5e1",
           fontWeight: "bold",
         }}
       >
