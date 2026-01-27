@@ -21,6 +21,8 @@ export const MandalartGrid = () => {
   const nodes = useMandalartStore((state) => state.nodes);
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
+  const zoomedNodeId = useMandalartStore((state) => state.zoomedNodeId);
+  const setZoomedNodeId = useMandalartStore((state) => state.setZoomedNodeId);
 
   // Parse Data Structure
   const { coreNode, subNodesMap, actionNodesMap } = useMemo(() => {
@@ -39,8 +41,19 @@ export const MandalartGrid = () => {
     return { coreNode: core, subNodesMap, actionNodesMap };
   }, [nodes]);
 
+  // Determine which block to show in Zoomed Mode
+  const zoomedBlockIndex = useMemo(() => {
+    if (!zoomedNodeId) return null;
+    const subNode = Object.values(subNodesMap).find((n) => n.id === zoomedNodeId);
+    if (subNode) return subNode.position;
+
+    if (coreNode && coreNode.id === zoomedNodeId) return 4;
+
+    return null;
+  }, [zoomedNodeId, subNodesMap, coreNode]);
+
   // Render a single 3x3 block
-  const renderBlock = (blockIndex: number) => {
+  const renderBlock = (blockIndex: number, isZoomedView = false) => {
     const isCenterBlock = blockIndex === 4;
 
     // Determine the "Center Identity" of this block
@@ -64,9 +77,11 @@ export const MandalartGrid = () => {
         key={blockIndex}
         className={cn(
           "grid grid-cols-3 gap-1 p-1 rounded-xl transition-all duration-300",
-          isCenterBlock
-            ? "bg-white dark:bg-slate-900 shadow-xl z-10 scale-[1.02] ring-1 ring-slate-200 dark:ring-slate-700"
-            : "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50",
+          isZoomedView
+            ? "w-full h-full gap-2 p-4 bg-white dark:bg-slate-900 shadow-none border-0"
+            : isCenterBlock
+              ? "bg-white dark:bg-slate-900 shadow-xl z-10 scale-[1.02] ring-1 ring-slate-200 dark:ring-slate-700"
+              : "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50",
         )}
       >
         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((cellPos) => {
@@ -76,12 +91,24 @@ export const MandalartGrid = () => {
           if (isCellCenter) {
             node = centerNode;
           } else {
-            // If it's the center block, surrounding cells are SUB nodes at `cellPos`
-            // If it's an outer block, surrounding cells are ACTION nodes at `cellPos`
             node = surroundingNodes[cellPos];
           }
 
           const isSelected = node && node.id === selectedNodeId;
+
+          // Handle Zoom Logic
+          const canZoom =
+            !isZoomedView &&
+            ((isCenterBlock && !isCellCenter && node) || // Sub Goal in Center Block
+              (!isCenterBlock && isCellCenter && node)); // Sub Goal in Outer Block
+
+          const handleZoom = () => {
+            if (isZoomedView) {
+              setZoomedNodeId(null);
+            } else {
+              if (node) setZoomedNodeId(node.id);
+            }
+          };
 
           return (
             <Cell
@@ -90,16 +117,22 @@ export const MandalartGrid = () => {
               node={node}
               isCenter={isCellCenter}
               isActive={!!isSelected}
+              onZoom={
+                (!isZoomedView && canZoom) || (isZoomedView && isCellCenter)
+                  ? handleZoom
+                  : undefined
+              }
+              isZoomed={isZoomedView}
               onClick={() => {
-                // TODO: Handle cell click (open editor, zoom, etc.)
                 if (node) setSelectedNodeId(node.id);
-                console.log(`Clicked Block ${blockIndex} Cell ${cellPos}`, node);
               }}
               className={cn(
                 // Style adjustments for nested grids
                 isCenterBlock && isCellCenter && "bg-primary text-black font-black text-sm", // Core Goal
                 isCenterBlock && !isCellCenter && "font-bold", // Sub Goals in Center
                 !isCenterBlock && isCellCenter && "font-bold bg-slate-100 dark:bg-slate-800", // Sub Goals in Outer
+                isZoomedView && "text-sm sm:text-base", // Larger text in zoomed view
+                isZoomedView && isCellCenter && "text-lg sm:text-xl", // Much larger center text
               )}
             />
           );
@@ -111,9 +144,25 @@ export const MandalartGrid = () => {
   return (
     <div className="w-full max-w-[800px] aspect-square mx-auto p-2 sm:p-4">
       {/* Main 3x3 Grid of Blocks */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full h-full">
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
-      </div>
+      {zoomedBlockIndex !== null ? (
+        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
+          <div className="w-full aspect-square max-w-[500px]">
+            {renderBlock(zoomedBlockIndex, true)}
+          </div>
+          <div className="text-center mt-6 text-sm text-slate-400">
+            <button
+              onClick={() => setZoomedNodeId(null)}
+              className="underline hover:text-primary transition-colors"
+            >
+              전체 보기로 돌아가기
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full h-full">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
+        </div>
+      )}
     </div>
   );
 };
