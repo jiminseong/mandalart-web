@@ -16,37 +16,35 @@ export default async function Image() {
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#102216", // PRD Dark Forest Green
-        backgroundImage: "radial-gradient(circle at 50% 50%, #1a3a24 0%, #102216 100%)",
-        padding: "60px",
+        padding: "80px",
         position: "relative",
+        fontFamily: "sans-serif",
       }}
     >
-      {/* Background Grid Pattern */}
+      {/* Simple Side Glows */}
       <div
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          opacity: 0.1,
-          display: "flex",
-          flexWrap: "wrap",
+          top: -100,
+          right: -100,
+          width: 400,
+          height: 400,
+          background: "rgba(19, 236, 91, 0.15)",
+          borderRadius: "50%",
         }}
-      >
-        {Array.from({ length: 400 }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: "60px",
-              height: "60px",
-              border: "0.5px solid #13ec5b",
-            }}
-          />
-        ))}
-      </div>
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: -150,
+          left: -150,
+          width: 500,
+          height: 500,
+          background: "rgba(19, 236, 91, 0.1)",
+          borderRadius: "50%",
+        }}
+      />
 
-      {/* Content Container */}
       <div
         style={{
           display: "flex",
@@ -54,7 +52,6 @@ export default async function Image() {
           height: "100%",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "40px",
           zIndex: 10,
         }}
       >
@@ -70,11 +67,11 @@ export default async function Image() {
             style={{
               background: "#13ec5b",
               color: "#102216",
-              padding: "8px 24px",
+              padding: "10px 24px",
               borderRadius: "100px",
               fontSize: "24px",
-              fontWeight: "900",
-              display: "inline-flex",
+              fontWeight: "bold",
+              display: "flex",
               width: "fit-content",
               marginBottom: "32px",
             }}
@@ -86,83 +83,66 @@ export default async function Image() {
             style={{
               display: "flex",
               flexDirection: "column",
-              fontSize: "72px",
-              fontWeight: "900",
+              fontSize: "76px",
+              fontWeight: 900,
               color: "white",
-              lineHeight: "1.1",
-              marginBottom: "24px",
-              letterSpacing: "-3px",
+              lineHeight: 1.2,
+              marginBottom: "28px",
             }}
           >
             <span>꿈을 현실로 만드는</span>
             <span style={{ color: "#13ec5b" }}>가장 확실한 기술</span>
           </div>
 
-          <p
+          <div
             style={{
               fontSize: "32px",
-              color: "#94a3b8",
-              margin: 0,
-              opacity: 0.8,
+              color: "rgba(255, 255, 255, 0.6)",
+              display: "flex",
             }}
           >
-            성공하는 사람들의 목표 관리법, AI 코칭과 시작하세요.
-          </p>
+            성공을 위한 64단계 AI 계획표
+          </div>
         </div>
 
-        {/* Visual Side (Mandalart Grid Graphic) */}
+        {/* Visual Side (Simplified 3x3 Grid Graphic) */}
         <div
           style={{
             display: "flex",
-            width: "420px",
-            height: "420px",
+            width: "400px",
+            height: "400px",
             flexDirection: "row",
             flexWrap: "wrap",
-            gap: "10px",
-            padding: "10px",
-            backgroundColor: "rgba(19, 236, 91, 0.05)",
-            borderRadius: "24px",
-            border: "1px solid rgba(19, 236, 91, 0.2)",
+            gap: "12px",
+            padding: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.03)",
+            borderRadius: "40px",
+            border: "1px solid rgba(19, 236, 91, 0.1)",
           }}
         >
-          {Array.from({ length: 9 }).map((_, i) => (
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
               style={{
-                width: "calc(33.33% - 7px)",
-                height: "calc(33.33% - 7px)",
+                width: "114px",
+                height: "114px",
                 backgroundColor: i === 4 ? "#13ec5b" : "rgba(255, 255, 255, 0.05)",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                borderRadius: "16px",
                 border: i === 4 ? "none" : "1px solid rgba(255, 255, 255, 0.1)",
               }}
-            >
-              {i === 4 && (
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    background: "#102216",
-                    borderRadius: "8px",
-                    opacity: 0.8,
-                  }}
-                />
-              )}
-            </div>
+            />
           ))}
         </div>
       </div>
 
-      {/* Bottom Branding */}
+      {/* Domain Footer */}
       <div
         style={{
           position: "absolute",
-          bottom: "40px",
-          left: "60px",
+          bottom: "50px",
+          left: "80px",
           color: "rgba(255,255,255,0.2)",
-          fontSize: "20px",
+          fontSize: "22px",
           fontWeight: "bold",
         }}
       >
