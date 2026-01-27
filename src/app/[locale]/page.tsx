@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, InfoIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -18,7 +18,7 @@ export default async function Home() {
           className="group text-sm font-bold text-slate-600 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
         >
           <span className="bg-primary/10 p-1 rounded-full group-hover:bg-primary/20 transition-colors">
-            <Sparkles size={14} className="text-primary" />
+            <InfoIcon size={14} className="text-primary" />
           </span>
           {navT("about")}
         </Link>

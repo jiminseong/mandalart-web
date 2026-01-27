@@ -164,7 +164,7 @@ export const OhtaniGrid = () => {
                       >
                         <span
                           className={cn(
-                            "text-[8px] sm:text-[10px] leading-tight whitespace-pre-wrap break-keep text-slate-800",
+                            "text-[6px] sm:text-[8px] leading-tight whitespace-pre-wrap break-keep text-slate-800",
                             isBold ? "font-black" : "font-medium",
                           )}
                         >

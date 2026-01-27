@@ -90,7 +90,7 @@ export default async function AboutPage() {
             </p>
             <Link
               href="/editor"
-              className="inline-block px-10 py-5 bg-primary text-white font-bold rounded-2xl text-xl hover:scale-105 transition-transform shadow-lg shadow-primary/30"
+              className="inline-block px-10 py-5 bg-primary text-white font-bold rounded-2xl text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/30"
             >
               {t("ctaCreate")}
             </Link>
