@@ -2,9 +2,9 @@
 
 import React, { useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
-import { Download, Share2, Check, ArrowLeft, Image as ImageIcon } from "lucide-react";
+import { Download, Share2, ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/utils/cn";
-import html2canvas from "html2canvas";
+import { toBlob, toPng } from "html-to-image";
 import Link from "next/link";
 
 export default function SharePage() {
@@ -13,82 +13,23 @@ export default function SharePage() {
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
-  const [showBadges, setShowBadges] = useState(false); // To be implemented if badge data exists
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Helper to render a specific block
-  const renderBlock = (blockIndex: number) => {
-    // Determine block position
-    const row = Math.floor(blockIndex / 3);
-    const col = blockIndex % 3;
-
-    // Calculate level-1 node index for this block
-    // Center block (4) is Core. Others are Subs.
-    let parentNodeId: string | null = null;
-    let isCoreBlock = false;
-
-    if (blockIndex === 4) {
-      isCoreBlock = true;
-      // Core Goals Block
-    } else {
-      // Map block index to Sub Goal Node
-      // Logic must match MandalartGrid.tsx logic
-      // But simply: Find the sub node that corresponds to this position?
-      // Actually, store stores nodes flatly.
-      // Let's reuse the logic:
-      // Core Node is Level 0.
-      // Sub Nodes are Level 1.
-      // We need to find the specific Level 1 node for this block.
-    }
-
-    // Simplification for Share Preview:
-    // Just render the text. To allow perfect rendering, we ideally reuse MandalartGrid.
-    // But MandalartGrid has interactive elements.
-    // Let's try to reconstruct a clean readonly version here.
-
-    const coreNode = nodes.find((n) => n.level === 0);
-    if (!coreNode) return null;
-
-    let centerContent = "";
-    let centerColor = "";
-    let cells: { content: string; color: string }[] = [];
-
-    if (blockIndex === 4) {
-      // Center Block (Core)
-      centerContent = coreNode.content || "";
-      centerColor = "bg-primary text-white"; // Core Center Style
-
-      // Surrounding cells in center block are Sub Goals
-      // We need to find all Level 1 nodes and place them correctly
-      // This mapping is tricky without the exact same logic.
-      // Let's assume standard order: 8 sub goals, pos 0~7 (skipping center)
-      // Actually, let's just use the store's structure if possible.
-      // Since we can't easily import internal logic, let's copy the renderer logic slightly simplified.
-    }
-  };
-
-  // Actually, re-implementing grid logic is risky.
-  // Better approach: Import MandalartGrid but put it in a "Read Only" mode or just strip interactions via CSS?
-  // Or just accept it's identical to Editor.
-  // The screenshot shows a "clean" version.
-
-  // Let's try to make a "ReadOnlyGrid" component in the future.
-  // For now, I will use MandalartGrid and overlay a transparent div to block interaction,
-  // and inject styles via a wrapper class.
+  // Helper to render a specific block...
+  // (Remaining render logic skipped as it is not needed here)
 
   const handleDownload = async () => {
     if (!containerRef.current) return;
 
     try {
-      const canvas = await html2canvas(containerRef.current, {
-        scale: 2, // High resolution
+      // html-to-image: toPng
+      const dataUrl = await toPng(containerRef.current, {
+        cacheBust: true,
         backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
-        useCORS: true,
       });
 
-      const image = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.href = image;
+      link.href = dataUrl;
       link.download = `mandalart-2026-${Date.now()}.png`;
       link.click();
     } catch (err) {
@@ -98,15 +39,33 @@ export default function SharePage() {
   };
 
   const handleShare = async () => {
+    if (!containerRef.current) return;
+
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: "Mandalart 2026",
-          text: "나만의 만다라트 계획표를 확인해보세요!",
-          url: window.location.href, // Or generate a shareable link if backend exists
+        const blob = await toBlob(containerRef.current, {
+          cacheBust: true,
+          backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
         });
+
+        if (!blob) return;
+        const file = new File([blob], "mandalart-2026.png", { type: "image/png" });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "만다라트 2026",
+            text: "나만의 만다라트 계획표를 확인해보세요!",
+          });
+        } else {
+          await navigator.share({
+            title: "만다라트 2026",
+            text: "나만의 만다라트 계획표를 확인해보세요!",
+            url: window.location.href,
+          });
+        }
       } catch (err) {
-        console.log("Error sharing", err);
+        console.error("Error sharing", err);
       }
     } else {
       alert("이 브라우저에서는 공유 기능을 지원하지 않습니다.");
@@ -131,7 +90,7 @@ export default function SharePage() {
             <ArrowLeft size={24} />
           </Link>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            그리드 내보내기 및 공유
+            만다라트 내보내기 및 공유
           </h1>
         </div>
       </header>
@@ -166,7 +125,7 @@ export default function SharePage() {
                       isDarkMode ? "text-white" : "text-slate-900",
                     )}
                   >
-                    Mandalart 2026
+                    만다라트 2026
                   </h1>
                   <p
                     className={cn(
@@ -224,7 +183,7 @@ export default function SharePage() {
                 <Switch checked={showTitle} onCheckedChange={setShowTitle} />
               </div>
 
-              <div className="flex items-center justify-between p-2 opacity-50 cursor-not-allowed">
+              <div className="flex items-center justify-between p-2">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
                     <ImageIcon size={16} />
@@ -287,58 +246,88 @@ function Switch({
 }
 
 // Simplified Grid Renderer for Export (Crucial for clean export)
+// Simplified Grid Renderer for Export (Crucial for clean export)
 function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }) {
-  // Reconstructing the 3x3x3 grid logic simply
-  const renderCell = (content: string, type: "core" | "sub" | "action", isCenter: boolean) => {
-    // We use INLINE STYLES with HEX CODES to avoid html2canvas issues with modern CSS functions (lab/oklch)
-    // derived from Tailwind v4 or variables.
+  // HTML2Canvas limitation fixes:
+  // 1. Avoid 'display: contents' -> Use nested grids
+  // 2. Avoid modern color spaces (lab, oklch) -> Use Explicit HEX via inline styles
+  // 3. Avoid 'gap' if possible or ensure it works -> explicit margin/padding is safer but grid gap usually works in recent versions if container has size.
 
-    let style: React.CSSProperties = {
-      backgroundColor: "#ffffff",
-      color: "#64748b", // slate-500
-    };
+  const renderCell = (content: string, type: "core" | "sub" | "action", isCenter: boolean) => {
+    let bgColor = "#ffffff";
+    let textColor = "#64748b"; // slate-500
+    let fontWeight = 400;
 
     // Color Logic
     if (type === "core") {
       if (isCenter) {
-        style = { backgroundColor: "#3b82f6", color: "#ffffff" }; // Primary (Blue 500)
+        bgColor = "#3b82f6"; // Primary Blue 500
+        textColor = "#ffffff";
+        fontWeight = 900;
       } else {
-        style = { backgroundColor: "#f1f5f9", color: "#0f172a" }; // Slate 100, Slate 900
+        bgColor = "#f1f5f9"; // Slate 100
+        textColor = "#0f172a"; // Slate 900
+        fontWeight = 700;
       }
     } else if (type === "sub") {
       if (isCenter) {
-        style = { backgroundColor: "#f1f5f9", color: "#0f172a" }; // Slate 100, Slate 900
+        bgColor = "#f1f5f9"; // Slate 100
+        textColor = "#0f172a"; // Slate 900
+        fontWeight = 700;
       } else {
-        style = { backgroundColor: "#ffffff", color: "#64748b" }; // White, Slate 500
+        bgColor = "#ffffff";
+        textColor = "#64748b"; // Slate 500
+        fontWeight = 500;
       }
-    } else {
-      style = { backgroundColor: "#ffffff", color: "#64748b" }; // White, Slate 500
     }
 
+    // Dark Mode Overrides
     if (isDarkMode) {
-      // Dark Mode colors
-      if (style.backgroundColor === "#ffffff") {
-        style.backgroundColor = "#1e293b"; // Slate 800
-        style.color = "#cbd5e1"; // Slate 300
+      if (bgColor === "#ffffff") {
+        bgColor = "#1e293b"; // Slate 800
+        textColor = "#cbd5e1"; // Slate 300
+      } else if (bgColor === "#f1f5f9") {
+        bgColor = "#334155"; // Slate 700
+        textColor = "#e2e8f0"; // Slate 200
       }
-      if (style.backgroundColor === "#f1f5f9") {
-        style.backgroundColor = "#334155"; // Slate 700
-        style.color = "#e2e8f0"; // Slate 200
-      }
+    }
+
+    // Translate Default Text
+    let displayContent = content;
+    if (!displayContent) {
+      displayContent = "";
+    } else {
+      if (displayContent.startsWith("Sub Goal")) displayContent = "세부 목표";
+      if (displayContent.startsWith("Action")) displayContent = "실천";
+      if (displayContent === "Mandalart") displayContent = "만다라트";
     }
 
     return (
       <div
-        style={style}
-        className="aspect-square flex items-center justify-center p-1 text-center text-[8px] sm:text-[10px] break-keep leading-tight font-medium"
+        style={{
+          backgroundColor: bgColor,
+          color: textColor,
+          width: "100%",
+          height: "100%",
+          display: "flex", // Flex inside cell is fine
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          fontSize: "10px",
+          lineHeight: "1.2",
+          fontWeight: fontWeight,
+          wordBreak: "keep-all",
+          whiteSpace: "pre-wrap",
+          padding: "2px",
+          boxSizing: "border-box", // Important
+        }}
       >
-        {content}
+        {displayContent}
       </div>
     );
   };
 
   const renderBlock = (blockIdx: number) => {
-    // Identify Block Type and Center Node
     const isCoreBlock = blockIdx === 4;
 
     const coreNode = nodes.find((n) => n.level === 0);
@@ -353,41 +342,26 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
 
     if (isCoreBlock) {
       blockCenterNode = coreNode;
-      // Cells are subNodes arranged around center.
-      // Positions mapping:
-      // 0: TopLeft, 1: Top, 2: TopRight
-      // 3: Left,    4: Center, 5: Right
-      // 6: BottomLeft, 7: Bottom, 8: BottomRight
-      // We assume subNodes have positions 0..7
-
-      // Map subNode position (0-7) to Grid Index (0-8, skip 4)
       const getSubNodeAt = (pos: number) => subNodes.find((n) => n.position === pos);
-
       cellNodes = [
         getSubNodeAt(0),
         getSubNodeAt(1),
         getSubNodeAt(2),
         getSubNodeAt(3),
         coreNode,
-        getSubNodeAt(4),
         getSubNodeAt(5),
         getSubNodeAt(6),
         getSubNodeAt(7),
+        getSubNodeAt(8),
       ];
     } else {
-      // Sub Block
-      // blockIdx 0..8
-      // If blockIdx < 4, position is blockIdx.
-      // If blockIdx > 4, position is blockIdx - 1.
       let subPos = blockIdx;
       if (blockIdx > 4) subPos = blockIdx - 1;
-
       blockCenterNode = subNodes.find((n) => n.position === subPos);
 
-      // Actions
       if (blockCenterNode) {
         const actions = nodes.filter((n) => n.level === 2 && n.parent_id === blockCenterNode?.id);
-        cellNodes = [0, 1, 2, 3, 99, 4, 5, 6, 7].map((p) => {
+        cellNodes = [0, 1, 2, 3, 99, 5, 6, 7, 8].map((p) => {
           if (p === 99) return blockCenterNode;
           return actions.find((n) => n.position === p);
         });
@@ -396,35 +370,53 @@ function ExportGrid({ nodes, isDarkMode }: { nodes: any[]; isDarkMode: boolean }
       }
     }
 
-    const gridStyle = {
-      gap: "1px",
-      backgroundColor: isDarkMode ? "#334155" : "#e2e8f0", // Slate 700 or Slate 200
-      borderColor: isDarkMode ? "#334155" : "#e2e8f0",
-    };
+    const gridGapColor = isDarkMode ? "#334155" : "#e2e8f0";
 
     return (
-      <div style={gridStyle} className="grid grid-cols-3 border">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateRows: "repeat(3, 1fr)", // Explicit rows
+          gap: "1px",
+          backgroundColor: gridGapColor,
+          border: `1px solid ${gridGapColor}`,
+          aspectRatio: "1/1", // Force square
+          width: "100%",
+          height: "100%",
+        }}
+      >
         {cellNodes.map((n, i) => {
           const isCenter = i === 4;
           const type = isCoreBlock ? (isCenter ? "core" : "sub") : isCenter ? "sub" : "action";
           return (
-            <React.Fragment key={i}>{renderCell(n?.content || "", type, isCenter)}</React.Fragment>
+            <div key={i} style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+              {renderCell(n?.content || "", type, isCenter)}
+            </div>
           );
         })}
       </div>
     );
   };
 
-  const containerStyle = {
-    gap: "4px",
-    backgroundColor: isDarkMode ? "#cbd5e1" : "#cbd5e1", // Slate 300 (gap color)
-    borderColor: isDarkMode ? "#cbd5e1" : "#cbd5e1",
-  };
+  const containerGapColor = isDarkMode ? "#cbd5e1" : "#cbd5e1";
 
   return (
-    <div style={containerStyle} className="w-full h-full grid grid-cols-3 border">
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gridTemplateRows: "repeat(3, 1fr)", // Explicit rows
+        gap: "4px",
+        backgroundColor: containerGapColor,
+        border: `1px solid ${containerGapColor}`,
+        aspectRatio: "1/1",
+      }}
+    >
       {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-        <div key={i} className="contents">
+        <div key={i} style={{ width: "100%", height: "100%" }}>
           {renderBlock(i)}
         </div>
       ))}

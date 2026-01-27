@@ -69,13 +69,10 @@ export default function FeedbackPage() {
               <ArrowLeft size={18} /> 에디터로 돌아가기
             </Link>
             {/* Copy Link button simulation */}
-            <button className="py-4 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+            <button className="py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
               <LinkIcon size={18} /> 링크 복사
             </button>
           </div>
-
-          {/* Simple Decoration */}
-          <div className="h-32 rounded-2xl bg-gradient-to-br from-yellow-200 to-green-200 w-full mt-6 opacity-80" />
         </div>
       </div>
     );
@@ -85,7 +82,7 @@ export default function FeedbackPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans">
       <header className="bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-black text-slate-900 dark:text-white">Mandalart 2026</h1>
+          <h1 className="text-xl font-black text-slate-900 dark:text-white">만다라트 2026</h1>
           {/* Optional User Avatar placeholder */}
         </div>
       </header>

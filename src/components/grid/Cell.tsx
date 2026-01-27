@@ -47,7 +47,8 @@ export const Cell = ({
       )}
     >
       <span className={cn("line-clamp-3", !node?.content && "text-[10px] opacity-50")}>
-        {node?.content || (isPlaceholder ? "" : "")}
+        {node?.content?.replace("Sub Goal", "세부 목표").replace("Action", "실천") ||
+          (isPlaceholder ? "" : "")}
       </span>
 
       {/* Zoom Action Button (Visible only on Center cells of Outer blocks, or Core cell) */}

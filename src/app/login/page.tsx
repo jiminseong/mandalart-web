@@ -46,7 +46,7 @@ export default function LoginPage() {
 
         <div className="text-center">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
-            {isLogin ? "Welcome Back" : "Join Mandalart 2026"}
+            {isLogin ? "환영합니다" : "만다라트 2026 시작하기"}
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
             {isLogin
@@ -65,7 +65,7 @@ export default function LoginPage() {
                   type="text"
                   required
                   placeholder="홍길동"
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
                 />
               </div>
             )}
@@ -77,7 +77,7 @@ export default function LoginPage() {
                 type="email"
                 required
                 placeholder="hello@example.com"
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
 
@@ -90,8 +90,8 @@ export default function LoginPage() {
                 type="password"
                 required
                 minLength={6}
-                placeholder="••••••••"
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                placeholder="6자리 이상 입력해주세요"
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
               />
             </div>
 
@@ -106,7 +106,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="w-full py-4 rounded-xl bg-primary text-slate-900 font-bold text-lg shadow-lg shadow-primary/20 hover:brightness-105 active:scale-95 transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {isLoading ? <Loader2 className="animate-spin" /> : isLogin ? "로그인" : "시작하기"}
+              {isLoading ? <Loader2 className="animate-spin" /> : isLogin ? "로그인" : "회원가입"}
             </button>
           </form>
 

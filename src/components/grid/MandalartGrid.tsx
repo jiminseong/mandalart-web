@@ -180,7 +180,7 @@ export const MandalartGrid = () => {
         <div className="absolute top-4 z-20 flex justify-center w-full pointer-events-none">
           <button
             onClick={() => setZoomedNodeId(null)}
-            className="pointer-events-auto flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur shadow-lg rounded-full text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all animate-in slide-in-from-top-4 fade-in"
+            className="pointer-events-auto flex items-center gap-2 px-6 py-3 bg-white/95 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xl rounded-full text-sm font-bold border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all animate-in slide-in-from-top-4 fade-in z-50 hover:scale-105 active:scale-95"
           >
             <ArrowLeft size={16} />
             전체 보기

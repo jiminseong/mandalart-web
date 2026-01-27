@@ -5,7 +5,12 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { X, Save, Sparkles, CheckCircle2, Circle } from "lucide-react";
 import { cn } from "@/utils/cn";
 
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+
 export const NodeEditor = () => {
+  const router = useRouter();
+  const supabase = createClient();
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const getNode = useMandalartStore((state) => state.getNode);
@@ -46,6 +51,33 @@ export const NodeEditor = () => {
   };
 
   const handleAiSuggest = async () => {
+    // 1. Auth Check & Free Trial
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      // Free Trial Logic
+      const usedCount = parseInt(localStorage.getItem("ai_free_usage_count") || "0", 10);
+      const MAX_FREE_COUNT = 3;
+
+      if (usedCount >= MAX_FREE_COUNT) {
+        if (
+          confirm(
+            `무료 체험 횟수(${MAX_FREE_COUNT}회)를 모두 사용하셨습니다.\n계속하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?`,
+          )
+        ) {
+          router.push("/login");
+        }
+        return;
+      }
+
+      // Increment usage count for non-logged-in users
+      localStorage.setItem("ai_free_usage_count", (usedCount + 1).toString());
+      // Notify other components (like ProgressBar)
+      window.dispatchEvent(new Event("ai-usage-updated"));
+    }
+
     setIsAiLoading(true);
     try {
       // Prepare Context
@@ -187,7 +219,7 @@ export const NodeEditor = () => {
                       <button
                         key={i}
                         onClick={() => setContent(s)}
-                        className="text-left text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-primary transition-colors"
+                        className="text-left text-xs p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-colors text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                       >
                         {s}
                       </button>

@@ -23,7 +23,7 @@ export default function Home() {
         <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-4">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary-700 font-bold text-xs ring-1 ring-primary/20">
             <Sparkles size={12} />
-            Mandalart 2026
+            만다라트 2026
           </span>
           <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-800">
             작은 목표부터

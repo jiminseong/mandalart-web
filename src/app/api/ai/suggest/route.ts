@@ -1,11 +1,51 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
+import { createClient } from "@/utils/supabase/server";
+import { headers } from "next/headers";
+
+// Simple in-memory rate limiter for demo purposes
+const ipRateLimit = new Map<string, { count: number; lastTime: number }>();
+const FREE_LIMIT = 5; // Allow 5 requests per hour for guests
+const WINDOW_MS = 60 * 60 * 1000;
+
 // Initialize Gemini (Ensure API Key is present in .env.local)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: Request) {
   try {
+    // 0. Auth & Rate Limit Check
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // If NOT logged in, perform stricter checks
+    if (!user) {
+      const headersList = await headers();
+      const ip = headersList.get("x-forwarded-for") || "unknown-ip";
+      const userAgent = headersList.get("user-agent") || "unknown-ua";
+      const fingerPrint = `${ip}-${userAgent}`;
+
+      const now = Date.now();
+      const record = ipRateLimit.get(fingerPrint) || { count: 0, lastTime: now };
+
+      if (now - record.lastTime > WINDOW_MS) {
+        record.count = 0;
+        record.lastTime = now;
+      }
+
+      if (record.count >= FREE_LIMIT) {
+        return NextResponse.json(
+          { error: "Free trial limit exceeded. Please login." },
+          { status: 429 },
+        );
+      }
+
+      record.count++;
+      ipRateLimit.set(fingerPrint, record);
+    }
+
     const { context, goalLevel, currentContent } = await req.json();
 
     // 1. Validation (Key Check)
@@ -20,7 +60,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Prompt Engineering
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     let prompt = "";
     if (goalLevel === 0) {
