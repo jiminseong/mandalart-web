@@ -17,14 +17,6 @@ export const metadata: Metadata = {
     description: "꿈을 현실로 만드는 가장 확실한 방법, 만다라트 계획표",
     url: "https://mandalart.life",
     siteName: "Mandalart 2026",
-    images: [
-      {
-        url: "/og.png",
-        width: 1200,
-        height: 630,
-        alt: "만다라트 2026",
-      },
-    ],
     type: "website",
   },
   twitter: {
