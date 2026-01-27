@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Prompt Engineering
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
 
     let prompt = "";
     if (goalLevel === 0) {
@@ -74,6 +74,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ suggestions });
   } catch (error) {
     console.error("AI Error:", error);
-    return NextResponse.json({ error: "AI Service Unavailable" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "AI Service Unavailable",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }

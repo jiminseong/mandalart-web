@@ -93,12 +93,12 @@ export const NodeEditor = () => {
       {/* Sheet */}
       <div
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-2xl rounded-t-2xl p-6 transition-transform duration-300 ease-out transform translate-y-0",
-          "lg:w-[400px] lg:right-0 lg:left-auto lg:top-0 lg:bottom-0 lg:border-l lg:border-t-0 lg:rounded-none lg:h-full",
+          "fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-2xl rounded-t-2xl transition-transform duration-300 ease-out transform translate-y-0 flex flex-col max-h-[90vh]",
+          "lg:w-[400px] lg:right-0 lg:left-auto lg:top-0 lg:bottom-0 lg:border-l lg:border-t-0 lg:rounded-none lg:h-full lg:max-h-none",
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex-none flex items-center justify-between p-6 pb-2">
           <div>
             <span
               className={cn(
@@ -122,8 +122,8 @@ export const NodeEditor = () => {
           </button>
         </div>
 
-        {/* Body */}
-        <div className="space-y-6">
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Content Input */}
           <div className="space-y-4">
             <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
@@ -197,10 +197,13 @@ export const NodeEditor = () => {
               )}
             </div>
           </div>
+
+          {/* Add extra padding at bottom for safe area scrolling */}
+          <div className="h-24 lg:hidden"></div>
         </div>
 
-        {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-3">
+        {/* Footer (Fixed at bottom within the sheet) */}
+        <div className="flex-none p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-3 pb-8 lg:pb-6">
           <button
             onClick={() => setSelectedNodeId(null)}
             className="flex-1 py-4 rounded-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
