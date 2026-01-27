@@ -1,6 +1,7 @@
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { DebugPanel } from "@/components/DebugPanel";
 import { NodeEditor } from "@/components/editor/NodeEditor";
+import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
 
 export default function EditorPage() {
   return (
@@ -15,6 +16,7 @@ export default function EditorPage() {
 
       <DebugPanel />
       <NodeEditor />
+      <AuthSyncManager />
     </div>
   );
 }
