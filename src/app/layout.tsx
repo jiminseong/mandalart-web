@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className="antialiased bg-white text-slate-900 font-sans">
         <Providers>{children}</Providers>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
     </html>
   );
 }
