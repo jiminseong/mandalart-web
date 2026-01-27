@@ -41,9 +41,11 @@ export default async function AboutPage() {
       <header className="fixed top-0 left-0 w-full p-6 z-20">
         <Link
           href="/"
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold transition-colors"
+          className="group text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
         >
-          <ArrowLeft size={20} />
+          <span className="bg-slate-100 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
+            <ArrowLeft size={16} />
+          </span>
           {navT("home")}
         </Link>
       </header>

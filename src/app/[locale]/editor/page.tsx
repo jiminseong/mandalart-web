@@ -12,22 +12,23 @@ export default async function EditorPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
-      <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10">
-        <div className="flex items-center gap-4">
+      <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10 h-16">
+        <div className="flex items-center">
           <Link
             href="/"
             className="p-2 -ml-2 text-slate-400 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft size={24} />
           </Link>
-          <h1 className="text-xl font-black text-slate-900 dark:text-white hidden sm:block">
+          <h1 className="text-xl font-black text-slate-900 dark:text-white hidden sm:block ml-2">
             {t("title")}
           </h1>
-          <h1 className="text-xl font-black text-slate-900 dark:text-white sm:hidden">2026</h1>
-          <LanguageSwitcher />
         </div>
 
         <ProgressBar />
+
+        {/* Placeholder to maintain flex layout if needed, or just let ProgressBar center */}
+        <div className="w-10 sm:w-20" />
       </header>
 
       <main className="w-full flex-1 flex flex-col items-center justify-center relative">

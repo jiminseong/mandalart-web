@@ -15,10 +15,10 @@ export default async function Home() {
       <header className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center">
         <Link
           href="/about"
-          className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors flex items-center gap-1"
+          className="group text-sm font-bold text-slate-600 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
         >
-          <span className="bg-slate-100 p-1 rounded-full">
-            <Sparkles size={12} />
+          <span className="bg-primary/10 p-1 rounded-full group-hover:bg-primary/20 transition-colors">
+            <Sparkles size={14} className="text-primary" />
           </span>
           {navT("about")}
         </Link>

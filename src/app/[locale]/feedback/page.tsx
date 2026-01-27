@@ -7,6 +7,7 @@ import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
 import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function FeedbackPage() {
   const t = useTranslations("feedback");
@@ -90,10 +91,18 @@ export default function FeedbackPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans">
-      <header className="bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-100 dark:border-slate-800">
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800 p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-black text-slate-900 dark:text-white">만다라트 2026</h1>
-          {/* Optional User Avatar placeholder */}
+          <Link
+            href="/"
+            className="group text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+          >
+            <span className="bg-slate-100 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
+              <ArrowLeft size={16} />
+            </span>
+            {t("title")}
+          </Link>
+          <LanguageSwitcher />
         </div>
       </header>
 
