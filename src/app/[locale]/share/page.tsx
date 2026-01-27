@@ -1,20 +1,20 @@
-"use client";
-
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { Download, Share2, ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toBlob, toPng } from "html-to-image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { analytics } from "@/utils/gtm";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function SharePage() {
+  const t = useTranslations("share");
+  const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
-  const [showBadges, setShowBadges] = useState(false); // To be implemented if badge data exists
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Helper to render a specific block...
@@ -71,7 +71,7 @@ export default function SharePage() {
           await navigator.share({
             title: "만다라트 2026",
             text: "나만의 만다라트 계획표를 확인해보세요!",
-            url: window.location.href,
+            url: globalThis.location.href,
           });
         }
       } catch (err) {
@@ -99,9 +99,7 @@ export default function SharePage() {
           >
             <ArrowLeft size={24} />
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            만다라트 내보내기 및 공유
-          </h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
         </div>
       </header>
 
@@ -109,8 +107,10 @@ export default function SharePage() {
         {/* Preview Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-end">
-            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">미리보기</h2>
-            <span className="text-xs text-slate-400">고화질 PNG</span>
+            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+              {t("preview")}
+            </h2>
+            <span className="text-xs text-slate-400">{t("highQuality")}</span>
           </div>
 
           <div
@@ -143,7 +143,7 @@ export default function SharePage() {
                       isDarkMode ? "text-slate-400" : "text-slate-500",
                     )}
                   >
-                    {new Date().toLocaleDateString()}
+                    {new Date().toLocaleDateString(locale)}
                   </p>
                 </div>
               )}
@@ -178,7 +178,7 @@ export default function SharePage() {
         {/* Settings Section */}
         <div className="space-y-8">
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
-            <h3 className="font-bold text-slate-900 dark:text-white">설정</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white">{t("settings")}</h3>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between p-2">
@@ -187,7 +187,7 @@ export default function SharePage() {
                     T
                   </div>
                   <span className="font-medium text-slate-700 dark:text-slate-200">
-                    제목/날짜 표시
+                    {t("showTitle")}
                   </span>
                 </div>
                 <Switch checked={showTitle} onCheckedChange={setShowTitle} />
@@ -199,7 +199,7 @@ export default function SharePage() {
                     <ImageIcon size={16} />
                   </div>
                   <span className="font-medium text-slate-700 dark:text-slate-200">
-                    배경 스타일 (Dark/Light)
+                    {t("darkMode")}
                   </span>
                 </div>
                 <Switch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
@@ -213,14 +213,14 @@ export default function SharePage() {
               className="w-full py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <Download size={20} />
-              PNG 저장
+              {t("downloadPng")}
             </button>
             <button
               onClick={handleShare}
               className="w-full py-4 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold rounded-xl shadow-lg shadow-yellow-400/20 active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <Share2 size={20} />
-              공유하기
+              {t("shareButton")}
             </button>
           </div>
         </div>

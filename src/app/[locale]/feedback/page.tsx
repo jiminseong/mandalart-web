@@ -1,13 +1,13 @@
-"use client";
-
 import React, { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { ArrowLeft, Star, Link as LinkIcon, Check } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
+import { useTranslations } from "next-intl";
 
 export default function FeedbackPage() {
+  const t = useTranslations("feedback");
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

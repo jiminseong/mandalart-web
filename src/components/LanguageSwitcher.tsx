@@ -1,45 +1,34 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { Globe } from "lucide-react";
+import { usePathname, useRouter, routing } from "@/i18n/routing";
 import { cn } from "@/utils/cn";
+import { useLocale } from "next-intl";
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
+  const locale = useLocale();
 
-  const currentLocale = pathname.startsWith("/en") ? "en" : "ko";
-
-  const switchLanguage = (locale: "ko" | "en") => {
-    const newPathname = pathname.replace(/^\/(ko|en)/, `/${locale}`);
-    router.push(newPathname);
+  const switchLanguage = (newLocale: "ko" | "en") => {
+    router.replace(pathname, { locale: newLocale });
   };
 
   return (
-    <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full p-1 shadow-sm border border-slate-200 dark:border-slate-700">
-      <button
-        onClick={() => switchLanguage("ko")}
-        className={cn(
-          "px-3 py-1.5 rounded-full text-sm font-bold transition-all",
-          currentLocale === "ko"
-            ? "bg-primary text-white"
-            : "text-slate-500 hover:text-slate-900 dark:hover:text-white",
-        )}
-      >
-        한국어
-      </button>
-      <button
-        onClick={() => switchLanguage("en")}
-        className={cn(
-          "px-3 py-1.5 rounded-full text-sm font-bold transition-all",
-          currentLocale === "en"
-            ? "bg-primary text-white"
-            : "text-slate-500 hover:text-slate-900 dark:hover:text-white",
-        )}
-      >
-        English
-      </button>
+    <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-full p-1 border border-slate-200 dark:border-slate-700">
+      {routing.locales.map((loc) => (
+        <button
+          key={loc}
+          onClick={() => switchLanguage(loc as "ko" | "en")}
+          className={cn(
+            "px-2.5 py-1 rounded-full text-xs font-bold transition-all uppercase",
+            locale === loc
+              ? "bg-white dark:bg-slate-700 text-primary shadow-sm"
+              : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+          )}
+        >
+          {loc}
+        </button>
+      ))}
     </div>
   );
 }

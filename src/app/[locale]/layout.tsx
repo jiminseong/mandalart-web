@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 import { GoogleTagManager } from "@next/third-parties/google";
-import "./globals.css";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import "../globals.css";
 
 export const metadata: Metadata = {
   title: "만다라트 2026 - 오타니 쇼헤이의 목표 달성법",
@@ -22,15 +26,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-}>) {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className="antialiased bg-white text-slate-900 font-sans">
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
     </html>

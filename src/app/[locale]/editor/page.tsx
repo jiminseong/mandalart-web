@@ -1,11 +1,15 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ArrowLeft, Share2, MessageSquarePlus } from "lucide-react";
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
 import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
+import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-export default function EditorPage() {
+export default async function EditorPage() {
+  const t = await getTranslations("editor");
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
       <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10">
@@ -17,9 +21,10 @@ export default function EditorPage() {
             <ArrowLeft size={24} />
           </Link>
           <h1 className="text-xl font-black text-slate-900 dark:text-white hidden sm:block">
-            만다라트 2026
+            {t("title")}
           </h1>
           <h1 className="text-xl font-black text-slate-900 dark:text-white sm:hidden">2026</h1>
+          <LanguageSwitcher />
         </div>
 
         <ProgressBar />
@@ -42,7 +47,7 @@ export default function EditorPage() {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             </div>
             <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-              피드백
+              {t("feedback")}
             </span>
           </Link>
 
@@ -55,7 +60,7 @@ export default function EditorPage() {
               className="text-slate-400 group-hover:text-primary transition-colors"
             />
             <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-              공유하기
+              {t("share")}
             </span>
           </Link>
         </div>
