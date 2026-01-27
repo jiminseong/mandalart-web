@@ -13,7 +13,7 @@ export function track(event: string, params: Record<string, any> = {}) {
       ...params,
     });
   } else {
-    console.log(`[GTM] Track: ${event}`, params);
+    console.log(`[Analytics] Track: ${event}`, params);
   }
 }
 
@@ -37,4 +37,46 @@ export type AiParams = {
   suggestion_count?: number;
   suggestion_rank?: number;
   latency_ms?: number;
+};
+
+// Specific Event Trackers
+export const analytics = {
+  // 1. Export Image Event
+  exportImage: (params: {
+    theme: "light" | "dark";
+    show_title_date: boolean;
+    filled_count_total: number;
+  }) => {
+    track("export_image", params);
+  },
+
+  // 2. Cell Edit Event
+  cellEdit: (params: CellEditParams) => {
+    track("cell_edit", params);
+  },
+
+  // 3. AI Apply Event
+  aiApply: (params: AiParams) => {
+    track("ai_apply", params);
+  },
+
+  // 4. Waitlist Submit Event
+  waitlistSubmit: (params: { channel: "email" | "kakao"; placement: string }) => {
+    track("waitlist_submit", params);
+  },
+
+  // 5. Survey Submit Event
+  surveySubmit: (params: { q_interest_score: number; has_waitlist_optin: boolean }) => {
+    track("survey_submit", params);
+  },
+
+  // 6. Page View (manual if needed)
+  pageView: (params: { page_path: string; page_title: string }) => {
+    track("page_view", params);
+  },
+
+  // 7. Start Click
+  startClick: (params: { entry: "hero" | "onboarding_end" | "example_use" }) => {
+    track("start_click", params);
+  },
 };

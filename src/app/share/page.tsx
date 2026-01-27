@@ -6,6 +6,7 @@ import { Download, Share2, ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toBlob, toPng } from "html-to-image";
 import Link from "next/link";
+import { analytics } from "@/utils/gtm";
 
 export default function SharePage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,6 +14,7 @@ export default function SharePage() {
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
+  const [showBadges, setShowBadges] = useState(false); // To be implemented if badge data exists
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Helper to render a specific block...
@@ -32,6 +34,14 @@ export default function SharePage() {
       link.href = dataUrl;
       link.download = `mandalart-2026-${Date.now()}.png`;
       link.click();
+
+      // Track export_image event
+      const filledCount = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
+      analytics.exportImage({
+        theme: isDarkMode ? "dark" : "light",
+        show_title_date: showTitle,
+        filled_count_total: filledCount,
+      });
     } catch (err) {
       console.error("Failed to save image", err);
       alert("이미지 저장에 실패했습니다.");

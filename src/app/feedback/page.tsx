@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { ArrowLeft, Star, Link as LinkIcon, Check } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
+import { analytics } from "@/utils/gtm";
 
 export default function FeedbackPage() {
   const supabase = createClient();
@@ -42,6 +43,13 @@ export default function FeedbackPage() {
       });
 
       if (error) throw error;
+
+      // Track survey_submit event
+      analytics.surveySubmit({
+        q_interest_score: rating,
+        has_waitlist_optin: contact.trim().length > 0,
+      });
+
       setSuccess(true);
     } catch (err) {
       console.error(err);
