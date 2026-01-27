@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { Download, Share2, ArrowLeft, Image as ImageIcon } from "lucide-react";

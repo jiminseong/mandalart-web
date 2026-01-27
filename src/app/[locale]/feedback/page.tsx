@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { ArrowLeft, Star, Link as LinkIcon, Check } from "lucide-react";
