@@ -2,6 +2,14 @@ import Link from "next/link";
 import { ArrowLeft, Target, Grid, ListTodo } from "lucide-react";
 import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "만다라트 기법이란? - 오타니 쇼헤이 성공 비결",
+  description:
+    "만다라트(Mandalart)의 뜻과 작성법, 그리고 오타니 쇼헤이가 실제로 작성한 계획표 예시를 통해 목표 달성의 비밀을 확인해보세요.",
+};
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
