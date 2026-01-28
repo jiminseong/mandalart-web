@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/api/",
     },
-    sitemap: "https://mandalart.life/sitemap.xml",
+    sitemap: "https://www.mandalart.life/sitemap.xml",
   };
 }
