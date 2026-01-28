@@ -1,18 +1,24 @@
-type WindowWithDataLayer = Window & {
-  dataLayer: any[];
-};
-
-declare const window: WindowWithDataLayer;
+import { sendGTMEvent, sendGAEvent } from "@next/third-parties/google";
 
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+export const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export function track(event: string, params: Record<string, any> = {}) {
-  if (typeof window !== "undefined" && window.dataLayer) {
-    window.dataLayer.push({
+  // Send to GTM
+  if (GTM_ID) {
+    sendGTMEvent({
       event,
       ...params,
     });
-  } else {
+  }
+
+  // Send to GA4
+  if (GA_ID) {
+    sendGAEvent("event", event, params);
+  }
+
+  // Log in development
+  if (process.env.NODE_ENV === "development") {
     console.log(`[Analytics] Track: ${event}`, params);
   }
 }

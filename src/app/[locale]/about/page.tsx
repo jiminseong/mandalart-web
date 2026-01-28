@@ -2,6 +2,7 @@ import { Link } from "@/i18n/routing";
 import { ArrowLeft, ArrowRight, Target, Grid, ListTodo } from "lucide-react";
 import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 import { getTranslations } from "next-intl/server";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 import { Metadata } from "next";
 
@@ -49,13 +50,14 @@ export default async function AboutPage() {
           {navT("home")}
         </Link>
 
-        <Link
+        <TrackedLink
           href="/editor"
+          eventParams={{ entry: "onboarding_end" }}
           className="group flex items-center gap-2 px-6 py-2 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-all text-sm"
         >
           {t("ctaCreate")}
           <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </Link>
+        </TrackedLink>
       </header>
 
       <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto space-y-32">
@@ -96,12 +98,13 @@ export default async function AboutPage() {
             <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed whitespace-pre-wrap">
               {t("ohtaniDesc")}
             </p>
-            <Link
+            <TrackedLink
               href="/editor"
+              eventParams={{ entry: "example_use" }}
               className="inline-block px-10 py-5 bg-primary text-white font-bold rounded-2xl text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/30"
             >
               {t("ctaCreate")}
-            </Link>
+            </TrackedLink>
           </div>
           {/* Deco */}
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">

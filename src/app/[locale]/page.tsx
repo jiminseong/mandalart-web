@@ -2,6 +2,7 @@ import { Link } from "@/i18n/routing";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export default async function Home() {
   const t = await getTranslations("home");
@@ -36,13 +37,14 @@ export default async function Home() {
 
         <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
           <div className="flex gap-4">
-            <Link
+            <TrackedLink
               href="/about"
+              eventParams={{ entry: "hero" }}
               className="group flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-lg"
             >
               {t("cta")}
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </TrackedLink>
             <Link
               href="/login"
               className="px-8 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all text-lg"

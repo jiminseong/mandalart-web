@@ -2,11 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
-import { X, Save, Sparkles, CheckCircle2, Circle } from "lucide-react";
+import { X, Save, Sparkles } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { analytics } from "@/utils/gtm";
+
+const getNodeSection = (level: number) => {
+  if (level === 0) return "center";
+  if (level === 1) return "core8";
+  return "actions64";
+};
 
 export const NodeEditor = () => {
   const router = useRouter();
@@ -15,7 +22,6 @@ export const NodeEditor = () => {
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const getNode = useMandalartStore((state) => state.getNode);
   const updateNodeContent = useMandalartStore((state) => state.updateNodeContent);
-  const updateNodeStatus = useMandalartStore((state) => state.updateNodeStatus);
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Local state for smooth typing
@@ -39,7 +45,21 @@ export const NodeEditor = () => {
   if (!selectedNodeId || !node) return null;
 
   const handleSave = () => {
+    const isNewContent = node.content !== content;
+    const filledCountTotal = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
+
     updateNodeContent(selectedNodeId, content, note);
+
+    if (isNewContent) {
+      analytics.cellEdit({
+        section: getNodeSection(node.level),
+        cell_index: node.position,
+        filled: content.trim().length > 0,
+        filled_count_total: filledCountTotal,
+        input_len: content.length,
+      });
+    }
+
     setSelectedNodeId(null);
   };
 
@@ -58,7 +78,7 @@ export const NodeEditor = () => {
 
     if (!user) {
       // Free Trial Logic
-      const usedCount = parseInt(localStorage.getItem("ai_free_usage_count") || "0", 10);
+      const usedCount = Number.parseInt(localStorage.getItem("ai_free_usage_count") || "0", 10);
       const MAX_FREE_COUNT = 3;
 
       if (usedCount >= MAX_FREE_COUNT) {
@@ -75,10 +95,16 @@ export const NodeEditor = () => {
       // Increment usage count for non-logged-in users
       localStorage.setItem("ai_free_usage_count", (usedCount + 1).toString());
       // Notify other components (like ProgressBar)
-      window.dispatchEvent(new Event("ai-usage-updated"));
+      globalThis.window.dispatchEvent(new Event("ai-usage-updated"));
     }
 
     setIsAiLoading(true);
+    const ai_mode = content.trim().length > 0 ? "polish" : "fill_blanks";
+    analytics.aiApply({
+      cell_index: node.position,
+      section: getNodeSection(node.level),
+      ai_mode,
+    });
     try {
       // Prepare Context
       const core = nodes.find((n) => n.level === 0);
@@ -114,6 +140,12 @@ export const NodeEditor = () => {
   const isCore = node.level === 0;
   const isSub = node.level === 1;
 
+  const tagColorClass = isCore
+    ? "bg-primary/20 text-primary-700 dark:text-primary"
+    : "bg-slate-100 dark:bg-slate-800 text-slate-500";
+
+  const tagLabel = isCore ? "핵심 목표" : isSub ? "세부 목표" : "실행 계획";
+
   return (
     <>
       {/* Backdrop */}
@@ -133,16 +165,9 @@ export const NodeEditor = () => {
         <div className="flex-none flex items-center justify-between p-6 pb-2">
           <div>
             <span
-              className={cn(
-                "text-xs font-bold px-2 py-1 rounded mb-2 inline-block",
-                isCore
-                  ? "bg-primary/20 text-primary-700 dark:text-primary"
-                  : isSub
-                    ? "bg-slate-100 dark:bg-slate-800 text-slate-500"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-500",
-              )}
+              className={cn("text-xs font-bold px-2 py-1 rounded mb-2 inline-block", tagColorClass)}
             >
-              {isCore ? "핵심 목표" : isSub ? "세부 목표" : "실행 계획"}
+              {tagLabel}
             </span>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">목표 설정</h2>
           </div>
@@ -218,7 +243,14 @@ export const NodeEditor = () => {
                     {suggestions.map((s, i) => (
                       <button
                         key={i}
-                        onClick={() => setContent(s)}
+                        onClick={() => {
+                          setContent(s);
+                          analytics.aiApply({
+                            cell_index: node.position,
+                            section: getNodeSection(node.level),
+                            suggestion_rank: i + 1,
+                          });
+                        }}
                         className="text-left text-xs p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-colors text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                       >
                         {s}
@@ -244,7 +276,10 @@ export const NodeEditor = () => {
           </button>
           <button
             onClick={handleSave}
-            className="flex-[2] py-4 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20 hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+            className={cn(
+              "flex-2 py-4 rounded-xl bg-primary text-slate-900 font-bold shadow-lg shadow-primary/20",
+              "hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2",
+            )}
           >
             <Save size={20} />
             저장하기
