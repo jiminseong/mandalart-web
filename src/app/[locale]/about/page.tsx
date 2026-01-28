@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { ArrowLeft, Target, Grid, ListTodo } from "lucide-react";
+import { ArrowLeft, ArrowRight, Target, Grid, ListTodo } from "lucide-react";
 import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 import { getTranslations } from "next-intl/server";
 
@@ -38,7 +38,7 @@ export default async function AboutPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      <header className="fixed top-0 left-0 w-full p-6 z-20">
+      <header className="fixed top-0 left-0 w-full p-6 z-20 flex justify-between items-center bg-white/50 backdrop-blur-sm">
         <Link
           href="/"
           className="group text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
@@ -47,6 +47,14 @@ export default async function AboutPage() {
             <ArrowLeft size={16} />
           </span>
           {navT("home")}
+        </Link>
+
+        <Link
+          href="/editor"
+          className="group flex items-center gap-2 px-6 py-2 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-all text-sm"
+        >
+          {t("ctaCreate")}
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </Link>
       </header>
 
