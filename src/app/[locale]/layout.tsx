@@ -24,6 +24,12 @@ export const metadata: Metadata = {
     title: "만다라트 2026",
     description: "2026년 목표 달성을 위한 AI 만다라트 플래너",
   },
+  verification: {
+    other: {
+      "naver-site-verification":
+        "6f5ed20b15cdfacfee02a434b86948063b4b1f01",
+    },
+  },
 };
 
 export default async function RootLayout({
