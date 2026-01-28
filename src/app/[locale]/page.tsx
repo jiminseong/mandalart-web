@@ -12,16 +12,7 @@ export default async function Home() {
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
 
       {/* Header */}
-      <header className="absolute top-0 left-0 w-full p-6 z-20 flex justify-between items-center">
-        <Link
-          href="/about"
-          className="group text-sm font-bold text-slate-600 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
-        >
-          <span className="bg-primary/10 p-1 rounded-full group-hover:bg-primary/20 transition-colors">
-            <InfoIcon size={14} className="text-primary" />
-          </span>
-          {navT("about")}
-        </Link>
+      <header className="absolute top-0 left-0 w-full p-6 z-20 flex justify-end items-center">
         <LanguageSwitcher />
       </header>
 
@@ -43,19 +34,32 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="flex gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+        <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+          <div className="flex gap-4">
+            <Link
+              href="/editor"
+              className="group flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-lg"
+            >
+              {t("cta")}
+              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              href="/login"
+              className="px-8 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all text-lg"
+            >
+              {navT("login")}
+            </Link>
+          </div>
+
           <Link
-            href="/editor"
-            className="group flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all text-lg"
+            href="/about"
+            className="group text-sm font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-2 py-2 px-4 rounded-full bg-slate-100/50 hover:bg-primary/5"
           >
-            {t("cta")}
-            <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            href="/login"
-            className="px-8 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all text-lg"
-          >
-            {navT("login")}
+            <InfoIcon
+              size={16}
+              className="text-slate-400 group-hover:text-primary transition-colors"
+            />
+            {navT("about")}
           </Link>
         </div>
       </main>
