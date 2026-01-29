@@ -38,13 +38,13 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
-      <header className="fixed top-0 left-0 w-full p-6 z-20 flex justify-between items-center bg-white/50 backdrop-blur-sm">
+    <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-200">
+      <header className="fixed top-0 left-0 w-full p-6 z-20 flex justify-between items-center bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm">
         <Link
           href="/"
-          className="group text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+          className="group text-sm font-bold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
         >
-          <span className="bg-slate-100 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
+          <span className="bg-slate-100 dark:bg-slate-800 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
             <ArrowLeft size={16} />
           </span>
           {navT("home")}
@@ -63,10 +63,10 @@ export default async function AboutPage() {
       <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto space-y-32">
         {/* Hero */}
         <section className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 leading-tight whitespace-pre-wrap">
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white leading-tight whitespace-pre-wrap">
             {t("title")}
           </h1>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto whitespace-pre-wrap">
+          <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto whitespace-pre-wrap">
             {t("description")}
           </p>
         </section>
@@ -74,12 +74,17 @@ export default async function AboutPage() {
         {/* How it works */}
         <section className="grid sm:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           {steps.map((item) => (
-            <div key={item.id} className="bg-slate-50 p-8 rounded-3xl text-center space-y-4">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-sm text-primary ring-1 ring-slate-100">
+            <div
+              key={item.id}
+              className="bg-slate-50 dark:bg-slate-900 p-8 rounded-3xl text-center space-y-4 border border-transparent dark:border-slate-800"
+            >
+              <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm text-primary ring-1 ring-slate-100 dark:ring-slate-700">
                 <item.icon size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
-              <p className="text-slate-500 whitespace-pre-wrap leading-relaxed">{item.desc}</p>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">{item.title}</h3>
+              <p className="text-slate-500 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
+                {item.desc}
+              </p>
             </div>
           ))}
         </section>

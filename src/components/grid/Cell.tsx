@@ -45,11 +45,13 @@ export const Cell = ({
         // Placeholder/Empty state
         !node?.content &&
           !isCenter &&
-          "bg-slate-50 dark:bg-slate-800/50 border-dashed text-slate-400",
+          "bg-slate-50 dark:bg-slate-800/50 border-dashed text-slate-400 dark:text-slate-500",
         className,
       )}
     >
-      <span className={cn("line-clamp-3", !node?.content && "text-[10px] opacity-50")}>
+      <span
+        className={cn("line-clamp-3", !node?.content && "text-[10px] opacity-60 dark:opacity-80")}
+      >
         {node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || ""}
       </span>
 

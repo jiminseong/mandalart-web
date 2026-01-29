@@ -26,8 +26,7 @@ export const metadata: Metadata = {
   },
   verification: {
     other: {
-      "naver-site-verification":
-        "6f5ed20b15cdfacfee02a434b86948063b4b1f01",
+      "naver-site-verification": "6f5ed20b15cdfacfee02a434b86948063b4b1f01",
     },
   },
 };
@@ -52,7 +51,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className="antialiased bg-white text-slate-900 font-sans">
+      <body className="antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

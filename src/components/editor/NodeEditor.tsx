@@ -141,8 +141,8 @@ export const NodeEditor = () => {
   const isSub = node.level === 1;
 
   const tagColorClass = isCore
-    ? "bg-primary/20 text-primary-700 dark:text-primary"
-    : "bg-slate-100 dark:bg-slate-800 text-slate-500";
+    ? "bg-primary/20 text-primary-700 dark:text-primary-300"
+    : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400";
 
   const tagLabel = isCore ? "핵심 목표" : isSub ? "세부 목표" : "실행 계획";
 
@@ -233,12 +233,16 @@ export const NodeEditor = () => {
               )}
 
               {isAiLoading && (
-                <div className="text-xs text-slate-500 animate-pulse">열심히 고민 중입니다...</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
+                  열심히 고민 중입니다...
+                </div>
               )}
 
               {suggestions.length > 0 && (
                 <div className="space-y-2 mt-2 w-full">
-                  <p className="text-xs text-slate-500 mb-1">마음에 드는 목표를 클릭하세요:</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    마음에 드는 목표를 클릭하세요:
+                  </p>
                   <div className="flex flex-col gap-2">
                     {suggestions.map((s, i) => (
                       <button
@@ -270,7 +274,7 @@ export const NodeEditor = () => {
         <div className="flex-none p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-3 pb-8 lg:pb-6">
           <button
             onClick={() => setSelectedNodeId(null)}
-            className="flex-1 py-4 rounded-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="flex-1 py-4 rounded-xl font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             취소
           </button>

@@ -69,8 +69,12 @@ export default function FeedbackPage() {
           <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check size={40} strokeWidth={4} />
           </div>
-          <h2 className="text-2xl font-black text-slate-900">참여해 주셔서 감사합니다</h2>
-          <p className="text-slate-500">작성해주신 소중한 의견은 서비스 개선에 큰 힘이 됩니다.</p>
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+            참여해 주셔서 감사합니다
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400">
+            작성해주신 소중한 의견은 서비스 개선에 큰 힘이 됩니다.
+          </p>
 
           <div className="grid grid-cols-2 gap-3 pt-4">
             <Link
@@ -111,7 +115,7 @@ export default function FeedbackPage() {
           <h1 className="text-3xl font-black text-slate-900 dark:text-white">
             소중한 의견을 들려주세요
           </h1>
-          <p className="text-slate-500 leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
             만다라트 기법과 AI 코칭을 결합한 완벽한 목표 달성 앱을 만들기 위해 여러분의 소중한
             의견을 기다리고 있습니다.
           </p>
@@ -123,7 +127,7 @@ export default function FeedbackPage() {
             <Star size={20} fill="currentColor" />
             서비스 관심도
           </div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             만다라트와 연동된 할 일 앱이 있다면 사용하실 의향이 있나요?
           </p>
           <div className="grid grid-cols-5 gap-2">
@@ -265,7 +269,7 @@ export default function FeedbackPage() {
         </button>
       </main>
 
-      <footer className="py-8 text-center text-xs text-slate-300">
+      <footer className="py-8 text-center text-xs text-slate-400 dark:text-slate-600">
         © 2026 Mandalart Plan. 목표 달성을 응원합니다.
       </footer>
     </div>
