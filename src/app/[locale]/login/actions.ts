@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+import { redirect, routing } from "@/i18n/routing";
 import { createClient } from "@/utils/supabase/server";
 
 export async function login(formData: FormData) {
@@ -19,7 +20,10 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/editor");
+
+  const localeFromForm = formData.get("locale") as string | null;
+  const locale = localeFromForm || (await getLocale()) || routing.defaultLocale;
+  redirect({ href: "/editor", locale });
 }
 
 export async function signup(formData: FormData) {
@@ -42,5 +46,8 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/editor");
+
+  const localeFromForm = formData.get("locale") as string | null;
+  const locale = localeFromForm || (await getLocale()) || routing.defaultLocale;
+  redirect({ href: "/editor", locale });
 }

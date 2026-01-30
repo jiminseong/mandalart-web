@@ -5,7 +5,8 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { X, Save, Sparkles } from "lucide-react";
 import { cn } from "@/utils/cn";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useLocale } from "next-intl";
 import { createClient } from "@/utils/supabase/client";
 import { analytics } from "@/utils/gtm";
 
@@ -17,6 +18,7 @@ const getNodeSection = (level: number) => {
 
 export const NodeEditor = () => {
   const router = useRouter();
+  const locale = useLocale();
   const supabase = createClient();
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
@@ -87,7 +89,7 @@ export const NodeEditor = () => {
             `무료 체험 횟수(${MAX_FREE_COUNT}회)를 모두 사용하셨습니다.\n계속하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?`,
           )
         ) {
-          router.push("/login");
+          router.push("/login", { locale });
         }
         return;
       }

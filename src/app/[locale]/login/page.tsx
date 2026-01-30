@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { login, signup } from "./actions";
 import { Loader2, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { cn } from "@/utils/cn";
+import { Link } from "@/i18n/routing";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const locale = useLocale();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,6 +58,7 @@ export default function LoginPage() {
 
         <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800">
           <form onSubmit={handleSubmit} className="space-y-6">
+            <input type="hidden" name="locale" value={locale} />
             {!isLogin && (
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300">이름</label>
