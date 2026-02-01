@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude plugin marketplace add heyman333/atelier-ui)",
+      "Bash(claude plugin install:*)",
+      "Bash(claude plugin list:*)",
+      "Bash(claude skill:*)",
+      "Bash(claude plugin --help:*)",
+      "Skill(atelier-ui:apple-ui-designer)"
+    ]
+  }
+}

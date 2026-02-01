@@ -16,7 +16,9 @@ export default function SharePage() {
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Options
+  // Options
   const [showTitle, setShowTitle] = useState(true);
+  const [showWatermark, setShowWatermark] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Helper to render a specific block...
@@ -42,6 +44,7 @@ export default function SharePage() {
       analytics.exportImage({
         theme: isDarkMode ? "dark" : "light",
         show_title_date: showTitle,
+        show_watermark: showWatermark,
         filled_count_total: filledCount,
       });
     } catch (err) {
@@ -161,14 +164,16 @@ export default function SharePage() {
               </div>
 
               {/* Branding Footer */}
-              <div
-                className={cn(
-                  "absolute bottom-8 right-8 text-[10px] font-bold opacity-30 italic",
-                  isDarkMode ? "text-white" : "text-slate-900",
-                )}
-              >
-                {t("createdWith")}
-              </div>
+              {showWatermark && (
+                <div
+                  className={cn(
+                    "absolute bottom-3 right-6 text-[10px] font-bold opacity-30 italic",
+                    isDarkMode ? "text-white" : "text-slate-900",
+                  )}
+                >
+                  {t("createdWith")}
+                </div>
+              )}
             </div>
           </div>
           <p className="text-center text-xs text-slate-400">{t("previewDisclaimer")}</p>
@@ -190,6 +195,18 @@ export default function SharePage() {
                   </span>
                 </div>
                 <Switch checked={showTitle} onCheckedChange={setShowTitle} />
+              </div>
+
+              <div className="flex items-center justify-between p-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 font-bold">
+                    W
+                  </div>
+                  <span className="font-medium text-slate-700 dark:text-slate-200">
+                    {t("showWatermark")}
+                  </span>
+                </div>
+                <Switch checked={showWatermark} onCheckedChange={setShowWatermark} />
               </div>
 
               <div className="flex items-center justify-between p-2">

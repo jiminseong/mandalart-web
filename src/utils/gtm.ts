@@ -51,6 +51,7 @@ export const analytics = {
   exportImage: (params: {
     theme: "light" | "dark";
     show_title_date: boolean;
+    show_watermark: boolean;
     filled_count_total: number;
   }) => {
     track("export_image", params);

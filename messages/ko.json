@@ -46,6 +46,7 @@
     "preview": "미리보기",
     "settings": "설정",
     "showTitle": "제목/날짜 표시",
+    "showWatermark": "워터마크 표시",
     "darkMode": "배경 스타일 (Dark/Light)",
     "downloadPng": "PNG 저장",
     "shareButton": "공유하기",
