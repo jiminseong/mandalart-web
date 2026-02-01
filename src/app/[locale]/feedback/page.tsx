@@ -64,24 +64,24 @@ export default function FeedbackPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center space-y-6 shadow-xl animate-in fade-in slide-in-from-bottom-8">
-          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check size={40} strokeWidth={4} />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-6">
+        <div className="max-w-sm w-full text-center space-y-6">
+          <div className="w-16 h-16 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto">
+            <Check size={32} strokeWidth={3} />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">{t("thankYou")}</h2>
-          <p className="text-slate-500 dark:text-slate-400">{t("thankYouDesc")}</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t("thankYou")}</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t("thankYouDesc")}</p>
 
-          <div className="grid grid-cols-2 gap-3 pt-4">
+          <div className="space-y-3 pt-4">
             <Link
               href="/editor"
-              className="py-4 rounded-xl border border-slate-200 font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors"
             >
-              <ArrowLeft size={18} /> {t("backToEditor")}
+              <span>{t("backToEditor")}</span>
             </Link>
-            {/* Copy Link button simulation */}
-            <button className="py-4 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-              <LinkIcon size={18} /> {t("copyLink")}
+            <button className="flex items-center justify-center gap-2 w-full py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 active:bg-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-600 text-slate-900 dark:text-white font-semibold rounded-2xl transition-colors">
+              <LinkIcon size={18} strokeWidth={2.5} />
+              <span>{t("copyLink")}</span>
             </button>
           </div>
         </div>
@@ -90,45 +90,44 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans">
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800 p-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      {/* iOS-style Navigation Bar */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
+        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
           <Link
             href="/"
-            className="group text-sm font-bold text-slate-600 bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
           >
-            <span className="bg-slate-100 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
-              <ArrowLeft size={16} />
-            </span>
-            {t("title")}
+            <ArrowLeft size={20} strokeWidth={2.5} />
+            <span className="font-semibold">{t("title")}</span>
           </Link>
           <LanguageSwitcher />
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto p-4 py-8 space-y-8">
-        <section className="space-y-4">
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white">{t("pageTitle")}</h1>
-          <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{t("pageDesc")}</p>
+      <main className="max-w-screen-sm mx-auto px-6 py-8 pb-20 space-y-6">
+        <section className="space-y-2">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("pageTitle")}</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t("pageDesc")}</p>
         </section>
 
         {/* Interest Rating */}
-        <section className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
-          <div className="flex items-center gap-2 text-green-500 font-bold">
-            <Star size={20} fill="currentColor" />
+        <section className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-black/5 dark:border-white/5 space-y-4">
+          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
+            <Star size={18} fill="currentColor" strokeWidth={0} />
             {t("interestScore")}
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{t("interestQuestion")}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{t("interestQuestion")}</p>
           <div className="grid grid-cols-5 gap-2">
             {[1, 2, 3, 4, 5].map((score) => (
               <button
                 key={score}
                 onClick={() => setRating(score)}
                 className={cn(
-                  "py-3 rounded-xl font-bold transition-all",
+                  "py-3 rounded-xl font-semibold transition-colors",
                   rating === score
-                    ? "bg-green-500 text-white shadow-lg shadow-green-500/30 scale-105"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600",
+                    ? "bg-green-600 text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 active:opacity-70",
                 )}
               >
                 {score}
@@ -141,15 +140,15 @@ export default function FeedbackPage() {
         </section>
 
         {/* Detailed Questions */}
-        <section className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-6">
-          <div className="flex items-center gap-2 text-green-500 font-bold">
+        <section className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-black/5 dark:border-white/5 space-y-5">
+          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -163,74 +162,74 @@ export default function FeedbackPage() {
 
           {/* Question 1 */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">
+            <label className="text-sm font-semibold text-slate-900 dark:text-white">
               {t("q1Label")}
             </label>
             <textarea
               value={removalFeature}
               onChange={(e) => setRemovalFeature(e.target.value)}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
               placeholder={t("q1Placeholder")}
             />
           </div>
 
           {/* Question 2 */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">
+            <label className="text-sm font-semibold text-slate-900 dark:text-white">
               {t("q2Label")}
             </label>
             <textarea
               value={wantedFeature}
               onChange={(e) => setWantedFeature(e.target.value)}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
               placeholder={t("q2Placeholder")}
             />
           </div>
 
           {/* Question 3 */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">
+            <label className="text-sm font-semibold text-slate-900 dark:text-white">
               {t("q3Label")}
             </label>
             <textarea
               value={bestFeature}
               onChange={(e) => setBestFeature(e.target.value)}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
               placeholder={t("q3Placeholder")}
             />
           </div>
 
           {/* Question 4 */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">
+            <label className="text-sm font-semibold text-slate-900 dark:text-white">
               {t("q4Label")}
             </label>
             <textarea
               value={reasonNotUsing}
               onChange={(e) => setReasonNotUsing(e.target.value)}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
               placeholder={t("q4Placeholder")}
             />
           </div>
 
           {/* Question 5 */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-900 dark:text-white">
+            <label className="text-sm font-semibold text-slate-900 dark:text-white">
               {t("q5Label")}
             </label>
             <textarea
               value={reasonUsing}
               onChange={(e) => setReasonUsing(e.target.value)}
-              className="w-full p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
               placeholder={t("q5Placeholder")}
             />
           </div>
         </section>
 
         {/* Waitlist */}
-        <section className="bg-green-50 dark:bg-green-900/20 p-6 rounded-3xl border border-green-100 dark:border-green-900/30 space-y-4">
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-bold">
-            <Star size={20} fill="currentColor" />
+        <section className="bg-green-50 dark:bg-green-900/10 p-5 rounded-2xl border border-green-200/50 dark:border-green-800/30 space-y-3">
+          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
+            <Star size={18} fill="currentColor" strokeWidth={0} />
             {t("waitlistTitle")}
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">{t("waitlistDesc")}</p>
@@ -240,23 +239,23 @@ export default function FeedbackPage() {
             value={contact}
             onChange={(e) => setContact(e.target.value)}
             placeholder={t("contactPlaceholder")}
-            className="w-full p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-green-500 outline-none text-slate-900 dark:text-white"
+            className="w-full p-3 bg-white dark:bg-slate-900 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-green-600 outline-none text-slate-900 dark:text-white"
           />
-          <p className="text-[10px] text-green-600 dark:text-green-500 flex items-center gap-1">
-            <Check size={10} /> {t("privacyNote")}
+          <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1">
+            <Check size={12} strokeWidth={3} /> {t("privacyNote")}
           </p>
         </section>
 
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full py-5 bg-green-500 hover:bg-green-600 text-white text-lg font-black rounded-2xl shadow-xl shadow-green-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? t("submitting") : t("submit")}
         </button>
       </main>
 
-      <footer className="py-8 text-center text-xs text-slate-400 dark:text-slate-600">
+      <footer className="py-6 text-center text-xs text-slate-400 dark:text-slate-600">
         © 2026 Mandalart Plan. 목표 달성을 응원합니다.
       </footer>
     </div>

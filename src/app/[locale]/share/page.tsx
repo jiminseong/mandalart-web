@@ -95,48 +95,56 @@ export default function SharePage() {
   // For export, we want a fixed size container.
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col">
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex flex-col">
+      {/* iOS-style Navigation Bar */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
+        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
           <Link
             href="/editor"
-            className="p-2 -ml-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={20} strokeWidth={2.5} />
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
+
+          <h1 className="text-base font-semibold text-slate-900 dark:text-white absolute left-1/2 -translate-x-1/2">
+            {t("title")}
+          </h1>
+
+          <div className="w-5"></div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8 grid lg:grid-cols-2 gap-8 items-start">
+      <main className="flex-1 max-w-screen-sm mx-auto w-full px-6 py-8 pb-20 space-y-6">
         {/* Preview Section */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex justify-between items-end">
-            <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+            <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {t("preview")}
             </h2>
-            <span className="text-xs text-slate-400">{t("highQuality")}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{t("highQuality")}</span>
           </div>
 
           <div
             className={cn(
-              "p-8 rounded-3xl shadow-2xl transition-colors duration-300 flex items-center justify-center overflow-hidden",
-              isDarkMode ? "bg-slate-900" : "bg-white",
+              "p-6 rounded-2xl border transition-colors duration-300 flex items-center justify-center overflow-hidden",
+              isDarkMode
+                ? "bg-slate-900 border-white/5"
+                : "bg-white border-black/5",
             )}
           >
             {/* Capture Area */}
             <div
               ref={containerRef}
               className={cn(
-                "w-full aspect-square max-w-[600px] relative p-8",
+                "w-full aspect-square max-w-[600px] relative p-6",
                 isDarkMode ? "bg-slate-900 text-white" : "bg-white text-slate-900",
               )}
             >
               {showTitle && (
-                <div className="mb-8 text-center space-y-2">
+                <div className="mb-6 text-center space-y-1">
                   <h1
                     className={cn(
-                      "text-3xl font-black",
+                      "text-2xl font-bold",
                       isDarkMode ? "text-white" : "text-slate-900",
                     )}
                   >
@@ -144,7 +152,7 @@ export default function SharePage() {
                   </h1>
                   <p
                     className={cn(
-                      "text-sm opacity-60",
+                      "text-xs opacity-60",
                       isDarkMode ? "text-slate-400" : "text-slate-500",
                     )}
                   >
@@ -153,21 +161,14 @@ export default function SharePage() {
                 </div>
               )}
 
-              {/* Reuse Grid - Ideally we import it. Since we can't easily pass props to change its style deeply without refactoring, 
-                        we will trust the grid to render nicely. We need to make sure it expands to fit this container.
-                        
-                        Warning: MandalartGrid uses absolute positioning/responsive logic that might conflict.
-                        Let's Try importing it first.
-                    */}
               <div className="pointer-events-none">
                 <ExportGrid nodes={nodes} isDarkMode={isDarkMode} t={t} />
               </div>
 
-              {/* Branding Footer */}
               {showWatermark && (
                 <div
                   className={cn(
-                    "absolute bottom-3 right-6 text-[10px] font-bold opacity-30 italic",
+                    "absolute bottom-2 right-4 text-[9px] font-medium opacity-30",
                     isDarkMode ? "text-white" : "text-slate-900",
                   )}
                 >
@@ -176,48 +177,37 @@ export default function SharePage() {
               )}
             </div>
           </div>
-          <p className="text-center text-xs text-slate-400">{t("previewDisclaimer")}</p>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500">{t("previewDisclaimer")}</p>
         </div>
 
         {/* Settings Section */}
-        <div className="space-y-8">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
-            <h3 className="font-bold text-slate-900 dark:text-white">{t("settings")}</h3>
+        <div className="space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden">
+            <div className="px-5 py-3 border-b border-black/5 dark:border-white/5">
+              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                {t("settings")}
+              </h3>
+            </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
-                    T
-                  </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">
-                    {t("showTitle")}
-                  </span>
-                </div>
+            <div className="divide-y divide-black/5 dark:divide-white/5">
+              <div className="flex items-center justify-between px-5 py-3">
+                <span className="text-sm font-medium text-slate-900 dark:text-white">
+                  {t("showTitle")}
+                </span>
                 <Switch checked={showTitle} onCheckedChange={setShowTitle} />
               </div>
 
-              <div className="flex items-center justify-between p-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 font-bold">
-                    W
-                  </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">
-                    {t("showWatermark")}
-                  </span>
-                </div>
+              <div className="flex items-center justify-between px-5 py-3">
+                <span className="text-sm font-medium text-slate-900 dark:text-white">
+                  {t("showWatermark")}
+                </span>
                 <Switch checked={showWatermark} onCheckedChange={setShowWatermark} />
               </div>
 
-              <div className="flex items-center justify-between p-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500">
-                    <ImageIcon size={16} />
-                  </div>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">
-                    {t("darkMode")}
-                  </span>
-                </div>
+              <div className="flex items-center justify-between px-5 py-3">
+                <span className="text-sm font-medium text-slate-900 dark:text-white">
+                  {t("darkMode")}
+                </span>
                 <Switch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
               </div>
             </div>
@@ -226,16 +216,16 @@ export default function SharePage() {
           <div className="space-y-3">
             <button
               onClick={handleDownload}
-              className="w-full py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
             >
-              <Download size={20} />
+              <Download size={20} strokeWidth={2.5} />
               {t("downloadPng")}
             </button>
             <button
               onClick={handleShare}
-              className="w-full py-4 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold rounded-xl shadow-lg shadow-yellow-400/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 active:bg-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-600 text-slate-900 dark:text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
             >
-              <Share2 size={20} />
+              <Share2 size={20} strokeWidth={2.5} />
               {t("shareButton")}
             </button>
           </div>
@@ -245,7 +235,7 @@ export default function SharePage() {
   );
 }
 
-// Simple Toggle Component
+// iOS-style Toggle Component
 function Switch({
   checked,
   onCheckedChange,
@@ -257,14 +247,14 @@ function Switch({
     <button
       onClick={() => onCheckedChange(!checked)}
       className={cn(
-        "w-12 h-7 rounded-full transition-colors relative",
-        checked ? "bg-green-500" : "bg-slate-200 dark:bg-slate-700",
+        "w-11 h-7 rounded-full transition-colors relative shrink-0",
+        checked ? "bg-green-500" : "bg-slate-300 dark:bg-slate-700",
       )}
     >
       <div
         className={cn(
-          "absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-transform shadow-sm",
-          checked ? "translate-x-5" : "translate-x-0",
+          "absolute top-0.5 w-6 h-6 rounded-full bg-white transition-transform shadow-md",
+          checked ? "translate-x-[18px] left-0.5" : "translate-x-0 left-0.5",
         )}
       />
     </button>

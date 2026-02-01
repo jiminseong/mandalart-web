@@ -11,60 +11,66 @@ export default async function EditorPage() {
   const t = await getTranslations("editor");
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
-      <header className="absolute top-0 w-full p-4 flex justify-between items-center z-10 h-20">
-        <div className="flex items-center flex-1">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      {/* iOS-style Navigation Bar */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
+        <div className="max-w-screen-xl mx-auto px-4 h-11 flex items-center justify-between">
           <Link
             href="/"
-            className="p-2 -ml-2 text-slate-400 hover:text-slate-900 transition-colors"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={20} strokeWidth={2.5} />
           </Link>
-          <h1 className="text-xl font-black text-slate-900 dark:text-white hidden sm:block ml-2">
+
+          <h1 className="text-base font-semibold text-slate-900 dark:text-white absolute left-1/2 -translate-x-1/2">
             {t("title")}
           </h1>
+
+          <LanguageSwitcher />
         </div>
 
-        <ProgressBar />
-
-        <div className="flex-1 flex justify-end">
-          <LanguageSwitcher />
+        <div className="px-4 pb-2">
+          <ProgressBar />
         </div>
       </header>
 
-      <main className="w-full flex-1 flex flex-col items-center justify-center relative">
+      <main className="flex-1 flex flex-col items-center justify-center relative p-4">
         <MandalartGrid />
 
-        {/* Bottom Actions */}
-        <div className="absolute bottom-8 flex items-center gap-4 animate-in slide-in-from-bottom-4 fade-in duration-700">
-          <Link
-            href="/feedback"
-            className="group flex items-center gap-2 px-5 py-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-100 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all"
-          >
-            <div className="relative">
-              <MessageSquarePlus
-                size={20}
-                className="text-slate-400 group-hover:text-primary transition-colors"
-              />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            </div>
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-              {t("feedback")}
-            </span>
-          </Link>
+        {/* Bottom Actions - iOS Safe Area */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-t border-black/5 dark:border-white/5">
+          <div className="max-w-screen-sm mx-auto px-4 py-3 flex items-center justify-center gap-3">
+            <Link
+              href="/feedback"
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl active:opacity-70 transition-opacity"
+            >
+              <div className="relative">
+                <MessageSquarePlus
+                  size={18}
+                  className="text-slate-600 dark:text-slate-300"
+                  strokeWidth={2}
+                />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
+              </div>
+              <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                {t("feedback")}
+              </span>
+            </Link>
 
-          <Link
-            href="/share"
-            className="group flex items-center gap-2 px-5 py-3 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-100 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all"
-          >
-            <Share2
-              size={20}
-              className="text-slate-400 group-hover:text-primary transition-colors"
-            />
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-              {t("share")}
-            </span>
-          </Link>
+            <Link
+              href="/share"
+              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl transition-colors"
+            >
+              <Share2
+                size={18}
+                className="text-white"
+                strokeWidth={2}
+              />
+              <span className="text-sm font-semibold text-white">
+                {t("share")}
+              </span>
+            </Link>
+          </div>
         </div>
       </main>
 

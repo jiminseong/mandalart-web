@@ -38,51 +38,53 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-200">
-      <header className="fixed top-0 left-0 w-full p-6 z-20 flex justify-between items-center bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm">
-        <Link
-          href="/"
-          className="group text-sm font-bold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:text-primary shadow-sm hover:shadow-md transition-all flex items-center gap-2"
-        >
-          <span className="bg-slate-100 dark:bg-slate-800 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
-            <ArrowLeft size={16} />
-          </span>
-          {navT("home")}
-        </Link>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      {/* iOS-style Navigation Bar */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
+        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
+          >
+            <ArrowLeft size={20} strokeWidth={2.5} />
+            <span className="font-semibold">{navT("home")}</span>
+          </Link>
 
-        <TrackedLink
-          href="/editor"
-          eventParams={{ entry: "onboarding_end" }}
-          className="group flex items-center gap-2 px-6 py-2 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-all text-sm"
-        >
-          {t("ctaCreate")}
-          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </TrackedLink>
+          <TrackedLink
+            href="/editor"
+            eventParams={{ entry: "onboarding_end" }}
+            className="text-blue-600 dark:text-blue-400 font-semibold active:opacity-50 transition-opacity"
+          >
+            {t("ctaCreate")}
+          </TrackedLink>
+        </div>
       </header>
 
-      <main className="pt-32 pb-20 px-6 max-w-4xl mx-auto space-y-32">
+      <main className="max-w-screen-sm mx-auto px-6 pb-20">
         {/* Hero */}
-        <section className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white leading-tight whitespace-pre-wrap">
+        <section className="pt-8 pb-12 text-center space-y-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight whitespace-pre-wrap">
             {t("title")}
           </h1>
-          <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto whitespace-pre-wrap">
+          <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
             {t("description")}
           </p>
         </section>
 
         {/* How it works */}
-        <section className="grid sm:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-          {steps.map((item) => (
+        <section className="space-y-3 pb-12">
+          {steps.map((item, index) => (
             <div
               key={item.id}
-              className="bg-slate-50 dark:bg-slate-900 p-8 rounded-3xl text-center space-y-4 border border-transparent dark:border-slate-800"
+              className="bg-white dark:bg-slate-900 p-6 rounded-2xl space-y-3 border border-black/5 dark:border-white/5"
             >
-              <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto shadow-sm text-primary ring-1 ring-slate-100 dark:ring-slate-700">
-                <item.icon size={32} />
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-600/10 dark:bg-blue-400/10 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <item.icon size={24} strokeWidth={2} />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">{item.title}</h3>
-              <p className="text-slate-500 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed pl-15">
                 {item.desc}
               </p>
             </div>
@@ -90,32 +92,27 @@ export default async function AboutPage() {
         </section>
 
         {/* Example (Ohtani) */}
-        <section className="bg-slate-900 text-white rounded-[40px] p-10 sm:p-20 text-center space-y-8 overflow-hidden relative animate-in fade-in duration-700 delay-500">
-          <div className="relative z-10 space-y-8">
-            <h2 className="text-3xl sm:text-5xl font-black leading-tight whitespace-pre-wrap">
-              {t("ohtaniTitle")}
-            </h2>
+        <section className="bg-slate-900 dark:bg-slate-800 text-white rounded-3xl p-8 space-y-6">
+          <h2 className="text-2xl font-bold leading-tight whitespace-pre-wrap text-center">
+            {t("ohtaniTitle")}
+          </h2>
 
-            <div className="py-8">
-              <OhtaniGrid />
-            </div>
+          <div className="py-4">
+            <OhtaniGrid />
+          </div>
 
-            <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed whitespace-pre-wrap">
-              {t("ohtaniDesc")}
-            </p>
-            <TrackedLink
-              href="/editor"
-              eventParams={{ entry: "example_use" }}
-              className="inline-block px-10 py-5 bg-primary text-white font-bold rounded-2xl text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/30"
-            >
-              {t("ctaCreate")}
-            </TrackedLink>
-          </div>
-          {/* Deco */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full blur-[50px]" />
-            <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500 rounded-full blur-[60px]" />
-          </div>
+          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap text-center">
+            {t("ohtaniDesc")}
+          </p>
+
+          <TrackedLink
+            href="/editor"
+            eventParams={{ entry: "example_use" }}
+            className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors"
+          >
+            <span>{t("ctaCreate")}</span>
+            <ArrowRight size={20} strokeWidth={2.5} />
+          </TrackedLink>
         </section>
       </main>
     </div>
