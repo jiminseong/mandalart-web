@@ -21,30 +21,32 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
 
     // If NOT logged in, perform stricter checks
-    if (!user) {
-      const headersList = await headers();
-      const ip = headersList.get("x-forwarded-for") || "unknown-ip";
-      const userAgent = headersList.get("user-agent") || "unknown-ua";
-      const fingerPrint = `${ip}-${userAgent}`;
+    // if (!user) {
+    //   const headersList = await headers();
+    //   const ip = headersList.get("x-forwarded-for") || "unknown-ip";
+    //   const userAgent = headersList.get("user-agent") || "unknown-ua";
+    //   const fingerPrint = `${ip}-${userAgent}`;
 
-      const now = Date.now();
-      const record = ipRateLimit.get(fingerPrint) || { count: 0, lastTime: now };
+    //   const now = Date.now();
+    //   const record = ipRateLimit.get(fingerPrint) || { count: 0, lastTime: now };
 
-      if (now - record.lastTime > WINDOW_MS) {
-        record.count = 0;
-        record.lastTime = now;
-      }
+    //   if (now - record.lastTime > WINDOW_MS) {
+    //     record.count = 0;
+    //     record.lastTime = now;
+    //   }
 
-      if (record.count >= FREE_LIMIT) {
-        return NextResponse.json(
-          { error: "Free trial limit exceeded. Please login." },
-          { status: 429 },
-        );
-      }
+    //   /*
+    //   if (record.count >= FREE_LIMIT) {
+    //     return NextResponse.json(
+    //       { error: "Free trial limit exceeded. Please login." },
+    //       { status: 429 },
+    //     );
+    //   }
+    //   */
 
-      record.count++;
-      ipRateLimit.set(fingerPrint, record);
-    }
+    //   record.count++;
+    //   ipRateLimit.set(fingerPrint, record);
+    // }
 
     const { context, goalLevel, currentContent } = await req.json();
 

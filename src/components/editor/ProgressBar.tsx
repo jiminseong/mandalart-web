@@ -70,14 +70,14 @@ export const ProgressBar = () => {
         />
       </div>
 
-      {remainingAi !== null && (
+      {/* {remainingAi !== null && (
         <div className="flex items-center justify-center w-full mt-1">
           <span className="text-[10px] sm:text-xs font-medium text-primary bg-primary/5 dark:bg-primary/20 px-2 py-0.5 rounded-full border border-primary/20 flex items-center gap-1 shadow-sm whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
             {t("freeAiRemaining", { count: remainingAi })}
           </span>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

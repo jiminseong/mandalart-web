@@ -214,59 +214,59 @@ export const NodeEditor = () => {
           </div>
 
           {/* AI Coach Teaser */}
-          <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex gap-3 items-start">
-            <div className="bg-primary/20 p-2 rounded-lg text-primary-700 dark:text-primary">
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-1">AI 코칭</h4>
-              {!isAiLoading && suggestions.length === 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
-                    목표 설정이 막막하신가요? AI가 적절한 목표를 추천해드립니다.
-                  </p>
-                  <button
-                    onClick={handleAiSuggest}
-                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                  >
-                    추천 받기
-                  </button>
-                </div>
-              )}
-
-              {isAiLoading && (
-                <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
-                  열심히 고민 중입니다...
-                </div>
-              )}
-
-              {suggestions.length > 0 && (
-                <div className="space-y-2 mt-2 w-full">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                    마음에 드는 목표를 클릭하세요:
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    {suggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          setContent(s);
-                          analytics.aiApply({
-                            cell_index: node.position,
-                            section: getNodeSection(node.level),
-                            suggestion_rank: i + 1,
-                          });
-                        }}
-                        className="text-left text-xs p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-colors text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
-                      >
-                        {s}
-                      </button>
-                    ))}
+          {/* <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex gap-3 items-start">
+              <div className="bg-primary/20 p-2 rounded-lg text-primary-700 dark:text-primary">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-1">AI 코칭</h4>
+                {!isAiLoading && suggestions.length === 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      목표 설정이 막막하신가요? AI가 적절한 목표를 추천해드립니다.
+                    </p>
+                    <button
+                      onClick={handleAiSuggest}
+                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                    >
+                      추천 받기
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
+                )}
+
+                {isAiLoading && (
+                  <div className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
+                    열심히 고민 중입니다...
+                  </div>
+                )}
+
+                {suggestions.length > 0 && (
+                  <div className="space-y-2 mt-2 w-full">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                      마음에 드는 목표를 클릭하세요:
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {suggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setContent(s);
+                            analytics.aiApply({
+                              cell_index: node.position,
+                              section: getNodeSection(node.level),
+                              suggestion_rank: i + 1,
+                            });
+                          }}
+                          className="text-left text-xs p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-colors text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div> */}
 
           {/* Add extra padding at bottom for safe area scrolling */}
           <div className="h-24 lg:hidden"></div>
