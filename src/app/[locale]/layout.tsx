@@ -5,6 +5,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { Analytics } from "@vercel/analytics/next";
+
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -51,6 +53,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <Analytics />
       <body className="antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
