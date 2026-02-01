@@ -38,7 +38,9 @@ export default async function Home() {
 
           {/* Description */}
           <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs">
-            {t("description")} {t("descriptionSub")}
+            {t("description")}
+            <br />
+            {t("descriptionSub")}
           </p>
 
           {/* CTA Button */}
