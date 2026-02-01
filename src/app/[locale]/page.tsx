@@ -38,20 +38,28 @@ export default async function Home() {
 
           {/* Description */}
           <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs">
-            {t("description")}
-            {" "}
-            {t("descriptionSub")}
+            {t("description")} {t("descriptionSub")}
           </p>
 
           {/* CTA Button */}
-          <div className="pt-4 w-full">
+          <div className="pt-4 w-full space-y-3">
+            <TrackedLink
+              href="/about"
+              eventParams={{ entry: "hero_about" }}
+              className="group flex items-center justify-center gap-2 w-full px-6 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 dark:active:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-2xl transition-colors shadow-sm"
+            >
+              <span>{_navT("about")}</span>
+            </TrackedLink>
             <TrackedLink
               href="/editor"
               eventParams={{ entry: "hero" }}
               className="group flex items-center justify-center gap-2 w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors shadow-sm"
             >
               <span>{t("cta")}</span>
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" strokeWidth={2.5} />
+              <ArrowRight
+                className="w-5 h-5 transition-transform group-hover:translate-x-0.5"
+                strokeWidth={2.5}
+              />
             </TrackedLink>
           </div>
         </div>

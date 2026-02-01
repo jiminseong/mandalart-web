@@ -83,7 +83,7 @@ export const analytics = {
   },
 
   // 7. Start Click
-  startClick: (params: { entry: "hero" | "onboarding_end" | "example_use" }) => {
+  startClick: (params: { entry: "hero" | "onboarding_end" | "example_use" | "hero_about" }) => {
     track("start_click", params);
   },
 };

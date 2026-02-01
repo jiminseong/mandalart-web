@@ -82,9 +82,9 @@
     "q4Placeholder": "Too lazy to write, ineffective, etc.",
     "q5Label": "5. Reasons for using todo apps",
     "q5Placeholder": "Systematic management, not to forget, etc.",
-    "waitlistTitle": "Early Access & Waitlist",
-    "waitlistDesc": "Be the first to know when we launch.",
-    "contactPlaceholder": "Email or Kakao ID",
+    "waitlistTitle": "Mandalart-based Todo App Idea",
+    "waitlistDesc": "We are envisioning an app that naturally connects Mandalart goals to daily todos. We'd love your feedback.",
+    "todoAppIdeaPlaceholder": "Feel free to write down any features you wish for or concerns you may have.",
     "privacyNote": "The information you provide will only be used for launch notifications.",
     "submitting": "Submitting...",
     "submit": "Submit ➤"

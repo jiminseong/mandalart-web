@@ -108,7 +108,9 @@ export default function FeedbackPage() {
       <main className="max-w-screen-sm mx-auto px-6 py-8 pb-20 space-y-6">
         <section className="space-y-2">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("pageTitle")}</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t("pageDesc")}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            {t("pageDesc")}
+          </p>
         </section>
 
         {/* Interest Rating */}
@@ -226,24 +228,22 @@ export default function FeedbackPage() {
           </div>
         </section>
 
-        {/* Waitlist */}
-        <section className="bg-green-50 dark:bg-green-900/10 p-5 rounded-2xl border border-green-200/50 dark:border-green-800/30 space-y-3">
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
+        <section className="bg-indigo-50 dark:bg-indigo-900/10 p-5 rounded-2xl border border-indigo-200/50 dark:border-indigo-800/30 space-y-3">
+          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold">
             <Star size={18} fill="currentColor" strokeWidth={0} />
             {t("waitlistTitle")}
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">{t("waitlistDesc")}</p>
 
-          <input
-            type="text"
+          <textarea
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            placeholder={t("contactPlaceholder")}
-            className="w-full p-3 bg-white dark:bg-slate-900 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-green-600 outline-none text-slate-900 dark:text-white"
+            placeholder={t("todoAppIdeaPlaceholder")}
+            className="w-full p-3 bg-white dark:bg-slate-900 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-indigo-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
           />
-          <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1">
+          {/* <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1">
             <Check size={12} strokeWidth={3} /> {t("privacyNote")}
-          </p>
+          </p> */}
         </section>
 
         <button
