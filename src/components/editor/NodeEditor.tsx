@@ -74,31 +74,31 @@ export const NodeEditor = () => {
 
   const handleAiSuggest = async () => {
     // 1. Auth Check & Free Trial
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    // } = await supabase.auth.getUser();
 
-    if (!user) {
-      // Free Trial Logic
-      const usedCount = Number.parseInt(localStorage.getItem("ai_free_usage_count") || "0", 10);
-      const MAX_FREE_COUNT = 3;
+    // if (!user) {
+    //   // Free Trial Logic
+    //   const usedCount = Number.parseInt(localStorage.getItem("ai_free_usage_count") || "0", 10);
+    //   const MAX_FREE_COUNT = 3;
 
-      if (usedCount >= MAX_FREE_COUNT) {
-        if (
-          confirm(
-            `무료 체험 횟수(${MAX_FREE_COUNT}회)를 모두 사용하셨습니다.\n계속하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?`,
-          )
-        ) {
-          router.push("/login", { locale });
-        }
-        return;
-      }
+    //   if (usedCount >= MAX_FREE_COUNT) {
+    //     if (
+    //       confirm(
+    //         `무료 체험 횟수(${MAX_FREE_COUNT}회)를 모두 사용하셨습니다.\n계속하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?`,
+    //       )
+    //     ) {
+    //       router.push("/login", { locale });
+    //     }
+    //     return;
+    //   }
 
-      // Increment usage count for non-logged-in users
-      localStorage.setItem("ai_free_usage_count", (usedCount + 1).toString());
-      // Notify other components (like ProgressBar)
-      globalThis.window.dispatchEvent(new Event("ai-usage-updated"));
-    }
+    //   // Increment usage count for non-logged-in users
+    //   localStorage.setItem("ai_free_usage_count", (usedCount + 1).toString());
+    //   // Notify other components (like ProgressBar)
+    //   globalThis.window.dispatchEvent(new Event("ai-usage-updated"));
+    // }
 
     setIsAiLoading(true);
     const ai_mode = content.trim().length > 0 ? "polish" : "fill_blanks";

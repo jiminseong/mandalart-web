@@ -6,7 +6,7 @@ import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export default async function Home() {
   const t = await getTranslations("home");
-  const navT = await getTranslations("nav");
+  const _navT = await getTranslations("nav");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-slate-950 p-6 overflow-hidden relative">
@@ -45,12 +45,6 @@ export default async function Home() {
               {t("cta")}
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </TrackedLink>
-            <Link
-              href="/login"
-              className="px-8 py-4 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-bold rounded-2xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-lg"
-            >
-              {navT("login")}
-            </Link>
           </div>
         </div>
       </main>
