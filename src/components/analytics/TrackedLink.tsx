@@ -2,15 +2,13 @@
 
 import React from "react";
 import { Link } from "@/i18n/routing";
-import { analytics } from "@/utils/gtm";
+import { analytics, StartClickParams } from "@/utils/gtm";
 
 interface TrackedLinkProps {
   href: string;
   className?: string;
   children: React.ReactNode;
-  eventParams: {
-    entry: "hero" | "onboarding_end" | "example_use";
-  };
+  eventParams: StartClickParams;
 }
 
 export const TrackedLink = ({ href, className, children, eventParams }: TrackedLinkProps) => {

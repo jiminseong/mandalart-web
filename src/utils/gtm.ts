@@ -46,6 +46,10 @@ export type AiParams = {
 };
 
 // Specific Event Trackers
+export type StartClickParams = {
+  entry: "hero" | "onboarding_end" | "example_use" | "hero_about";
+};
+
 export const analytics = {
   // 1. Export Image Event
   exportImage: (params: {
@@ -83,7 +87,7 @@ export const analytics = {
   },
 
   // 7. Start Click
-  startClick: (params: { entry: "hero" | "onboarding_end" | "example_use" | "hero_about" }) => {
+  startClick: (params: StartClickParams) => {
     track("start_click", params);
   },
 };
