@@ -352,6 +352,29 @@ type NutritionLog = {
 };
 ```
 
+#### 3.5 Workout Session UX Improvements (Added v2026.2.4 - Revised)
+
+> 2026.02.04 Updated: Refined workout logging UX based on user feedback.
+
+**1) Priority 1 (Immediate Implementation)**
+*   **Set Logic Fix**: Ensure each set check/input is independent (fix synchronization bug).
+*   **Grouping Strategy**:
+    *   Group by **Exercise Name**.
+    *   **Scheme A (Top Set)**: Warm-up → Top Set → Back-off Set(s).
+    *   **Scheme B (Straight)**: Warm-up → Working Set(s).
+*   **Exercise Addition**: Allow selecting "Scheme Type" (Top Set vs Straight) when adding an exercise.
+*   **Unit Support**: Add 'lbs' (Pounds) support per exercise or global toggle.
+*   **Interaction**:
+    *   **Drag & Drop**: Reorder exercises.
+    *   **Delete Set**: Allow removing specific sets.
+*   **Finalize**: Add "Complete Workout" (Save All) button at the bottom.
+
+**2) Priority 2 (TODO)**
+*   **Rest Timer**: Auto-start timer after checking off a set.
+
+**3) Priority 3 (Future/Premium)**
+*   **Black Mono Theme**: High-contrast, premium dark mode theme.
+
 ---
 
 ### 3.2 판단 단계 (Reasoning Steps)
