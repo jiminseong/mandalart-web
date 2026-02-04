@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
+import { deleteGoal } from "../../actions";
+import { Trash2 } from "lucide-react";
 
 export default async function GoalsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const supabase = await createClient();
 
-  const { data: goal } = await supabase
+  const { data: goals } = await supabase
     .from("goals")
     .select("*")
     .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    .order("created_at", { ascending: false });
 
   const {
     data: { user },
@@ -32,43 +32,6 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
   const profile = profileResult.data;
   const inbody = inbodyResult.data;
 
-  const targetValue = goal ? goal.target_value : 500;
-  let currentValue = 0;
-  let startValue = 0; // Default start
-
-  if (goal) {
-    if (goal.type === "strength") {
-      // Assuming lifts is stored as JSON: { squat: 100, bench: 80, deadlift: 120, overhead: 50 }
-      // Total = S + B + D
-      const lifts = profile?.lifts as any; // Cast for now
-      if (lifts) {
-        currentValue =
-          (Number(lifts.squat) || 0) + (Number(lifts.bench) || 0) + (Number(lifts.deadlift) || 0);
-      }
-      // Heuristic: If current is 0, start is 0. If current > 0, maybe assume start was somewhat lower?
-      // For MVP, letting start=0 makes the progress bar relative to absolute 0.
-      // Or if we want "progress since start", we need a stored start_value in goals.
-      // The user said "current value should be shown".
-      startValue = 0;
-    } else if (goal.type === "weight") {
-      currentValue = inbody?.weight || 0;
-    } else if (goal.type === "bodyfat") {
-      currentValue = inbody?.body_fat_rate || 0;
-    }
-  }
-
-  // Calculate Progress
-  // For weight loss, logic might be inverted, but for now linear progress 0 -> Target
-  const progress =
-    targetValue > startValue
-      ? Math.min(100, Math.max(0, ((currentValue - startValue) / (targetValue - startValue)) * 100))
-      : 0;
-
-  // If undefined/null, fallback
-  if (isNaN(progress)) {
-    // safe fallback
-  }
-
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2">
       <div className="space-y-1 pt-2">
@@ -80,63 +43,101 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
         </h1>
       </div>
 
-      <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[22px] p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-[17px] font-semibold text-black dark:text-white">
-            진행 중인 목표
-          </span>
-          <Link
-            href={`/${locale}/health/onboarding/goal?mode=edit&redirect_to=/${locale}/health/goals/current`}
-            className="text-[15px] text-[#007AFF] font-medium hover:text-[#007AFF]/80 transition-colors"
-          >
-            수정
-          </Link>
-        </div>
+      <div className="space-y-4">
+        {goals && goals.length > 0 ? (
+          goals.map((goal) => {
+            const targetValue = goal.target_value || 0;
+            let currentValue = 0;
+            let startValue = 0;
 
-        {goal ? (
-          <>
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
-                {goal.type === "strength"
-                  ? "💪"
-                  : goal.type === "weight"
-                    ? "⚖️"
-                    : goal.type === "bodyfat"
-                      ? "🔥"
-                      : "🏃"}
-              </div>
-              <div>
-                <div className="text-[20px] font-bold text-black dark:text-white">
-                  {goal.type === "strength"
-                    ? "근력 증가"
-                    : goal.type === "weight"
-                      ? "체중 조절"
-                      : goal.type === "bodyfat"
-                        ? "체지방 감소"
-                        : "운동 습관"}
-                </div>
-                <div className="text-[15px] text-gray-500">
-                  {goal.type === "strength" ? "3대 운동 증량" : "목표 달성하기"}
-                </div>
-              </div>
-            </div>
+            if (goal.type === "strength") {
+              const lifts = profile?.lifts as any;
+              if (lifts) {
+                currentValue =
+                  (Number(lifts.squat) || 0) +
+                  (Number(lifts.bench) || 0) +
+                  (Number(lifts.deadlift) || 0);
+              }
+            } else if (goal.type === "weight") {
+              currentValue = inbody?.weight || 0;
+            } else if (goal.type === "bodyfat") {
+              currentValue = inbody?.body_fat_rate || 0;
+            }
 
-            <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full bg-[#007AFF]" style={{ width: `${progress}%` }} />
-            </div>
-            <div className="flex justify-between text-[13px] font-medium text-gray-400">
-              <span>
-                현재 {currentValue}
-                {goal.unit}
-              </span>
-              <span>
-                목표 {targetValue}
-                {goal.unit}
-              </span>
-            </div>
-          </>
+            const progress =
+              targetValue > startValue
+                ? Math.min(
+                    100,
+                    Math.max(0, ((currentValue - startValue) / (targetValue - startValue)) * 100),
+                  )
+                : 0;
+
+            return (
+              <div
+                key={goal.id}
+                className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[22px] p-6 space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[17px] font-semibold text-black dark:text-white">
+                    진행 중인 목표
+                  </span>
+
+                  <form action={deleteGoal.bind(null, goal.id, locale)}>
+                    <button
+                      type="submit"
+                      className="text-[15px] text-red-500 font-medium hover:text-red-600 transition-colors flex items-center gap-1"
+                    >
+                      삭제
+                    </button>
+                  </form>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
+                    {goal.type === "strength"
+                      ? "💪"
+                      : goal.type === "weight"
+                        ? "⚖️"
+                        : goal.type === "bodyfat"
+                          ? "🔥"
+                          : "🏃"}
+                  </div>
+                  <div>
+                    <div className="text-[20px] font-bold text-black dark:text-white">
+                      {goal.type === "strength"
+                        ? "근력 증가"
+                        : goal.type === "weight"
+                          ? "체중 조절"
+                          : goal.type === "bodyfat"
+                            ? "체지방 감소"
+                            : "운동 습관"}
+                    </div>
+                    <div className="text-[15px] text-gray-500">
+                      {goal.type === "strength" ? "3대 운동 증량" : "목표 달성하기"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#007AFF]" style={{ width: `${progress}%` }} />
+                </div>
+                <div className="flex justify-between text-[13px] font-medium text-gray-400">
+                  <span>
+                    현재 {currentValue}
+                    {goal.unit}
+                  </span>
+                  <span>
+                    목표 {targetValue}
+                    {goal.unit}
+                  </span>
+                </div>
+              </div>
+            );
+          })
         ) : (
-          <div className="py-8 text-center text-gray-500">목표가 설정되지 않았습니다.</div>
+          <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[22px] p-6 text-center text-gray-500">
+            목표가 설정되지 않았습니다.
+          </div>
         )}
       </div>
     </div>

@@ -165,6 +165,30 @@ export async function createGoal(previousState: any, formData: FormData) {
   redirect(redirectTo);
 }
 
+export async function deleteGoal(goalId: string, locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabase
+    .from("goals")
+    .update({ is_active: false })
+    .eq("id", goalId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error deleting goal:", error);
+    throw new Error("Failed to delete goal");
+  }
+
+  revalidatePath(`/${locale}/health/goals/current`);
+}
+
 export async function updateSchedule(previousState: any, formData: FormData) {
   const supabase = await createClient();
   const locale = (formData.get("locale") as string) || "ko";
