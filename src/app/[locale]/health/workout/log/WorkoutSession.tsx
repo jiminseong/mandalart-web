@@ -1,7 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, Plus, X, ChevronDown, CheckCircle2, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  ArrowLeft,
+  Plus,
+  X,
+  ChevronDown,
+  CheckCircle2,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  MoreHorizontal,
+} from "lucide-react";
 import Link from "next/link";
 import { saveWorkout } from "../actions";
 import { useRouter } from "next/navigation";
@@ -13,20 +23,19 @@ type Exercise = {
   category: string;
 };
 
+type SetType = "warmup" | "top_set" | "back_off" | "working";
+
 type WorkoutSet = {
+  id: string;
+  type: SetType;
   weight: string;
   reps: string;
   completed: boolean;
 };
 
 type WorkoutExercise = Exercise & {
+  unit: "kg" | "lb";
   sets: WorkoutSet[];
-  target?: {
-    sets: number;
-    reps: string;
-    rpe: number;
-    setType?: string;
-  };
 };
 
 export default function WorkoutSession({
@@ -40,39 +49,97 @@ export default function WorkoutSession({
 }) {
   const router = useRouter();
 
-  // Initialize with programmed routine if available
-  const initialExercises: WorkoutExercise[] = initialRoutine
-    ? initialRoutine.exercises
-        .sort((a: any, b: any) => a.order_index - b.order_index)
-        .map((pe: any) => ({
-          id: pe.exercise_details.id,
-          name: pe.exercise_details.name,
-          target_part: pe.exercise_details.target_part,
-          category: pe.exercise_details.category,
-          sets: Array(pe.target_sets).fill({ weight: "", reps: "", completed: false }),
-          target: {
-            sets: pe.target_sets,
-            reps: `${pe.min_reps}-${pe.max_reps}`,
-            rpe: pe.target_rpe,
-            setType: pe.set_type,
-          },
-        }))
-    : [];
-
-  // TODO: Add localStorage persistence (save activeExercises on change, load on mount) to prevent data loss on refresh.
-  const [activeExercises, setActiveExercises] = useState<WorkoutExercise[]>(initialExercises);
+  // Initialize exercises with grouping logic
+  const [activeExercises, setActiveExercises] = useState<WorkoutExercise[]>([]);
+  const [activeTypeSelector, setActiveTypeSelector] = useState<{
+    exIndex: number;
+    setIndex: number;
+  } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  // Group exercises by part for the filter
+  // Exercise Selection & Scheme State
+  const [selectedExerciseForAdd, setSelectedExerciseForAdd] = useState<Exercise | null>(null);
+
+  useEffect(() => {
+    if (initialRoutine && initialRoutine.exercises) {
+      // Group by exercise ID
+      const groupedMap = new Map<string, WorkoutExercise>();
+
+      const sortedRoutineExercises = initialRoutine.exercises.sort(
+        (a: any, b: any) => a.order_index - b.order_index,
+      );
+
+      sortedRoutineExercises.forEach((pe: any) => {
+        const exId = pe.exercise_details.id;
+        const targetSetCount = pe.target_sets || 3;
+
+        // Generate new sets based on target
+        const newSets: WorkoutSet[] = Array.from({ length: targetSetCount }).map((_, i) => ({
+          id: crypto.randomUUID(),
+          type: (pe.set_type as SetType) || "working",
+          weight: "",
+          reps: "",
+          completed: false,
+        }));
+
+        if (groupedMap.has(exId)) {
+          // Append sets to existing exercise
+          const existing = groupedMap.get(exId)!;
+          existing.sets.push(...newSets);
+        } else {
+          // Create new exercise entry
+          groupedMap.set(exId, {
+            id: pe.exercise_details.id,
+            name: pe.exercise_details.name,
+            target_part: pe.exercise_details.target_part,
+            category: pe.exercise_details.category,
+            unit: "kg",
+            sets: newSets,
+          });
+        }
+      });
+
+      setActiveExercises(Array.from(groupedMap.values()));
+    }
+  }, [initialRoutine]);
+
   const categories = ["All", ...Array.from(new Set(exercisesList.map((e) => e.target_part)))];
 
-  const handleAddExercise = (exercise: Exercise) => {
+  const handleAddExercise = (scheme: "straight" | "top_backoff") => {
+    if (!selectedExerciseForAdd) return;
+
+    let initialSets: WorkoutSet[] = [];
+
+    if (scheme === "top_backoff") {
+      initialSets = [
+        { id: crypto.randomUUID(), type: "warmup", weight: "", reps: "", completed: false },
+        { id: crypto.randomUUID(), type: "top_set", weight: "", reps: "", completed: false },
+        { id: crypto.randomUUID(), type: "back_off", weight: "", reps: "", completed: false },
+        { id: crypto.randomUUID(), type: "back_off", weight: "", reps: "", completed: false },
+      ];
+    } else {
+      // Straight sets (Working)
+      initialSets = Array.from({ length: 3 }).map(() => ({
+        id: crypto.randomUUID(),
+        type: "working",
+        weight: "",
+        reps: "",
+        completed: false,
+      }));
+    }
+
     setActiveExercises((prev) => [
       ...prev,
-      { ...exercise, sets: [{ weight: "", reps: "", completed: false }] },
+      {
+        ...selectedExerciseForAdd,
+        unit: "kg",
+        sets: initialSets,
+      },
     ]);
+
+    setSelectedExerciseForAdd(null);
     setIsModalOpen(false);
   };
 
@@ -80,12 +147,11 @@ export default function WorkoutSession({
     exerciseIndex: number,
     setIndex: number,
     field: keyof WorkoutSet,
-    value: string,
+    value: string | boolean | SetType,
   ) => {
     const newExercises = [...activeExercises];
-    const set = newExercises[exerciseIndex].sets[setIndex];
     // @ts-ignore
-    set[field] = value;
+    newExercises[exerciseIndex].sets[setIndex][field] = value;
     setActiveExercises(newExercises);
   };
 
@@ -94,11 +160,20 @@ export default function WorkoutSession({
     const previousSet =
       newExercises[exerciseIndex].sets[newExercises[exerciseIndex].sets.length - 1];
 
+    // Inherit type and weight/reps from previous set for convenience
     newExercises[exerciseIndex].sets.push({
+      id: crypto.randomUUID(),
+      type: previousSet ? previousSet.type : "working",
       weight: previousSet ? previousSet.weight : "",
       reps: previousSet ? previousSet.reps : "",
       completed: false,
     });
+    setActiveExercises(newExercises);
+  };
+
+  const removeSet = (exerciseIndex: number, setIndex: number) => {
+    const newExercises = [...activeExercises];
+    newExercises[exerciseIndex].sets.splice(setIndex, 1);
     setActiveExercises(newExercises);
   };
 
@@ -108,11 +183,30 @@ export default function WorkoutSession({
     setActiveExercises(newExercises);
   };
 
+  const moveExercise = (index: number, direction: "up" | "down") => {
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === activeExercises.length - 1) return;
+
+    const newExercises = [...activeExercises];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+    [newExercises[index], newExercises[targetIndex]] = [
+      newExercises[targetIndex],
+      newExercises[index],
+    ];
+    setActiveExercises(newExercises);
+  };
+
+  const toggleUnit = (index: number) => {
+    const newExercises = [...activeExercises];
+    newExercises[index].unit = newExercises[index].unit === "kg" ? "lb" : "kg";
+    setActiveExercises(newExercises);
+  };
+
   const handleFinish = async () => {
     if (activeExercises.length === 0) return;
     setIsSaving(true);
 
-    // Format data for simpler JSON
     const payload = {
       exercises: activeExercises.map((e) => ({
         id: e.id,
@@ -120,15 +214,23 @@ export default function WorkoutSession({
         sets: e.sets.map((s) => ({
           weight: Number(s.weight) || 0,
           reps: Number(s.reps) || 0,
+          type: s.type, // Pass set type to backend if supported, or just ignore
+          unit: e.unit,
         })),
       })),
     };
 
-    const result = await saveWorkout(payload);
-    if (result.success) {
-      router.push(`/${locale}/health/workout/history`);
-    } else {
-      alert("저장 실패");
+    try {
+      const result = await saveWorkout(payload);
+      if (result.success) {
+        router.push(`/${locale}/health/workout/history`);
+      } else {
+        alert("저장 실패");
+        setIsSaving(false);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("오류가 발생했습니다.");
       setIsSaving(false);
     }
   };
@@ -141,18 +243,26 @@ export default function WorkoutSession({
   return (
     <div className="flex flex-col h-screen bg-black text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 safe-top bg-black z-10">
+      <div className="flex items-center justify-between px-4 py-4 safe-top bg-black z-10 border-b border-white/5">
         <Link
           href={`/${locale}/health/dashboard/today`}
           className="p-2 text-white/50 hover:text-white transition-colors"
         >
           <ArrowLeft size={24} />
         </Link>
-        <span className="font-semibold text-[17px]">오늘의 운동</span>
+        <span className="font-semibold text-[17px]">세션 기록</span>
         <div className="w-10" />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-40 space-y-6">
+      {/* Backdrop for closing picker */}
+      {activeTypeSelector && (
+        <div
+          className="fixed inset-0 z-40 bg-transparent"
+          onClick={() => setActiveTypeSelector(null)}
+        />
+      )}
+
+      <div className="flex-1 overflow-y-auto px-4 pb-40 space-y-6 pt-4">
         {activeExercises.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500 space-y-4">
             <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-3xl">
@@ -163,55 +273,143 @@ export default function WorkoutSession({
         ) : (
           activeExercises.map((exercise, exIndex) => (
             <div
-              key={`${exercise.id}-${exIndex}`}
-              className="bg-[#1C1C1E] rounded-[22px] overflow-hidden"
+              key={exercise.id + exIndex}
+              className="bg-[#1C1C1E] rounded-[22px] border border-white/5"
             >
-              <div className="px-5 py-4 flex items-center justify-between border-b border-white/5 bg-[#2C2C2E]">
+              <div className="px-4 py-3 bg-[#2C2C2E] rounded-t-[22px] flex items-center justify-between">
                 <div>
                   <h3 className="text-[17px] font-bold text-white">{exercise.name}</h3>
-                  {exercise.target && (
-                    <p className="text-[13px] text-[#007AFF] mt-0.5">
-                      목표: {exercise.target.sets}세트 × {exercise.target.reps}회 @RPE{" "}
-                      {exercise.target.rpe}
-                    </p>
-                  )}
-                  {exercise.target?.setType && (
-                    <div className="mt-1.5 flex justify-start">
-                      <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide
-                        ${
-                          exercise.target.setType === "top_set"
-                            ? "bg-red-500/20 text-red-500"
-                            : exercise.target.setType === "back_off"
-                              ? "bg-orange-500/20 text-orange-400"
-                              : "bg-blue-500/20 text-blue-400"
-                        }`}
-                      >
-                        {exercise.target.setType.replace("_", " ")}
-                      </span>
-                    </div>
-                  )}
+                  <p className="text-[13px] text-gray-400">{exercise.target_part}</p>
                 </div>
-                <button
-                  onClick={() => removeExercise(exIndex)}
-                  className="text-gray-500 hover:text-red-500 p-1"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <div className="flex items-center gap-1">
+                  {/* Unit Toggle */}
+                  <button
+                    onClick={() => toggleUnit(exIndex)}
+                    className="px-2 py-1 bg-black/40 rounded text-[11px] font-bold mr-2 flex items-baseline"
+                  >
+                    {exercise.unit === "kg" ? (
+                      <>
+                        <span className="text-[#007AFF]">KG</span>
+                        <span className="text-gray-500 text-[9px] ml-0.5">/lb</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[#007AFF]">LB</span>
+                        <span className="text-gray-500 text-[9px] ml-0.5">/kg</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Reorder Buttons */}
+                  <button
+                    onClick={() => moveExercise(exIndex, "up")}
+                    className="p-1.5 text-gray-500 hover:text-white disabled:opacity-30"
+                    disabled={exIndex === 0}
+                  >
+                    <ArrowUp size={16} />
+                  </button>
+                  <button
+                    onClick={() => moveExercise(exIndex, "down")}
+                    className="p-1.5 text-gray-500 hover:text-white disabled:opacity-30"
+                    disabled={exIndex === activeExercises.length - 1}
+                  >
+                    <ArrowDown size={16} />
+                  </button>
+
+                  {/* Delete Exercise */}
+                  <button
+                    onClick={() => removeExercise(exIndex)}
+                    className="p-1.5 text-gray-500 hover:text-red-500 ml-1"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
+
               <div className="p-4 space-y-3">
-                <div className="grid grid-cols-10 gap-2 text-xs text-gray-500 font-medium text-center mb-1">
-                  <div className="col-span-2">SET</div>
-                  <div className="col-span-3">KG</div>
-                  <div className="col-span-3">REPS</div>
-                  <div className="col-span-2">DONE</div>
+                <div className="grid grid-cols-12 gap-2 text-[11px] text-gray-500 font-medium text-center mb-1 uppercase tracking-wider">
+                  <div className="col-span-2">Type</div>
+                  <div className="col-span-3">Weight ({exercise.unit})</div>
+                  <div className="col-span-3">Reps</div>
+                  <div className="col-span-2">Done</div>
+                  <div className="col-span-2"></div>
                 </div>
+
                 {exercise.sets.map((set, setIndex) => (
-                  <div key={setIndex} className="grid grid-cols-10 gap-2 items-center">
-                    <div className="col-span-2 flex justify-center">
-                      <div className="w-6 h-6 rounded-full bg-white/10 text-[13px] flex items-center justify-center text-gray-400">
-                        {setIndex + 1}
-                      </div>
+                  <div key={set.id} className="grid grid-cols-12 gap-2 items-center">
+                    <div className="col-span-2 flex justify-center relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveTypeSelector(
+                            activeTypeSelector?.exIndex === exIndex &&
+                              activeTypeSelector?.setIndex === setIndex
+                              ? null
+                              : { exIndex, setIndex },
+                          );
+                        }}
+                        className={`text-[10px] w-full h-[26px] flex items-center justify-center rounded font-bold uppercase transition-colors
+                          ${
+                            set.type === "top_set"
+                              ? "bg-red-500/20 text-red-500"
+                              : set.type === "back_off"
+                                ? "bg-orange-500/20 text-orange-400"
+                                : set.type === "warmup"
+                                  ? "bg-yellow-500/20 text-yellow-400"
+                                  : "bg-blue-500/20 text-blue-400"
+                          }`}
+                      >
+                        {set.type === "top_set"
+                          ? "TOP"
+                          : set.type === "back_off"
+                            ? "BACK"
+                            : set.type === "warmup"
+                              ? "WARM"
+                              : "WORK"}
+                      </button>
+
+                      {/* Custom Picker Dropdown */}
+                      {activeTypeSelector?.exIndex === exIndex &&
+                        activeTypeSelector?.setIndex === setIndex && (
+                          <div className="absolute top-full left-0 mt-1 w-full min-w-full bg-[#2C2C2E] border border-white/10 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-100">
+                            <button
+                              onClick={() => {
+                                updateSet(exIndex, setIndex, "type", "warmup");
+                                setActiveTypeSelector(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                            >
+                              <span className="text-[10px] text-yellow-500 font-bold">WARM</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                updateSet(exIndex, setIndex, "type", "top_set");
+                                setActiveTypeSelector(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                            >
+                              <span className="text-[10px] text-red-500 font-bold">TOP</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                updateSet(exIndex, setIndex, "type", "back_off");
+                                setActiveTypeSelector(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                            >
+                              <span className="text-[10px] text-orange-500 font-bold">BACK</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                updateSet(exIndex, setIndex, "type", "working");
+                                setActiveTypeSelector(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                            >
+                              <span className="text-[10px] text-blue-500 font-bold">WORK</span>
+                            </button>
+                          </div>
+                        )}
                     </div>
                     <div className="col-span-3">
                       <input
@@ -233,21 +431,28 @@ export default function WorkoutSession({
                     </div>
                     <div className="col-span-2 flex justify-center">
                       <button
-                        onClick={() =>
-                          updateSet(exIndex, setIndex, "completed", (!set.completed).toString())
-                        }
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${set.completed ? "bg-green-500 text-black" : "bg-white/10 text-gray-500"}`}
+                        onClick={() => updateSet(exIndex, setIndex, "completed", !set.completed)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${set.completed ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]" : "bg-white/10 text-gray-500"}`}
                       >
                         <CheckCircle2 size={18} />
                       </button>
                     </div>
+                    <div className="col-span-2 flex justify-center">
+                      <button
+                        onClick={() => removeSet(exIndex, setIndex)}
+                        className="p-2 text-gray-600 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 ))}
+
                 <button
                   onClick={() => addSet(exIndex)}
-                  className="w-full py-3 mt-2 text-[15px] font-medium text-[#007AFF] bg-blue-500/10 hover:bg-blue-500/20 rounded-[12px] transition-colors"
+                  className="w-full py-3 mt-2 text-[14px] font-medium text-[#007AFF] bg-blue-500/10 hover:bg-blue-500/20 rounded-[12px] transition-colors flex items-center justify-center gap-1"
                 >
-                  + 세트 추가
+                  <Plus size={16} /> 세트 추가
                 </button>
               </div>
             </div>
@@ -273,55 +478,106 @@ export default function WorkoutSession({
         </button>
       </div>
 
-      {/* Exercise Selection Modal (Full Screen Sheet style) */}
+      {/* Exercise Selection Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-[#1C1C1E] animate-in slide-in-from-bottom duration-300">
-          <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-            <span className="font-bold text-[17px]">운동 선택</span>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="p-2 bg-[#2C2C2E] rounded-full text-gray-400 hover:text-white"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          {/* Categories */}
-          <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-[15px] font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === cat ? "bg-white text-black" : "bg-[#2C2C2E] text-gray-400"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-4 pb-10">
-            <div className="space-y-1">
-              {filteredExercises.map((exercise) => (
+          {selectedExerciseForAdd ? (
+            // Scheme Selection Step
+            <div className="flex-1 flex flex-col p-6">
+              <div className="flex items-center gap-4 mb-8">
                 <button
-                  key={exercise.id}
-                  onClick={() => handleAddExercise(exercise)}
-                  className="w-full py-4 flex items-center justify-between border-b border-white/5 text-left group"
+                  onClick={() => setSelectedExerciseForAdd(null)}
+                  className="p-2 -ml-2 text-gray-400"
                 >
-                  <div>
-                    <div className="text-[17px] font-medium text-white group-hover:text-[#007AFF] transition-colors">
-                      {exercise.name}
-                    </div>
-                    <div className="text-[13px] text-gray-500">
-                      {exercise.target_part} · {exercise.category}
-                    </div>
-                  </div>
-                  <Plus size={20} className="text-gray-600 group-hover:text-[#007AFF]" />
+                  <ArrowLeft size={24} />
                 </button>
-              ))}
+                <div>
+                  <div className="text-xl font-bold text-white max-w-[250px] truncate">
+                    {selectedExerciseForAdd.name}
+                  </div>
+                  <div className="text-sm text-gray-500">세트 구성 방식을 선택하세요</div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <button
+                  onClick={() => handleAddExercise("straight")}
+                  className="w-full p-5 bg-[#2C2C2E] hover:bg-[#3A3A3C] rounded-2xl flex items-center justify-between group transition-colors"
+                >
+                  <div className="text-left">
+                    <div className="text-lg font-bold text-white mb-1">일반 세트 (Straight)</div>
+                    <div className="text-sm text-gray-400">워밍업 + 본세트 3세트</div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#007AFF]">
+                    <Plus size={20} className="text-white" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleAddExercise("top_backoff")}
+                  className="w-full p-5 bg-[#2C2C2E] hover:bg-[#3A3A3C] rounded-2xl flex items-center justify-between group transition-colors"
+                >
+                  <div className="text-left">
+                    <div className="text-lg font-bold text-[#FFD60A] mb-1">탑세트 + 백오프</div>
+                    <div className="text-sm text-gray-400">웜업 + 탑세트 1 + 백오프 2</div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#FFD60A]">
+                    <Plus size={20} className="text-white group-hover:text-black" />
+                  </div>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            // List Step
+            <>
+              <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
+                <span className="font-bold text-[17px]">운동 선택</span>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 bg-[#2C2C2E] rounded-full text-gray-400 hover:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              {/* Categories */}
+              <div className="px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-full text-[15px] font-medium whitespace-nowrap transition-colors ${
+                      selectedCategory === cat
+                        ? "bg-white text-black"
+                        : "bg-[#2C2C2E] text-gray-400"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 pb-10">
+                <div className="space-y-1">
+                  {filteredExercises.map((exercise) => (
+                    <button
+                      key={exercise.id}
+                      onClick={() => setSelectedExerciseForAdd(exercise)}
+                      className="w-full py-4 flex items-center justify-between border-b border-white/5 text-left group"
+                    >
+                      <div>
+                        <div className="text-[17px] font-medium text-white group-hover:text-[#007AFF] transition-colors">
+                          {exercise.name}
+                        </div>
+                        <div className="text-[13px] text-gray-500">
+                          {exercise.target_part} · {exercise.category}
+                        </div>
+                      </div>
+                      <Plus size={20} className="text-gray-600 group-hover:text-[#007AFF]" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
