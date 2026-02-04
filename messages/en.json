@@ -12,7 +12,10 @@
     "titleHighlight": "step by step ☁️",
     "description": "Create your own Mandalart.",
     "descriptionSub": "Clear your mind and focus on what matters.",
-    "cta": "Get Started"
+    "cta": "Get Started",
+    "healthOS": "HEALTH OS",
+    "todoOS": "TODO OS",
+    "comingSoon": "Coming Soon"
   },
   "about": {
     "title": "What is\nMandalart?",

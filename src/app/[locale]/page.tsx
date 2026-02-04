@@ -70,6 +70,23 @@ export default async function Home() {
                 strokeWidth={2.5}
               />
             </TrackedLink>
+
+            <div className="flex gap-3 pt-2">
+              <TrackedLink
+                href="/health"
+                eventParams={{ entry: "header_health" }}
+                className="flex-1 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-bold text-slate-900 dark:text-white rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+              >
+                {t("healthOS")}
+              </TrackedLink>
+              <button
+                disabled
+                className="flex-1 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white rounded-2xl border border-transparent opacity-50 cursor-not-allowed"
+              >
+                {t("todoOS")}
+                <span className="text-[10px] ml-1 font-normal opacity-80">({t("comingSoon")})</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
