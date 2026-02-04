@@ -217,22 +217,30 @@
     "supplements": {
       "names": {
         "probiotics": "유산균",
-        "arginine": "아르기닌",
-        "caffeine": "카페인",
-        "eaa": "EAA",
-        "creatine": "크레아틴",
+        "arginine_morning": "아르기닌",
+        "multivitamin_morning": "종비",
         "omega3": "오메가3",
-        "multivitamin_morning": "종비(아침)",
+        "vitamin_d3": "비타민 D3",
+        "coq10": "CoQ10",
+        "caffeine": "카페인",
+        "arginine": "아르기닌",
+        "eaa": "EAA",
+        "electrolyte": "전해질",
+        "wpi": "WPI",
+        "creatine": "크레아틴",
+        "multivitamin_dinner": "종비",
+        "omega3_dinner": "오메가3",
         "zinc": "아연",
-        "multivitamin_dinner": "종비(저녁)"
+        "magnesium": "마그네슘"
       },
       "times": {
         "empty_stomach": "공복",
+        "morning": "아침 식후",
         "pre_workout": "운동 전",
         "intra_workout": "운동 중",
         "post_workout": "운동 후",
-        "morning": "아침",
-        "dinner": "저녁"
+        "dinner": "저녁 식후",
+        "before_sleep": "취침 전"
       }
     }
   }

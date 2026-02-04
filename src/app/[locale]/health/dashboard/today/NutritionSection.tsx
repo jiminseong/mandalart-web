@@ -8,15 +8,35 @@ import { useTranslations } from "next-intl";
 
 // Define supplement types with translation keys
 const SUPPLEMENTS = [
+  // 기상 직후 (공복)
   { id: "probiotics", timeKey: "empty_stomach", icon: "🥛" },
-  { id: "arginine", timeKey: "pre_workout", icon: "🔥" },
-  { id: "caffeine", timeKey: "pre_workout", icon: "☕" },
-  { id: "eaa", timeKey: "intra_workout", icon: "💧" },
-  { id: "creatine", timeKey: "post_workout", icon: "💪" },
-  { id: "omega3", timeKey: "morning", icon: "🐟" },
+  { id: "arginine_morning", timeKey: "empty_stomach", icon: "🔥" },
+
+  // 아침 식후
   { id: "multivitamin_morning", timeKey: "morning", icon: "💊" },
-  { id: "zinc", timeKey: "dinner", icon: "🛡️" },
+  { id: "omega3", timeKey: "morning", icon: "🐟" },
+  { id: "vitamin_d3", timeKey: "morning", icon: "☀️" },
+  { id: "coq10", timeKey: "morning", icon: "⚡" },
+
+  // 운동 전
+  { id: "caffeine", timeKey: "pre_workout", icon: "☕" },
+  { id: "arginine", timeKey: "pre_workout", icon: "🔥" },
+
+  // 운동 중
+  { id: "eaa", timeKey: "intra_workout", icon: "💧" },
+  { id: "electrolyte", timeKey: "intra_workout", icon: "🧂" },
+
+  // 운동 후
+  { id: "wpi", timeKey: "post_workout", icon: "🥛" },
+  { id: "creatine", timeKey: "post_workout", icon: "💪" },
+
+  // 저녁 식후
   { id: "multivitamin_dinner", timeKey: "dinner", icon: "💊" },
+  { id: "omega3_dinner", timeKey: "dinner", icon: "🐟" },
+  { id: "zinc", timeKey: "dinner", icon: "🛡️" },
+
+  // 취침 전
+  { id: "magnesium", timeKey: "before_sleep", icon: "😴" },
 ];
 
 interface NutritionSectionProps {

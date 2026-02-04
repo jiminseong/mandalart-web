@@ -217,22 +217,30 @@
     "supplements": {
       "names": {
         "probiotics": "Probiotics",
-        "arginine": "Arginine",
-        "caffeine": "Caffeine",
-        "eaa": "EAA",
-        "creatine": "Creatine",
+        "arginine_morning": "Arginine",
+        "multivitamin_morning": "Multivitamin",
         "omega3": "Omega-3",
-        "multivitamin_morning": "Multi-V (AM)",
+        "vitamin_d3": "Vitamin D3",
+        "coq10": "CoQ10",
+        "caffeine": "Caffeine",
+        "arginine": "Arginine",
+        "eaa": "EAA",
+        "electrolyte": "Electrolyte",
+        "wpi": "WPI",
+        "creatine": "Creatine",
+        "multivitamin_dinner": "Multivitamin",
+        "omega3_dinner": "Omega-3",
         "zinc": "Zinc",
-        "multivitamin_dinner": "Multi-V (PM)"
+        "magnesium": "Magnesium"
       },
       "times": {
         "empty_stomach": "Empty Stomach",
+        "morning": "After Breakfast",
         "pre_workout": "Pre-Workout",
         "intra_workout": "Intra-Workout",
         "post_workout": "Post-Workout",
-        "morning": "Morning",
-        "dinner": "Evening"
+        "dinner": "After Dinner",
+        "before_sleep": "Before Sleep"
       }
     }
   }
