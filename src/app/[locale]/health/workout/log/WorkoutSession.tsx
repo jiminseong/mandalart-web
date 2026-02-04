@@ -12,6 +12,7 @@ import {
   ArrowDown,
   MoreHorizontal,
 } from "lucide-react";
+import WorkoutTimer from "./WorkoutTimer";
 import Link from "next/link";
 import { saveWorkout } from "../actions";
 import { useRouter } from "next/navigation";
@@ -251,7 +252,9 @@ export default function WorkoutSession({
           <ArrowLeft size={24} />
         </Link>
         <span className="font-semibold text-[17px]">세션 기록</span>
-        <div className="w-10" />
+        <div className="w-10 flex justify-end">
+          <WorkoutTimer />
+        </div>
       </div>
 
       {/* Backdrop for closing picker */}
