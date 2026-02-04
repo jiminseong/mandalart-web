@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import NutritionSection from "./NutritionSection";
 
 export default async function TodayPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -15,15 +16,28 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
     .eq("id", user?.id)
     .single();
 
-  const today = new Date();
-  const dateString = today.toLocaleDateString("ko-KR", {
+  // KST Date for DB Query
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const kstGap = 9 * 60 * 60 * 1000;
+  const todayKst = new Date(utc + kstGap);
+  const dateString = todayKst.toLocaleDateString("ko-KR", {
     month: "long",
     day: "numeric",
     weekday: "long",
   });
+  const todayIso = todayKst.toISOString().split("T")[0];
+
+  // Fetch Today's Nutrition Log
+  const { data: nutritionLog } = await supabase
+    .from("nutrition_logs")
+    .select("*")
+    .eq("user_id", user?.id)
+    .eq("date", todayIso)
+    .single();
 
   return (
-    <div className="min-h-full space-y-8 animate-in fade-in duration-700">
+    <div className="min-h-full space-y-8 animate-in fade-in duration-700 pb-20">
       {/* iOS Large Title Header */}
       <section className="pt-2 px-1">
         <span className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -69,6 +83,8 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
           </div>
         </div>
       </div>
+
+      <NutritionSection initialLog={nutritionLog} date={todayIso} locale={locale} />
 
       {/* Secondary Section */}
       <div className="space-y-4 px-1">
