@@ -8,6 +8,7 @@ type TimerState = {
   remaining: number;
   endTime: Date;
   isPaused: boolean;
+  isFinished?: boolean;
 };
 
 export default function WorkoutTimer() {
@@ -32,23 +33,21 @@ export default function WorkoutTimer() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (timerState && !timerState.isPaused && timerState.remaining > 0) {
+    if (timerState && !timerState.isPaused && !timerState.isFinished) {
       interval = setInterval(() => {
         setTimerState((prev) => {
           if (!prev) return null;
           if (prev.remaining <= 1) {
             // Timer Finished
-            return null; // Or show finished state
+            return { ...prev, remaining: 0, isFinished: true };
           }
           return { ...prev, remaining: prev.remaining - 1 };
         });
       }, 1000);
-    } else if (timerState && timerState.remaining <= 0) {
-      setTimerState(null);
     }
 
     return () => clearInterval(interval);
-  }, [timerState?.isPaused, timerState?.remaining]);
+  }, [timerState?.isPaused, timerState?.isFinished, timerState?.remaining]);
 
   const startTimer = (seconds: number) => {
     const now = new Date();
@@ -58,6 +57,7 @@ export default function WorkoutTimer() {
       remaining: seconds,
       endTime: end,
       isPaused: false,
+      isFinished: false,
     });
     setIsSelectorOpen(false);
   };
@@ -105,7 +105,7 @@ export default function WorkoutTimer() {
 
       {/* Selector Modal */}
       {isSelectorOpen && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4">
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setIsSelectorOpen(false)}
@@ -166,63 +166,79 @@ export default function WorkoutTimer() {
 
       {/* Running Timer Overlay */}
       {timerState && (
-        <div className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-center">
-          {/* Progress Circle & Time */}
-          <div className="relative mb-20">
-            {/* Background Circle */}
-            <svg width="300" height="300" className="transform -rotate-90">
-              <circle cx="150" cy="150" r={radius} stroke="#333" strokeWidth="12" fill="none" />
-              <circle
-                cx="150"
-                cy="150"
-                r={radius}
-                stroke="#3B82F6"
-                strokeWidth="12"
-                fill="none"
-                strokeDasharray={circumference}
-                strokeDashoffset={dashoffset}
-                strokeLinecap="round"
-                className="transition-[stroke-dashoffset] duration-1000 linear"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-7xl font-extralight text-white tabular-nums tracking-tight">
-                {formatTime(timerState.remaining)}
-              </span>
-              <div className="flex items-center gap-1.5 mt-2 text-gray-400">
-                <span className="text-base font-medium">
-                  {timerState && !timerState.isPaused
-                    ? formatEndTime(new Date(Date.now() + timerState.remaining * 1000))
-                    : "일시 정지됨"}
-                </span>
+        <>
+          {timerState.isFinished ? (
+            <div
+              className="fixed inset-0 z-9999 bg-blue-600 flex flex-col items-center justify-center animate-pulse cursor-pointer"
+              onClick={() => setTimerState(null)}
+            >
+              <div className="text-white text-6xl font-black tracking-tighter">휴식 끝!</div>
+              <div className="text-white/80 mt-4 text-xl font-medium mb-10">
+                화면을 터치해서 운동 시작
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="fixed inset-0 z-9999 bg-black flex flex-col items-center justify-center">
+              {/* Progress Circle & Time */}
+              <div className="relative mb-20">
+                {/* Background Circle */}
+                <svg width="300" height="300" className="transform -rotate-90">
+                  <circle cx="150" cy="150" r={radius} stroke="#333" strokeWidth="12" fill="none" />
+                  <circle
+                    cx="150"
+                    cy="150"
+                    r={radius}
+                    stroke="#3B82F6"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={dashoffset}
+                    strokeLinecap="round"
+                    className="transition-[stroke-dashoffset] duration-1000 linear"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-7xl font-extralight text-white tabular-nums tracking-tight">
+                    {formatTime(timerState.remaining)}
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-2 text-gray-400">
+                    <span className="text-base font-medium">
+                      {timerState && !timerState.isPaused
+                        ? formatEndTime(new Date(Date.now() + timerState.remaining * 1000))
+                        : "일시 정지됨"}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-          {/* Controls */}
-          <div className="w-full max-w-xs flex justify-between px-8">
-            <button
-              onClick={cancelTimer}
-              className="w-20 h-20 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center group active:scale-95 transition-transform"
-            >
-              <div className="w-[74px] h-[74px] rounded-full border-2 border-gray-600 flex items-center justify-center">
-                <span className="text-gray-400 font-medium group-hover:text-white">취소</span>
-              </div>
-            </button>
-            <button
-              onClick={togglePause}
-              className={`w-20 h-20 rounded-full flex items-center justify-center group active:scale-95 transition-transform ${timerState.isPaused ? "bg-blue-600" : "bg-blue-900/20 border border-blue-500/30"}`}
-            >
-              <div className={`w-[74px] h-[74px] rounded-full flex items-center justify-center`}>
-                <span
-                  className={`${timerState.isPaused ? "text-white" : "text-blue-500"} font-medium`}
+              {/* Controls */}
+              <div className="w-full max-w-xs flex justify-between px-8">
+                <button
+                  onClick={cancelTimer}
+                  className="w-20 h-20 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center group active:scale-95 transition-transform"
                 >
-                  {timerState.isPaused ? "재개" : "일시 정지"}
-                </span>
+                  <div className="w-[74px] h-[74px] rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    <span className="text-gray-400 font-medium group-hover:text-white">취소</span>
+                  </div>
+                </button>
+                <button
+                  onClick={togglePause}
+                  className={`w-20 h-20 rounded-full flex items-center justify-center group active:scale-95 transition-transform ${timerState.isPaused ? "bg-blue-600" : "bg-blue-900/20 border border-blue-500/30"}`}
+                >
+                  <div
+                    className={`w-[74px] h-[74px] rounded-full flex items-center justify-center`}
+                  >
+                    <span
+                      className={`${timerState.isPaused ? "text-white" : "text-blue-500"} font-medium`}
+                    >
+                      {timerState.isPaused ? "재개" : "일시 정지"}
+                    </span>
+                  </div>
+                </button>
               </div>
-            </button>
-          </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </>
   );
