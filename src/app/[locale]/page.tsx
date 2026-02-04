@@ -11,7 +11,14 @@ export default async function Home() {
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       {/* iOS-style Navigation Bar */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
-        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-end">
+        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
+          <TrackedLink
+            href="/health"
+            eventParams={{ entry: "header_health" }}
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-wider"
+          >
+            Health OS
+          </TrackedLink>
           <LanguageSwitcher />
         </div>
       </header>

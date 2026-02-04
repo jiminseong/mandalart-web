@@ -47,7 +47,7 @@ export type AiParams = {
 
 // Specific Event Trackers
 export type StartClickParams = {
-  entry: "hero" | "onboarding_end" | "example_use" | "hero_about"; // Added hero_about for tracking about page entry
+  entry: "hero" | "onboarding_end" | "example_use" | "hero_about" | "header_health"; // Added hero_about for tracking about page entry
 };
 
 export const analytics = {
