@@ -304,6 +304,54 @@ erDiagram
 5.  [UI] 프로그램 설정/생성 페이지 구현 (`/health/program/setup`)
 6.  [Server] 증량 규칙(Progression) 간단 버전 구현
 
+#### 3.4 Today's Nutrition & Supplements (Added v2026.02.04)
+
+> 2026.02.04 Updated: Added Nutrition & Supplement tracking features.
+
+**1) Concept**:
+"Today's Workout"과 동일한 위계로 **"Today's Nutrition"** 파트를 대시보드에 추가합니다. 본질은 영양제 섭취 상태 추적과 일일 핵심 영양소(칼로리, 단백질) 도달 여부 확인입니다.
+
+**2) Supplements Tracking (Checklist)**:
+정해진 타이밍에 맞춰 영양제를 복용했는지 체크합니다.
+*   **공복/기상 직후**: 유산균 (Probiotics)
+*   **아침 식후**: 종합비타민 (Multivitamin), 오메가3 (Omega-3)
+*   **운동 전 (Pre-workout)**: 아르기닌 (Arginine), 카페인 (Caffeine)
+*   **운동 중 (Intra-workout)**: EAA
+*   **운동 후 (Post-workout)**: 크레아틴 (Creatine)
+*   **저녁 식후**: 아연 (Zinc), 종합비타민 (Multivitamin)
+
+**3) Diet Tracking (Lite)**:
+*   **Track**: 칼로리(kcal), 단백질(g) 입력 및 합계 표시
+*   **TODO (Exclude for now)**: 탄수화물, 지방, 당류 등 상세 영양소는 제외
+
+**4) TODO: Smart Nutrition Algorithm**:
+> [Algorithmic Logic] Future Implementation
+> *   Calculate BMR (Basal Metabolic Rate) based on profile (Mifflin-St Jeor Equation).
+> *   Calculate TDEE (Total Daily Energy Expenditure) based on activity level & workout frequency.
+> *   Set dynamic Calorie/Protein targets based on the active Goal (e.g., Cut: TDEE - 500, Bulk: TDEE + 300).
+
+**5) Database Schema (Proposed)**:
+```typescript
+type NutritionLog = {
+  id: string;
+  userId: string;
+  date: Date; // YYYY-MM-DD
+  calories: number; // Current total
+  protein: number;  // Current total
+  supplements: {
+    probiotics?: boolean;
+    multivitamin_morning?: boolean;
+    omega3?: boolean;
+    arginine?: boolean;
+    caffeine?: boolean;
+    eaa?: boolean;
+    creatine?: boolean;
+    zinc?: boolean;
+    multivitamin_dinner?: boolean;
+  };
+};
+```
+
 ---
 
 ### 3.2 판단 단계 (Reasoning Steps)
@@ -342,6 +390,7 @@ AI의 출력은 다음 JSON 스키마를 엄격히 따라야 한다. 애매한 �
   * 운동 기록 (Workout Logging)
   * 인바디 기록
   * **오늘의 AI 판단 (Dashboard)**
+  * **영양 관리 (Nutrition & Supplements) - New**
   * 주간 활동 요약
 
 ### ❌ 제외 (Initial Phase)
@@ -349,7 +398,7 @@ AI의 출력은 다음 JSON 스키마를 엄격히 따라야 한다. 애매한 �
 * 영상 업로드/재생
 * 소셜 기능 (커뮤니티, 친구, 공유)
 * 랭킹 시스템
-* 정밀 영양 관리 (칼로리 계산, 식단 기록)
+* 정밀 영양 관리 (탄/단/지 비율, 당류 등 상세 기록) - *단, 칼로리/단백질/영양제 단순 추적은 MVP 포함*
 * 웨어러블 디바이스 연동
 * 푸시 알림
 
