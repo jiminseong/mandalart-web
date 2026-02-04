@@ -220,3 +220,75 @@ export async function updateSchedule(previousState: any, formData: FormData) {
 
   redirect(`/${locale}/health/dashboard/today`);
 }
+
+export async function saveNutritionLog(
+  date: string,
+  data: {
+    calories?: number;
+    protein?: number;
+    supplements?: any;
+  },
+  locale: string,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // First, try to fetch existing log to merge supplements if needed,
+  // but for simplicity, we might assume the UI sends the full state or we implement specific patch logic.
+  // Here we use upsert. If we want partial updates, we might need a distinct logic.
+  // For a "checklist", usually we toggle one item.
+  // Let's assume the UI sends the *full* supplements object or we merge it here.
+  // Actually, to be safe and atomic, let's fetch current first if supplements is being updated.
+
+  // Implementation Strategy:
+  // 1. If calories/protein provided, update them.
+  // 2. If supplements provided, merge with existing.
+
+  const { data: existing } = await supabase
+    .from("nutrition_logs")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("date", date)
+    .maybeSingle();
+
+  const updates: any = {
+    user_id: user.id,
+    date: date,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (data.calories !== undefined) updates.calories = data.calories;
+  if (data.protein !== undefined) updates.protein = data.protein;
+
+  if (data.supplements) {
+    // Merge existing supplements with new ones
+    const currentSupplements = existing?.supplements || {};
+    updates.supplements = { ...currentSupplements, ...data.supplements };
+  }
+
+  // If existing record found, use its ID? No, upsert using unique key (user_id, date) is cleaner if configured.
+  // But our migration defines unique(user_id, date), so upsert works.
+  // However, we need to be careful not to overwrite valid data with defaults if valid data wasn't passed.
+  // But we are constructing `updates` based on passed data.
+  // For columns like calories/protein, strict update.
+
+  // If no existing record, we need to initialize others to 0 or null if not provided?
+  // Table defaults are 0.
+
+  const { error } = await supabase
+    .from("nutrition_logs")
+    .upsert(updates, { onConflict: "user_id, date" });
+
+  if (error) {
+    console.error("Error saving nutrition log:", error);
+    throw new Error("Failed to save nutrition log");
+  }
+
+  revalidatePath(`/${locale}/health/dashboard/today`);
+}
