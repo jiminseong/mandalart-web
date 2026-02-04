@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { createGoal } from "../../actions";
 import { Check } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 
 const GOAL_TYPES = [
   { id: "strength", label: "근력 증가", sub: "3대 운동 증량", icon: "💪" },
@@ -17,7 +17,9 @@ const GOAL_TYPES = [
   // habit -> 일/주
 ];
 
-export default function GoalPage({ params }: { params: { locale: string } }) {
+export default function GoalPage() {
+  const params = useParams();
+  const locale = params.locale as string;
   // @ts-ignore
   const [state, action, isPending] = useActionState(createGoal, null);
   const [selectedType, setSelectedType] = useState(GOAL_TYPES[0]);
@@ -55,7 +57,7 @@ export default function GoalPage({ params }: { params: { locale: string } }) {
       </div>
 
       <form action={action} className="space-y-8 mt-8">
-        <input type="hidden" name="locale" value={params.locale} />
+        <input type="hidden" name="locale" value={locale} />
         <input type="hidden" name="unit" value={currentUnit} />
         <input type="hidden" name="priority" value="1" />
         <input type="hidden" name="start_date" value={new Date().toISOString().split("T")[0]} />
