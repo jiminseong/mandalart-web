@@ -85,18 +85,21 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/${locale}/health/onboarding/goal?mode=edit&redirect_to=/${locale}/health/goals/current`}
-                      className="text-[15px] text-[#007AFF] font-medium hover:text-[#007AFF]/80 transition-colors"
+                      className="text-[15px] leading-none text-[#007AFF] font-medium hover:text-[#007AFF]/80 transition-colors"
                     >
                       수정
                     </Link>
-                    <div className="w-[1px] h-3 bg-gray-300 dark:bg-gray-700" />
-                    <form action={deleteGoal.bind(null, goal.id, locale)}>
+                    <div className="w-px h-3 bg-gray-300 dark:bg-gray-700" />
+                    <form
+                      action={deleteGoal.bind(null, goal.id, locale)}
+                      className="flex items-center"
+                    >
                       <button
                         type="submit"
-                        className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center pt-1"
+                        className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center"
                         aria-label="삭제"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </form>
                   </div>
