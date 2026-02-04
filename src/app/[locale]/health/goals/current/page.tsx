@@ -82,14 +82,24 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                     진행 중인 목표
                   </span>
 
-                  <form action={deleteGoal.bind(null, goal.id, locale)}>
-                    <button
-                      type="submit"
-                      className="text-[15px] text-red-500 font-medium hover:text-red-600 transition-colors flex items-center gap-1"
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/${locale}/health/onboarding/goal?mode=edit&redirect_to=/${locale}/health/goals/current`}
+                      className="text-[15px] text-[#007AFF] font-medium hover:text-[#007AFF]/80 transition-colors"
                     >
-                      삭제
-                    </button>
-                  </form>
+                      수정
+                    </Link>
+                    <div className="w-[1px] h-3 bg-gray-300 dark:bg-gray-700" />
+                    <form action={deleteGoal.bind(null, goal.id, locale)}>
+                      <button
+                        type="submit"
+                        className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center pt-1"
+                        aria-label="삭제"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-4">
