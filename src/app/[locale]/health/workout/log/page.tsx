@@ -5,12 +5,10 @@ export default async function WorkoutLogPage({ params }: { params: Promise<{ loc
   const { locale } = await params;
   const supabase = await createClient();
 
-  // 1. Get current date in KST, then format as YYYY-MM-DD
-  // Since server might be UTC, we offset by 9 hours manually for checking "Today" in Korea
+  // 1. Get current date in KST
   const kstOffset = 9 * 60 * 60 * 1000;
   const nowKst = new Date(Date.now() + kstOffset);
-  const dayOfWeek = nowKst.getUTCDay(); // 0-6 (Sun-Sat) in KST context if we treat it as UTC date object
-  // Actually, getUTCDay() on a shifted date object gives the correct day index for KST
+  const dayOfWeek = nowKst.getUTCDay(); // 0-6 (Sun-Sat) in KST
 
   // 2. Fetch Active Program and Schedule
   const { data: program } = await supabase
@@ -37,25 +35,16 @@ export default async function WorkoutLogPage({ params }: { params: Promise<{ loc
 
   // 3. Find today's routine
   let todaysRoutine = null;
-  // We assume the program starts from week 1.
-  // For MVP, we just pick the FIRST week's matching day to show something.
 
   if (program && program.current_week && program.current_week.length > 0) {
     const weeks = program.current_week;
-    // Convert JS day (0=Sun, 1=Mon... 6=Sat) to DB day_order (1=Mon... 7=Sun)
-    // JS Wednesday(3) -> DB Wednesday(3)
-    // JS Sunday(0) -> DB Sunday(7)
     const targetDbDay = dayOfWeek === 0 ? 7 : dayOfWeek;
-    console.log(
-      `[WorkoutLog] Date: ${nowKst.toISOString()}, DayOfWeek(JS): ${dayOfWeek}, TargetDB: ${targetDbDay}`,
-    );
 
     for (const week of weeks) {
       const dayMatch = week.days.find((d: any) => d.day_order === targetDbDay);
 
       if (dayMatch) {
         todaysRoutine = dayMatch;
-        console.log(`[WorkoutLog] Found match: ${dayMatch.name}`);
         break;
       }
     }
@@ -67,10 +56,39 @@ export default async function WorkoutLogPage({ params }: { params: Promise<{ loc
     .select("*")
     .order("name", { ascending: true });
 
+  // 5. Localization Logic
+  // Helper to get localized name
+  const getName = (ex: any) => {
+    if (locale === "en" && ex.name_en) return ex.name_en;
+    return ex.name;
+  };
+
+  // Localize All Exercises List
+  const localizedAllExercises =
+    allExercises?.map((e: any) => ({
+      ...e,
+      name: getName(e),
+    })) || [];
+
+  // Localize Today's Routine
+  let localizedRoutine = null;
+  if (todaysRoutine) {
+    localizedRoutine = {
+      ...todaysRoutine,
+      exercises: todaysRoutine.exercises.map((ex: any) => ({
+        ...ex,
+        exercise_details: {
+          ...ex.exercise_details,
+          name: getName(ex.exercise_details),
+        },
+      })),
+    };
+  }
+
   return (
     <WorkoutSession
-      exercisesList={allExercises || []}
-      initialRoutine={todaysRoutine}
+      exercisesList={localizedAllExercises}
+      initialRoutine={localizedRoutine}
       locale={locale}
     />
   );

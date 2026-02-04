@@ -1,9 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import NutritionSection from "./NutritionSection";
+import HealthHeader from "./HealthHeader";
+import { getTranslations } from "next-intl/server";
 
 export default async function TodayPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "health.dashboard" });
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,7 +25,8 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
   const utc = now.getTime() + now.getTimezoneOffset() * 60000;
   const kstGap = 9 * 60 * 60 * 1000;
   const todayKst = new Date(utc + kstGap);
-  const dateString = todayKst.toLocaleDateString("ko-KR", {
+
+  const dateString = todayKst.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", {
     month: "long",
     day: "numeric",
     weekday: "long",
@@ -38,22 +43,12 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="min-h-full space-y-8 animate-in fade-in duration-700 pb-20">
-      {/* iOS Large Title Header */}
-      <section className="pt-2 px-1">
-        <span className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-          {dateString}
-        </span>
-        <div className="flex items-end justify-between mt-1">
-          <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-            투데이
-          </h1>
-          <div className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mb-1">
-            <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
-              {profile?.nickname?.[0] || "U"}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* iOS Large Title Header with Settings */}
+      <HealthHeader
+        dateString={dateString}
+        nickname={profile?.nickname || "User"}
+        locale={locale}
+      />
 
       {/* Main Action Card (iOS Widget Style) */}
       <div className="relative overflow-hidden rounded-[22px] bg-white dark:bg-[#1C1C1E] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-800 p-6">
@@ -65,12 +60,13 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
 
         <div className="space-y-4 relative z-10">
           <div>
-            <h2 className="text-[22px] font-bold text-black dark:text-white">오늘의 운동 가이드</h2>
-            <p className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 mt-1">
-              충분한 휴식으로 회복 상태가 좋습니다.
-              <br />
-              오늘의 추천 강도는 <strong>RPE 8</strong>입니다.
-            </p>
+            <h2 className="text-[22px] font-bold text-black dark:text-white">
+              {t("workoutGuide")}
+            </h2>
+            <p
+              className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 mt-1"
+              dangerouslySetInnerHTML={{ __html: t("recoveryGood", { rpe: 8 }) }}
+            />
           </div>
 
           <div className="pt-2">
@@ -78,7 +74,7 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
               href={`/${locale}/health/workout/log`}
               className="w-full h-[50px] bg-black dark:bg-white text-white dark:text-black rounded-[14px] font-semibold text-[17px] shadow-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center"
             >
-              오늘의 운동 시작하기
+              {t("startWorkout")}
             </Link>
           </div>
         </div>
@@ -88,11 +84,13 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
 
       {/* Secondary Section */}
       <div className="space-y-4 px-1">
-        <h3 className="text-[20px] font-bold text-black dark:text-white">지난 기록</h3>
+        <h3 className="text-[20px] font-bold text-black dark:text-white">{t("pastRecords")}</h3>
         <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[20px] p-5 flex items-center justify-between">
           <div>
-            <div className="text-[15px] font-semibold text-gray-500">이번 주 운동</div>
-            <div className="text-[28px] font-bold text-black dark:text-white">0회</div>
+            <div className="text-[15px] font-semibold text-gray-500">{t("thisWeekWorkout")}</div>
+            <div className="text-[28px] font-bold text-black dark:text-white">
+              {t("count", { count: 0 })}
+            </div>
           </div>
           <div className="h-12 w-12 rounded-full bg-white dark:bg-gray-700 flex items-center justify-center shadow-sm">
             📊

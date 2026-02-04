@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Copy, Target, CalendarDays, Dumbbell } from "lucide-react";
+import { Target, CalendarDays, Dumbbell } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function HealthTabBar({ locale }: { locale: string }) {
   const pathname = usePathname();
+  const t = useTranslations("health.nav");
 
   // Hide on onboarding or login pages just in case
   if (pathname.includes("/onboarding") || pathname.includes("/login")) {
@@ -14,19 +16,19 @@ export function HealthTabBar({ locale }: { locale: string }) {
 
   const tabs = [
     {
-      name: "투데이",
+      label: t("today"),
       href: `/${locale}/health/dashboard/today`,
       icon: CalendarDays,
       isActive: (path: string) => path.includes("/dashboard"),
     },
     {
-      name: "기록",
-      href: `/${locale}/health/workout/history`, // Linking to history/log
-      icon: Dumbbell, // Or ClipboardList
+      label: t("history"),
+      href: `/${locale}/health/workout/history`,
+      icon: Dumbbell,
       isActive: (path: string) => path.includes("/workout"),
     },
     {
-      name: "목표",
+      label: t("goals"),
       href: `/${locale}/health/goals/current`,
       icon: Target,
       isActive: (path: string) => path.includes("/goals"),
@@ -45,14 +47,14 @@ export function HealthTabBar({ locale }: { locale: string }) {
 
           return (
             <Link
-              key={tab.name}
+              key={tab.label}
               href={tab.href}
               className={`flex flex-col items-center justify-center gap-1 w-16 active:scale-90 transition-transform ${
                 active ? "text-[#007AFF]" : "text-gray-400 dark:text-gray-500"
               }`}
             >
               <Icon strokeWidth={active ? 2.5 : 2} size={26} />
-              <span className="text-[10px] font-medium tracking-tight">{tab.name}</span>
+              <span className="text-[10px] font-medium tracking-tight">{tab.label}</span>
             </Link>
           );
         })}

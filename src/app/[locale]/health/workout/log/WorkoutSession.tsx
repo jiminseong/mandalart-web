@@ -16,6 +16,7 @@ import WorkoutTimer from "./WorkoutTimer";
 import Link from "next/link";
 import { saveWorkout } from "../actions";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Exercise = {
   id: string;
@@ -48,6 +49,7 @@ export default function WorkoutSession({
   initialRoutine?: any;
   locale: string;
 }) {
+  const t = useTranslations("health.session");
   const router = useRouter();
 
   // Initialize exercises with grouping logic
@@ -226,12 +228,12 @@ export default function WorkoutSession({
       if (result.success) {
         router.push(`/${locale}/health/workout/history`);
       } else {
-        alert("저장 실패");
+        alert(t("saveError"));
         setIsSaving(false);
       }
     } catch (e) {
       console.error(e);
-      alert("오류가 발생했습니다.");
+      alert(t("genericError"));
       setIsSaving(false);
     }
   };
@@ -240,6 +242,21 @@ export default function WorkoutSession({
     selectedCategory === "All"
       ? exercisesList
       : exercisesList.filter((e) => e.target_part === selectedCategory);
+
+  const getSetTypeLabel = (type: SetType) => {
+    switch (type) {
+      case "top_set":
+        return t("typeTop");
+      case "back_off":
+        return t("typeBack");
+      case "warmup":
+        return t("typeWarm");
+      case "working":
+        return t("typeWork");
+      default:
+        return t("typeWork");
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
@@ -251,7 +268,7 @@ export default function WorkoutSession({
         >
           <ArrowLeft size={24} />
         </Link>
-        <span className="font-semibold text-[17px]">세션 기록</span>
+        <span className="font-semibold text-[17px]">{t("title")}</span>
         <div className="w-10 flex justify-end">
           <WorkoutTimer />
         </div>
@@ -271,7 +288,7 @@ export default function WorkoutSession({
             <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-3xl">
               💪
             </div>
-            <p className="text-[17px]">운동을 추가해주세요</p>
+            <p className="text-[17px]">{t("emptyTitle")}</p>
           </div>
         ) : (
           activeExercises.map((exercise, exIndex) => (
@@ -331,10 +348,12 @@ export default function WorkoutSession({
 
               <div className="p-4 space-y-3">
                 <div className="grid grid-cols-12 gap-2 text-[11px] text-gray-500 font-medium text-center mb-1 uppercase tracking-wider">
-                  <div className="col-span-2">Type</div>
-                  <div className="col-span-3">Weight ({exercise.unit})</div>
-                  <div className="col-span-3">Reps</div>
-                  <div className="col-span-2">Done</div>
+                  <div className="col-span-2">{t("tableType")}</div>
+                  <div className="col-span-3">
+                    {t("tableWeight")} ({exercise.unit})
+                  </div>
+                  <div className="col-span-3">{t("tableReps")}</div>
+                  <div className="col-span-2">{t("tableDone")}</div>
                   <div className="col-span-2"></div>
                 </div>
 
@@ -362,13 +381,7 @@ export default function WorkoutSession({
                                   : "bg-blue-500/20 text-blue-400"
                           }`}
                       >
-                        {set.type === "top_set"
-                          ? "TOP"
-                          : set.type === "back_off"
-                            ? "BACK"
-                            : set.type === "warmup"
-                              ? "WARM"
-                              : "WORK"}
+                        {getSetTypeLabel(set.type)}
                       </button>
 
                       {/* Custom Picker Dropdown */}
@@ -382,7 +395,9 @@ export default function WorkoutSession({
                               }}
                               className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
                             >
-                              <span className="text-[10px] text-yellow-500 font-bold">WARM</span>
+                              <span className="text-[10px] text-yellow-500 font-bold">
+                                {t("typeWarm")}
+                              </span>
                             </button>
                             <button
                               onClick={() => {
@@ -391,7 +406,9 @@ export default function WorkoutSession({
                               }}
                               className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
                             >
-                              <span className="text-[10px] text-red-500 font-bold">TOP</span>
+                              <span className="text-[10px] text-red-500 font-bold">
+                                {t("typeTop")}
+                              </span>
                             </button>
                             <button
                               onClick={() => {
@@ -400,7 +417,9 @@ export default function WorkoutSession({
                               }}
                               className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
                             >
-                              <span className="text-[10px] text-orange-500 font-bold">BACK</span>
+                              <span className="text-[10px] text-orange-500 font-bold">
+                                {t("typeBack")}
+                              </span>
                             </button>
                             <button
                               onClick={() => {
@@ -409,7 +428,9 @@ export default function WorkoutSession({
                               }}
                               className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
                             >
-                              <span className="text-[10px] text-blue-500 font-bold">WORK</span>
+                              <span className="text-[10px] text-blue-500 font-bold">
+                                {t("typeWork")}
+                              </span>
                             </button>
                           </div>
                         )}
@@ -455,7 +476,7 @@ export default function WorkoutSession({
                   onClick={() => addSet(exIndex)}
                   className="w-full py-3 mt-2 text-[14px] font-medium text-[#007AFF] bg-blue-500/10 hover:bg-blue-500/20 rounded-[12px] transition-colors flex items-center justify-center gap-1"
                 >
-                  <Plus size={16} /> 세트 추가
+                  <Plus size={16} /> {t("addSet")}
                 </button>
               </div>
             </div>
@@ -467,7 +488,7 @@ export default function WorkoutSession({
           className="w-full py-4 rounded-[20px] border-2 border-dashed border-[#2C2C2E] text-gray-500 font-medium hover:border-gray-600 hover:text-gray-300 transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={20} />
-          운동 추가하기
+          {t("addExercise")}
         </button>
       </div>
 
@@ -477,7 +498,7 @@ export default function WorkoutSession({
           disabled={isSaving || activeExercises.length === 0}
           className="w-full h-[56px] bg-[#007AFF] rounded-[28px] font-bold text-[20px] text-white flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSaving ? "저장 중..." : "운동 완료"}
+          {isSaving ? t("saving") : t("finish")}
         </button>
       </div>
 
@@ -498,7 +519,7 @@ export default function WorkoutSession({
                   <div className="text-xl font-bold text-white max-w-[250px] truncate">
                     {selectedExerciseForAdd.name}
                   </div>
-                  <div className="text-sm text-gray-500">세트 구성 방식을 선택하세요</div>
+                  <div className="text-sm text-gray-500">{t("schemeTitle")}</div>
                 </div>
               </div>
 
@@ -508,8 +529,8 @@ export default function WorkoutSession({
                   className="w-full p-5 bg-[#2C2C2E] hover:bg-[#3A3A3C] rounded-2xl flex items-center justify-between group transition-colors"
                 >
                   <div className="text-left">
-                    <div className="text-lg font-bold text-white mb-1">일반 세트 (Straight)</div>
-                    <div className="text-sm text-gray-400">워밍업 + 본세트 3세트</div>
+                    <div className="text-lg font-bold text-white mb-1">{t("schemeStraight")}</div>
+                    <div className="text-sm text-gray-400">{t("schemeStraightDesc")}</div>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#007AFF]">
                     <Plus size={20} className="text-white" />
@@ -521,8 +542,10 @@ export default function WorkoutSession({
                   className="w-full p-5 bg-[#2C2C2E] hover:bg-[#3A3A3C] rounded-2xl flex items-center justify-between group transition-colors"
                 >
                   <div className="text-left">
-                    <div className="text-lg font-bold text-[#FFD60A] mb-1">탑세트 + 백오프</div>
-                    <div className="text-sm text-gray-400">웜업 + 탑세트 1 + 백오프 2</div>
+                    <div className="text-lg font-bold text-[#FFD60A] mb-1">
+                      {t("schemeTopBack")}
+                    </div>
+                    <div className="text-sm text-gray-400">{t("schemeTopBackDesc")}</div>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#FFD60A]">
                     <Plus size={20} className="text-white group-hover:text-black" />
@@ -534,7 +557,7 @@ export default function WorkoutSession({
             // List Step
             <>
               <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-                <span className="font-bold text-[17px]">운동 선택</span>
+                <span className="font-bold text-[17px]">{t("selectExercise")}</span>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="p-2 bg-[#2C2C2E] rounded-full text-gray-400 hover:text-white"

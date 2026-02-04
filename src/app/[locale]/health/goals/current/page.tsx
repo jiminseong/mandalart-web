@@ -2,9 +2,12 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { deleteGoal } from "../../actions";
 import { Trash2 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export default async function GoalsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "health.goals" });
+  const tCommon = await getTranslations({ locale, namespace: "health.common" });
   const supabase = await createClient();
 
   const { data: goals } = await supabase
@@ -39,7 +42,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
           Target
         </span>
         <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          목표 달성
+          {t("title")}
         </h1>
       </div>
 
@@ -72,6 +75,15 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                   )
                 : 0;
 
+            // Map goal types and descriptions
+            let typeTitle = t("types.habit");
+            if (goal.type === "strength") typeTitle = t("types.strength");
+            else if (goal.type === "weight") typeTitle = t("types.weight");
+            else if (goal.type === "bodyfat") typeTitle = t("types.bodyfat");
+
+            let typeDesc = t("descriptions.default");
+            if (goal.type === "strength") typeDesc = t("descriptions.strength");
+
             return (
               <div
                 key={goal.id}
@@ -79,7 +91,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[17px] font-semibold text-black dark:text-white">
-                    진행 중인 목표
+                    {t("activeGoals")}
                   </span>
 
                   <div className="flex items-center gap-3">
@@ -87,7 +99,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                       href={`/${locale}/health/onboarding/goal?mode=edit&redirect_to=/${locale}/health/goals/current`}
                       className="text-[15px] leading-none text-[#007AFF] font-medium hover:text-[#007AFF]/80 transition-colors"
                     >
-                      수정
+                      {tCommon("edit")}
                     </Link>
                     <div className="w-px h-3 bg-gray-300 dark:bg-gray-700" />
                     <form
@@ -97,7 +109,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                       <button
                         type="submit"
                         className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center"
-                        aria-label="삭제"
+                        aria-label={tCommon("delete")}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -117,17 +129,9 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                   </div>
                   <div>
                     <div className="text-[20px] font-bold text-black dark:text-white">
-                      {goal.type === "strength"
-                        ? "근력 증가"
-                        : goal.type === "weight"
-                          ? "체중 조절"
-                          : goal.type === "bodyfat"
-                            ? "체지방 감소"
-                            : "운동 습관"}
+                      {typeTitle}
                     </div>
-                    <div className="text-[15px] text-gray-500">
-                      {goal.type === "strength" ? "3대 운동 증량" : "목표 달성하기"}
-                    </div>
+                    <div className="text-[15px] text-gray-500">{typeDesc}</div>
                   </div>
                 </div>
 
@@ -136,11 +140,11 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                 </div>
                 <div className="flex justify-between text-[13px] font-medium text-gray-400">
                   <span>
-                    현재 {currentValue}
+                    {t("current", { value: currentValue })}
                     {goal.unit}
                   </span>
                   <span>
-                    목표 {targetValue}
+                    {t("target", { value: targetValue })}
                     {goal.unit}
                   </span>
                 </div>
@@ -149,7 +153,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
           })
         ) : (
           <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[22px] p-6 text-center text-gray-500">
-            목표가 설정되지 않았습니다.
+            {t("empty")}
           </div>
         )}
       </div>

@@ -105,5 +105,120 @@
     "privacyNote": "The information you provide will only be used for launch notifications.",
     "submitting": "Submitting...",
     "submit": "Submit ➤"
+  },
+  "health": {
+    "timer": {
+      "title": "Rest Timer Settings",
+      "customSetup": "Custom Duration",
+      "placeholderMin": "min",
+      "placeholderSec": "sec",
+      "start": "Start",
+      "paused": "Paused",
+      "cancel": "Cancel",
+      "pause": "Pause",
+      "resume": "Resume",
+      "finishedTitle": "Time's Up!",
+      "finishedDesc": "Tap screen to start workout",
+      "unitMin": "m",
+      "unitSec": "s"
+    },
+    "session": {
+      "title": "Workout Session",
+      "emptyTitle": "Add an exercise",
+      "addExercise": "Add Exercise",
+      "finish": "Finish Workout",
+      "saving": "Saving...",
+      "saveError": "Failed to save",
+      "genericError": "An error occurred.",
+      "addSet": "Add Set",
+      "selectExercise": "Select Exercise",
+      "schemeTitle": "Select set scheme",
+      "schemeStraight": "Straight Sets",
+      "schemeStraightDesc": "Warmup + 3 Working Sets",
+      "schemeTopBack": "Top Set + Backoff",
+      "schemeTopBackDesc": "Warmup + 1 Top + 2 Backoff",
+      "tableType": "Type",
+      "tableWeight": "Weight",
+      "tableReps": "Reps",
+      "tableDone": "Done",
+      "typeTop": "TOP",
+      "typeBack": "BACK",
+      "typeWarm": "WARM",
+      "typeWork": "WORK"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "ko": "Korean",
+      "en": "English",
+      "cancel": "Cancel"
+    },
+    "common": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "saved": "Saved"
+    },
+    "nav": {
+      "today": "Today",
+      "history": "History",
+      "goals": "Goals"
+    },
+    "dashboard": {
+      "title": "Today",
+      "workoutGuide": "Today's Workout Guide",
+      "recoveryGood": "Recovery state is good due to sufficient rest.<br/>Recommended intensity is <strong>RPE {rpe}</strong>.",
+      "startWorkout": "Start Workout",
+      "todayNutrition": "Nutrition",
+      "todayNutritionDesc": "A healthy body starts with diet.",
+      "logMeal": "Log Meal",
+      "fillIn": "Log",
+      "calories": "Calories",
+      "protein": "Protein",
+      "supplementChecklist": "Supplements",
+      "pastRecords": "Past Records",
+      "thisWeekWorkout": "This Week",
+      "count": "{count} sessions"
+    },
+    "goals": {
+      "title": "Goals",
+      "activeGoals": "Active Goals",
+      "empty": "No goals set.",
+      "current": "Current {value}",
+      "target": "Goal {value}",
+      "types": {
+        "strength": "Strength",
+        "weight": "Weight",
+        "bodyfat": "Body Fat",
+        "habit": "Habit"
+      },
+      "descriptions": {
+        "strength": "Increase SBD",
+        "default": "Achieve your goal"
+      }
+    },
+    "supplements": {
+      "names": {
+        "probiotics": "Probiotics",
+        "arginine": "Arginine",
+        "caffeine": "Caffeine",
+        "eaa": "EAA",
+        "creatine": "Creatine",
+        "omega3": "Omega-3",
+        "multivitamin_morning": "Multi-V (AM)",
+        "zinc": "Zinc",
+        "multivitamin_dinner": "Multi-V (PM)"
+      },
+      "times": {
+        "empty_stomach": "Empty Stomach",
+        "pre_workout": "Pre-Workout",
+        "intra_workout": "Intra-Workout",
+        "post_workout": "Post-Workout",
+        "morning": "Morning",
+        "dinner": "Evening"
+      }
+    }
   }
 }

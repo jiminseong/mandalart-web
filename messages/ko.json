@@ -105,5 +105,120 @@
     "privacyNote": "입력하신 정보는 오직 출시 알림용으로만 사용됩니다.",
     "submitting": "제출 중...",
     "submit": "제출하기 ➤"
+  },
+  "health": {
+    "timer": {
+      "title": "휴식 타이머 설정",
+      "customSetup": "사용자 설정",
+      "placeholderMin": "분",
+      "placeholderSec": "초",
+      "start": "시작",
+      "paused": "일시 정지됨",
+      "cancel": "취소",
+      "pause": "일시 정지",
+      "resume": "재개",
+      "finishedTitle": "휴식 끝!",
+      "finishedDesc": "화면을 터치해서 운동 시작",
+      "unitMin": "분",
+      "unitSec": "초"
+    },
+    "session": {
+      "title": "세션 기록",
+      "emptyTitle": "운동을 추가해주세요",
+      "addExercise": "운동 추가하기",
+      "finish": "운동 완료",
+      "saving": "저장 중...",
+      "saveError": "저장 실패",
+      "genericError": "오류가 발생했습니다.",
+      "addSet": "세트 추가",
+      "selectExercise": "운동 선택",
+      "schemeTitle": "세트 구성 방식을 선택하세요",
+      "schemeStraight": "일반 세트 (Straight)",
+      "schemeStraightDesc": "워밍업 + 본세트 3세트",
+      "schemeTopBack": "탑세트 + 백오프",
+      "schemeTopBackDesc": "웜업 + 탑세트 1 + 백오프 2",
+      "tableType": "타입",
+      "tableWeight": "무게",
+      "tableReps": "횟수",
+      "tableDone": "완료",
+      "typeTop": "탑",
+      "typeBack": "백",
+      "typeWarm": "웜",
+      "typeWork": "본"
+    },
+    "settings": {
+      "title": "설정",
+      "language": "언어",
+      "ko": "한국어",
+      "en": "English",
+      "cancel": "취소"
+    },
+    "common": {
+      "edit": "수정",
+      "delete": "삭제",
+      "cancel": "취소",
+      "save": "저장",
+      "saving": "저장 중...",
+      "saved": "저장 완료"
+    },
+    "nav": {
+      "today": "투데이",
+      "history": "기록",
+      "goals": "목표"
+    },
+    "dashboard": {
+      "title": "투데이",
+      "workoutGuide": "오늘의 운동 가이드",
+      "recoveryGood": "충분한 휴식으로 회복 상태가 좋습니다.<br/>오늘의 추천 강도는 <strong>RPE {rpe}</strong>입니다.",
+      "startWorkout": "오늘의 운동 시작하기",
+      "todayNutrition": "오늘의 영양",
+      "todayNutritionDesc": "건강한 몸은 식단에서 시작됩니다.",
+      "logMeal": "식단 기록",
+      "fillIn": "기입하기",
+      "calories": "칼로리",
+      "protein": "단백질",
+      "supplementChecklist": "영양제 체크리스트",
+      "pastRecords": "지난 기록",
+      "thisWeekWorkout": "이번 주 운동",
+      "count": "{count}회"
+    },
+    "goals": {
+      "title": "목표 달성",
+      "activeGoals": "진행 중인 목표",
+      "empty": "목표가 설정되지 않았습니다.",
+      "current": "현재 {value}",
+      "target": "목표 {value}",
+      "types": {
+        "strength": "근력 증가",
+        "weight": "체중 조절",
+        "bodyfat": "체지방 감소",
+        "habit": "운동 습관"
+      },
+      "descriptions": {
+        "strength": "3대 운동 증량",
+        "default": "목표 달성하기"
+      }
+    },
+    "supplements": {
+      "names": {
+        "probiotics": "유산균",
+        "arginine": "아르기닌",
+        "caffeine": "카페인",
+        "eaa": "EAA",
+        "creatine": "크레아틴",
+        "omega3": "오메가3",
+        "multivitamin_morning": "종비(아침)",
+        "zinc": "아연",
+        "multivitamin_dinner": "종비(저녁)"
+      },
+      "times": {
+        "empty_stomach": "공복",
+        "pre_workout": "운동 전",
+        "intra_workout": "운동 중",
+        "post_workout": "운동 후",
+        "morning": "아침",
+        "dinner": "저녁"
+      }
+    }
   }
 }

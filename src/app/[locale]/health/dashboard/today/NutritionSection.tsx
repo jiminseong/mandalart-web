@@ -4,18 +4,19 @@ import { useState } from "react";
 import { saveNutritionLog } from "../../actions";
 import { Check, Edit2, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-// Define supplement types
+// Define supplement types with translation keys
 const SUPPLEMENTS = [
-  { id: "probiotics", label: "유산균", time: "공복", icon: "🥛" },
-  { id: "arginine", label: "아르기닌", time: "운동 전", icon: "🔥" },
-  { id: "caffeine", label: "카페인", time: "운동 전", icon: "☕" },
-  { id: "eaa", label: "EAA", time: "운동 중", icon: "💧" },
-  { id: "creatine", label: "크레아틴", time: "운동 후", icon: "💪" },
-  { id: "omega3", label: "오메가3", time: "아침", icon: "🐟" },
-  { id: "multivitamin_morning", label: "종비(아침)", time: "아침", icon: "💊" },
-  { id: "zinc", label: "아연", time: "저녁", icon: "🛡️" },
-  { id: "multivitamin_dinner", label: "종비(저녁)", time: "저녁", icon: "💊" },
+  { id: "probiotics", timeKey: "empty_stomach", icon: "🥛" },
+  { id: "arginine", timeKey: "pre_workout", icon: "🔥" },
+  { id: "caffeine", timeKey: "pre_workout", icon: "☕" },
+  { id: "eaa", timeKey: "intra_workout", icon: "💧" },
+  { id: "creatine", timeKey: "post_workout", icon: "💪" },
+  { id: "omega3", timeKey: "morning", icon: "🐟" },
+  { id: "multivitamin_morning", timeKey: "morning", icon: "💊" },
+  { id: "zinc", timeKey: "dinner", icon: "🛡️" },
+  { id: "multivitamin_dinner", timeKey: "dinner", icon: "💊" },
 ];
 
 interface NutritionSectionProps {
@@ -25,6 +26,10 @@ interface NutritionSectionProps {
 }
 
 export default function NutritionSection({ initialLog, date, locale }: NutritionSectionProps) {
+  const t = useTranslations("health.dashboard");
+  const tCommon = useTranslations("health.common");
+  const tSupplements = useTranslations("health.supplements");
+
   const [isEditing, setIsEditing] = useState(false);
   const [calories, setCalories] = useState(initialLog?.calories || 0);
   const [protein, setProtein] = useState(initialLog?.protein || 0);
@@ -62,9 +67,11 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
     <div className="space-y-6">
       <div className="flex items-center justify-between px-1">
         <div>
-          <h2 className="text-[22px] font-bold text-black dark:text-white">오늘의 영양</h2>
+          <h2 className="text-[22px] font-bold text-black dark:text-white">
+            {t("todayNutrition")}
+          </h2>
           <p className="text-[15px] text-gray-500 dark:text-gray-400 mt-0.5">
-            건강한 몸은 식단에서 시작됩니다.
+            {t("todayNutritionDesc")}
           </p>
         </div>
       </div>
@@ -74,14 +81,14 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
         <div className="bg-white dark:bg-[#1C1C1E] rounded-[22px] p-6 shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[17px] font-semibold text-black dark:text-white flex items-center gap-2">
-              <span>🍽️ 식단 기록</span>
+              <span>🍽️ {t("logMeal")}</span>
             </h3>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
                 className="text-[14px] font-medium text-[#007AFF] bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors"
               >
-                기입하기
+                {t("fillIn")}
               </button>
             )}
           </div>
@@ -90,7 +97,7 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
             <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[13px] text-gray-500">칼로리 (kcal)</label>
+                  <label className="text-[13px] text-gray-500">{t("calories")} (kcal)</label>
                   <input
                     type="number"
                     value={calories}
@@ -99,7 +106,7 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[13px] text-gray-500">단백질 (g)</label>
+                  <label className="text-[13px] text-gray-500">{t("protein")} (g)</label>
                   <input
                     type="number"
                     value={protein}
@@ -113,14 +120,14 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
                   onClick={() => setIsEditing(false)}
                   className="flex-1 py-3 text-[15px] font-medium text-gray-500 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 transition-colors"
                 >
-                  취소
+                  {tCommon("cancel")}
                 </button>
                 <button
                   onClick={handleSaveDiet}
                   disabled={isSaving}
                   className="flex-1 py-3 text-[15px] font-bold text-white bg-[#007AFF] rounded-xl hover:bg-[#006ae6] transition-colors"
                 >
-                  {isSaving ? "저장 중..." : "저장 완료"}
+                  {isSaving ? tCommon("saving") : tCommon("save")}
                 </button>
               </div>
             </div>
@@ -146,7 +153,7 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
         {/* Supplements Grid */}
         <div className="bg-white dark:bg-[#1C1C1E] rounded-[22px] p-6 shadow-sm border border-gray-100 dark:border-gray-800">
           <h3 className="text-[17px] font-semibold text-black dark:text-white mb-4">
-            ✨ 영양제 체크리스트
+            ✨ {t("supplementChecklist")}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {SUPPLEMENTS.map((item) => {
@@ -171,9 +178,11 @@ export default function NutritionSection({ initialLog, date, locale }: Nutrition
                     <div
                       className={`text-[14px] font-semibold ${isChecked ? "text-[#007AFF]" : "text-gray-700 dark:text-gray-300"}`}
                     >
-                      {item.label}
+                      {tSupplements(`names.${item.id}`)}
                     </div>
-                    <div className="text-[11px] text-gray-400">{item.time}</div>
+                    <div className="text-[11px] text-gray-400">
+                      {tSupplements(`times.${item.timeKey}`)}
+                    </div>
                   </div>
                 </button>
               );
