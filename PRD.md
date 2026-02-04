@@ -156,6 +156,156 @@ AI에게 전달되는 현재 사용자의 상태 정보 스냅샷.
 }
 ```
 
+#### 3.3 개인화 프로그램 및 세션 관리 (Added v2026.02.04)
+
+> 2026.02.04 기준 추가된 기능 명세입니다. 사용자의 목표와 상태에 맞춰 N주 단위의 운동 프로그램을 생성하고, 매일매일 수행할 세션을 자동으로 주입 및 관리하는 기능을 정의합니다.
+
+#### 1) 도메인 모델 정의
+
+*   **Program (프로그램)**: N주짜리 전체 계획 (예: "Powerbuilding Phase 1 - 8 Weeks"). 사용자의 목표에 맞춰 생성됩니다.
+*   **Program Week (주차)**: 프로그램의 하위 단위 (1주차, 2주차...). 각 주차는 'Loading(일반)', 'Deload(디로딩)', 'Test(측정)' 등의 타입을 가집니다.
+*   **Program Day (요일/세션 템플릿)**: 하루에 수행할 운동 목록의 계획입니다. (예: "Day 1 - 하체 중심").
+*   **Program Exercise (계획 운동)**: 해당 세션에서 수행해야 할 운동, 목표 세트, Reps, RPE 등이 정의됩니다.
+*   **Workout Session (실제 수행 세션)**: 특정 날짜에 할당된 실제 운동 기록 단위입니다. 계획(Program Day)과 연결되지만, 실제 수행 일자는 다를 수 있습니다.
+*   **Workout Log (운동 기록)**: 세션 내에서 실제로 수행한 운동, 세트, 무게, 횟수 등의 로그입니다.
+
+#### 2) 데이터베이스 설계 (ERD 제안)
+
+기존 `workouts` 테이블을 확장하고, 프로그램 관리를 위한 신규 테이블을 추가합니다.
+
+```mermaid
+erDiagram
+    PROFILES ||--o{ PROGRAMS : "has"
+    PROGRAMS ||--|{ PROGRAM_WEEKS : "contains"
+    PROGRAM_WEEKS ||--|{ PROGRAM_DAYS : "contains"
+    PROGRAM_DAYS ||--|{ PROGRAM_EXERCISES : "contains"
+    
+    PROGRAM_DAYS ||--o{ WORKOUTS : "instantiates"
+    WORKOUTS ||--|{ WORKOUT_LOGS : "contains"
+    WORKOUT_LOGS ||--|{ WORKOUT_SETS : "contains"
+    
+    EXERCISES ||--o{ PROGRAM_EXERCISES : "defines"
+    EXERCISES ||--o{ WORKOUT_LOGS : "logs"
+
+    PROGRAMS {
+        uuid id PK
+        uuid user_id FK
+        string name
+        int total_weeks
+        date start_date
+        date end_date
+        string status "ACTIVE, COMPLETED, ARCHIVED"
+    }
+
+    PROGRAM_WEEKS {
+        uuid id PK
+        uuid program_id FK
+        int week_order
+        string week_type "LOAD, DELOAD, TEST"
+        text focus_note
+    }
+
+    PROGRAM_DAYS {
+        uuid id PK
+        uuid program_week_id FK
+        int day_order
+        string name
+        uuid[] target_body_parts
+    }
+
+    PROGRAM_EXERCISES {
+        uuid id PK
+        uuid program_day_id FK
+        uuid exercise_id FK
+        int order_index
+        int target_sets
+        int min_reps
+        int max_reps
+        decimal target_rpe
+        int rest_seconds
+    }
+
+    WORKOUTS {
+        uuid id PK
+        uuid user_id FK
+        uuid program_day_id FK "Optional link to plan"
+        date date
+        string status "PLANNED, IN_PROGRESS, COMPLETED"
+        text condition_note
+        int fatigue_level "1-10"
+    }
+
+    WORKOUT_LOGS {
+        uuid id PK
+        uuid workout_id FK
+        uuid exercise_id FK
+        int order_index
+        boolean is_substituted
+        uuid original_exercise_id FK "If substituted"
+    }
+
+    WORKOUT_SETS {
+        uuid id PK
+        uuid workout_log_id FK
+        int set_order
+        decimal weight
+        int reps
+        decimal rpe
+        boolean completed
+    }
+```
+
+#### 3) 주요 API 설계
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| **POST** | `/programs/generate` | 사용자 프로필/목표 기반 N주 프로그램 생성 |
+| **GET** | `/programs/current` | 현재 활성화된 프로그램 및 진행 상황 조회 |
+| **POST** | `/workouts/generate-today` | 오늘 날짜의 예정된 운동 세션(Workout) 생성 (Idempotent) |
+| **GET** | `/workouts/today` | 오늘 수행해야 할(또는 수행 중인) 세션 상세 조회 |
+| **POST** | `/workouts/:id/complete` | 세션 완료 처리 및 다음 프로그램 갱신(Progression Rule 적용) |
+| **POST** | `/workouts/logs/:logId/sets` | 세트 기록 추가/수정 |
+
+**서버 액션 구조 (Next.js)**:
+*   `generateProgram(userId, preferences)`: 템플릿 기반 프로그램 데이터 생성
+*   `getTodayWorkout(userId)`: `workouts` 테이블 조회 -> 없으면 `programs` 확인 후 생성 -> 없으면 빈 세션 반환
+*   `saveWorkoutSet(logId, setData)`: 실시간 세트 저장
+*   `completeWorkout(workoutId)`: 완료 처리 및 통계 업데이트
+
+#### 4) 화면 및 UX 플로우
+
+1.  **온보딩/설정**:
+    *   사용자가 목표(근비대/스트렝스), 주당 운동 횟수(3/4/5일), 시작일을 입력하면 프로그램이 생성됩니다.
+2.  **홈 (투데이)**:
+    *   "오늘의 운동 시작하기" 버튼 클릭 시, 해당 날짜의 `Program Day`를 불러와 `Workout` 인스턴스를 생성합니다.
+    *   휴식일인 경우 "오늘은 휴식일입니다" 메시지와 함께 스트레칭 등을 추천합니다.
+3.  **운동 수행 (In-Session)**:
+    *   계획된 운동 목록이 표시됩니다. (예: 스쿼트 5세트, 5회, RPE 8)
+    *   사용자는 각 세트 수행 후 무게/횟수를 체크합니다.
+    *   특정 운동을 할 수 없는 경우 "대체(Substitute)" 버튼을 눌러 유사 부위 운동으로 교체합니다.
+4.  **완료 및 피드백**:
+    *   운동 완료 시, 총 볼륨과 달성률을 보여줍니다.
+    *   RPE와 피로도 입력을 받아 다음 주차 중량을 위한 데이터로 활용합니다.
+
+#### 5) 증량 로직 (Progression Rule Engine)
+
+*   **위치**: Server Side (Completion Action 내에서 실행)
+*   **로직 예시**:
+    *   `if (실제 RPE < 목표 RPE - 1) && (성공)` -> 다음 세션 무게 +2.5kg
+    *   `if (실제 RPE > 목표 RPE + 1) || (실패)` -> 다음 세션 무게 동결 또는 -5%
+    *   `Week 4 (Deload)` -> 강제로 전체 볼륨 50% 수준으로 생성
+
+#### 6) 작업 분해 (TODO)
+
+1.  [DB] 상기 ERD 기반 테이블 마이그레이션 (`program_*`, `workout_*` tables)
+2.  [Server] 프로그램 생성 로직 구현 (하드코딩된 템플릿 -> DB 주입)
+3.  [Server] `getTodayWorkout` 로직 구현 (Program Day -> Workout 변환)
+4.  [UI] `WorkoutSession` 컴포넌트 리팩토링 (정규화된 데이터 구조 지원)
+5.  [UI] 프로그램 설정/생성 페이지 구현 (`/health/program/setup`)
+6.  [Server] 증량 규칙(Progression) 간단 버전 구현
+
+---
+
 ### 3.2 판단 단계 (Reasoning Steps)
 AI는 다음 단계를 거쳐 최종 제안을 도출한다.
 

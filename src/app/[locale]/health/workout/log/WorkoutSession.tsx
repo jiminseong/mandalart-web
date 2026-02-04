@@ -21,17 +21,46 @@ type WorkoutSet = {
 
 type WorkoutExercise = Exercise & {
   sets: WorkoutSet[];
+  target?: {
+    sets: number;
+    reps: string;
+    rpe: number;
+    setType?: string;
+  };
 };
 
 export default function WorkoutSession({
   exercisesList,
+  initialRoutine,
   locale,
 }: {
   exercisesList: Exercise[];
+  initialRoutine?: any;
   locale: string;
 }) {
   const router = useRouter();
-  const [activeExercises, setActiveExercises] = useState<WorkoutExercise[]>([]);
+
+  // Initialize with programmed routine if available
+  const initialExercises: WorkoutExercise[] = initialRoutine
+    ? initialRoutine.exercises
+        .sort((a: any, b: any) => a.order_index - b.order_index)
+        .map((pe: any) => ({
+          id: pe.exercise_details.id,
+          name: pe.exercise_details.name,
+          target_part: pe.exercise_details.target_part,
+          category: pe.exercise_details.category,
+          sets: Array(pe.target_sets).fill({ weight: "", reps: "", completed: false }),
+          target: {
+            sets: pe.target_sets,
+            reps: `${pe.min_reps}-${pe.max_reps}`,
+            rpe: pe.target_rpe,
+            setType: pe.set_type,
+          },
+        }))
+    : [];
+
+  // TODO: Add localStorage persistence (save activeExercises on change, load on mount) to prevent data loss on refresh.
+  const [activeExercises, setActiveExercises] = useState<WorkoutExercise[]>(initialExercises);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -138,7 +167,31 @@ export default function WorkoutSession({
               className="bg-[#1C1C1E] rounded-[22px] overflow-hidden"
             >
               <div className="px-5 py-4 flex items-center justify-between border-b border-white/5 bg-[#2C2C2E]">
-                <h3 className="text-[17px] font-bold text-white">{exercise.name}</h3>
+                <div>
+                  <h3 className="text-[17px] font-bold text-white">{exercise.name}</h3>
+                  {exercise.target && (
+                    <p className="text-[13px] text-[#007AFF] mt-0.5">
+                      목표: {exercise.target.sets}세트 × {exercise.target.reps}회 @RPE{" "}
+                      {exercise.target.rpe}
+                    </p>
+                  )}
+                  {exercise.target?.setType && (
+                    <div className="mt-1.5 flex justify-start">
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide
+                        ${
+                          exercise.target.setType === "top_set"
+                            ? "bg-red-500/20 text-red-500"
+                            : exercise.target.setType === "back_off"
+                              ? "bg-orange-500/20 text-orange-400"
+                              : "bg-blue-500/20 text-blue-400"
+                        }`}
+                      >
+                        {exercise.target.setType.replace("_", " ")}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={() => removeExercise(exIndex)}
                   className="text-gray-500 hover:text-red-500 p-1"
