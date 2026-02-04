@@ -166,6 +166,18 @@
       "history": "기록",
       "goals": "목표"
     },
+    "units": {
+      "daysPerWeek": "일/주",
+      "times": "회",
+      "steps": "걸음",
+      "kg": "kg"
+    },
+    "history": {
+      "title": "운동 기록",
+      "description": "최근 수행한 운동 로그입니다.",
+      "emptyTitle": "기록이 없습니다",
+      "emptyDescription": "홈 화면에서 '오늘의 운동'을 시작하여 기록을 남겨보세요."
+    },
     "dashboard": {
       "title": "투데이",
       "workoutGuide": "오늘의 운동 가이드",

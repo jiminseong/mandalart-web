@@ -1,11 +1,40 @@
-export default function WorkoutHistoryPage() {
+import { getTranslations } from "next-intl/server";
+import { createClient } from "@/utils/supabase/server";
+import HealthPageHeader from "@/components/HealthPageHeader";
+
+export default async function WorkoutHistoryPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "health.history" });
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nickname")
+    .eq("id", user?.id)
+    .single();
+
+  const nickname = profile?.nickname || "";
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2">
-      <div className="space-y-1 pt-2">
-        <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          운동 기록
-        </h1>
-        <p className="text-[17px] text-gray-500 dark:text-gray-400">최근 수행한 운동 로그입니다.</p>
+      <div className="space-y-1">
+        <HealthPageHeader
+          subtitle="HISTORY"
+          title={t("title")}
+          nickname={nickname}
+          locale={locale}
+        />
+        <p className="text-[17px] text-gray-500 dark:text-gray-400 px-1 pb-4 border-b border-gray-100 dark:border-gray-800">
+          {t("description")}
+        </p>
       </div>
 
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
@@ -13,10 +42,10 @@ export default function WorkoutHistoryPage() {
           📝
         </div>
         <div className="space-y-1">
-          <h3 className="text-[20px] font-semibold text-black dark:text-white">기록이 없습니다</h3>
-          <p className="text-[15px] text-gray-500 max-w-[200px]">
-            홈 화면에서 '오늘의 운동'을 시작하여 기록을 남겨보세요.
-          </p>
+          <h3 className="text-[20px] font-semibold text-black dark:text-white">
+            {t("emptyTitle")}
+          </h3>
+          <p className="text-[15px] text-gray-500 max-w-[200px] mx-auto">{t("emptyDescription")}</p>
         </div>
       </div>
     </div>

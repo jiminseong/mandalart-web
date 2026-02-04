@@ -9,8 +9,12 @@ export function HealthTabBar({ locale }: { locale: string }) {
   const pathname = usePathname();
   const t = useTranslations("health.nav");
 
-  // Hide on onboarding or login pages just in case
-  if (pathname.includes("/onboarding") || pathname.includes("/login")) {
+  // Hide on onboarding, login, or workout log pages
+  if (
+    pathname.includes("/onboarding") ||
+    pathname.includes("/login") ||
+    pathname.includes("/workout/log")
+  ) {
     return null;
   }
 

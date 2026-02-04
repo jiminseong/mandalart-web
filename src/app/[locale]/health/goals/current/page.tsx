@@ -3,11 +3,13 @@ import { createClient } from "@/utils/supabase/server";
 import { deleteGoal } from "../../actions";
 import { Trash2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import HealthPageHeader from "@/components/HealthPageHeader";
 
 export default async function GoalsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "health.goals" });
   const tCommon = await getTranslations({ locale, namespace: "health.common" });
+  const tUnits = await getTranslations({ locale, namespace: "health.units" });
   const supabase = await createClient();
 
   const { data: goals } = await supabase
@@ -21,7 +23,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
   } = await supabase.auth.getUser();
 
   // Fetch Health Profile & Inbody
-  const [profileResult, inbodyResult] = await Promise.all([
+  const [profileResult, inbodyResult, userProfileResult] = await Promise.all([
     supabase.from("health_profiles").select("lifts").eq("user_id", user?.id).single(),
     supabase
       .from("inbodies")
@@ -30,21 +32,16 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
       .order("date", { ascending: false })
       .limit(1)
       .single(),
+    supabase.from("profiles").select("nickname").eq("id", user?.id).single(),
   ]);
 
   const profile = profileResult.data;
   const inbody = inbodyResult.data;
+  const nickname = userProfileResult.data?.nickname || "";
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2">
-      <div className="space-y-1 pt-2">
-        <span className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-          Target
-        </span>
-        <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          {t("title")}
-        </h1>
-      </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2 pb-24">
+      <HealthPageHeader subtitle="TARGET" title={t("title")} nickname={nickname} locale={locale} />
 
       <div className="space-y-4">
         {goals && goals.length > 0 ? (
@@ -84,6 +81,17 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
             let typeDesc = t("descriptions.default");
             if (goal.type === "strength") typeDesc = t("descriptions.strength");
 
+            // Unit Translation Helper
+            const getUnitLabel = (unit: string | null) => {
+              if (!unit) return "";
+              if (unit === "일/주") return tUnits("daysPerWeek");
+              if (unit === "kg") return tUnits("kg");
+              if (unit === "회") return tUnits("times");
+              if (unit === "걸음") return tUnits("steps");
+              return unit;
+            };
+            const displayUnit = getUnitLabel(goal.unit);
+
             return (
               <div
                 key={goal.id}
@@ -93,7 +101,6 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                   <span className="text-[17px] font-semibold text-black dark:text-white">
                     {t("activeGoals")}
                   </span>
-
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/${locale}/health/onboarding/goal?mode=edit&redirect_to=/${locale}/health/goals/current`}
@@ -141,11 +148,11 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
                 <div className="flex justify-between text-[13px] font-medium text-gray-400">
                   <span>
                     {t("current", { value: currentValue })}
-                    {goal.unit}
+                    {displayUnit}
                   </span>
                   <span>
                     {t("target", { value: targetValue })}
-                    {goal.unit}
+                    {displayUnit}
                   </span>
                 </div>
               </div>

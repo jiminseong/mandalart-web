@@ -65,7 +65,9 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
             </h2>
             <p
               className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 mt-1"
-              dangerouslySetInnerHTML={{ __html: t("recoveryGood", { rpe: 8 }) }}
+              dangerouslySetInnerHTML={{
+                __html: (t.raw("recoveryGood") as string).replace("{rpe}", "8"),
+              }}
             />
           </div>
 

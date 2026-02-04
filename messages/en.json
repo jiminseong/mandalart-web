@@ -166,6 +166,18 @@
       "history": "History",
       "goals": "Goals"
     },
+    "units": {
+      "daysPerWeek": " days/week",
+      "times": " times",
+      "steps": " steps",
+      "kg": "kg"
+    },
+    "history": {
+      "title": "Workout History",
+      "description": "Recent workout logs.",
+      "emptyTitle": "No History",
+      "emptyDescription": "Start 'Today's Workout' from the home screen to leave a log."
+    },
     "dashboard": {
       "title": "Today",
       "workoutGuide": "Today's Workout Guide",

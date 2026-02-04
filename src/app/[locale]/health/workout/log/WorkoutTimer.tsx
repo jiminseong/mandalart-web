@@ -265,7 +265,7 @@ export default function WorkoutTimer() {
 
               {/* Status Badge */}
               {timerState.isPaused && (
-                <div className="absolute top-1/4 px-4 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full">
+                <div className="absolute top-1/6 px-4 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded-full">
                   <span className="text-yellow-500 font-bold text-sm tracking-wide uppercase">
                     {t("paused")}
                   </span>
