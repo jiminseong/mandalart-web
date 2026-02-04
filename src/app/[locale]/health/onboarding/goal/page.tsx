@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { createGoal } from "../../actions";
 import { Check } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 const GOAL_TYPES = [
   { id: "strength", label: "근력 증가", sub: "3대 운동 증량", icon: "💪" },
@@ -20,6 +21,10 @@ export default function GoalPage({ params }: { params: { locale: string } }) {
   // @ts-ignore
   const [state, action, isPending] = useActionState(createGoal, null);
   const [selectedType, setSelectedType] = useState(GOAL_TYPES[0]);
+
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const redirectTo = searchParams.get("redirect_to");
 
   const getUnit = (typeId: string) => {
     if (typeId === "bodyfat") return "%";
@@ -40,10 +45,12 @@ export default function GoalPage({ params }: { params: { locale: string } }) {
     <>
       <div className="space-y-3">
         <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          가장 중요한 목표
+          {mode === "edit" ? "목표 수정" : "가장 중요한 목표"}
         </h1>
         <p className="text-[17px] leading-snug text-gray-500 dark:text-gray-400">
-          지금 가장 집중하고 싶은 '단 하나'를 알려주세요.
+          {mode === "edit"
+            ? "새로운 목표를 설정하면 프로그램이 재조정될 수 있습니다."
+            : "지금 가장 집중하고 싶은 '단 하나'를 알려주세요."}
         </p>
       </div>
 
@@ -52,6 +59,7 @@ export default function GoalPage({ params }: { params: { locale: string } }) {
         <input type="hidden" name="unit" value={currentUnit} />
         <input type="hidden" name="priority" value="1" />
         <input type="hidden" name="start_date" value={new Date().toISOString().split("T")[0]} />
+        {redirectTo && <input type="hidden" name="redirect_to" value={redirectTo} />}
 
         {/* iOS List Style Selection */}
         <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[20px] overflow-hidden">
@@ -109,7 +117,7 @@ export default function GoalPage({ params }: { params: { locale: string } }) {
             disabled={isPending}
             className="w-full h-[52px] bg-[#007AFF] hover:bg-[#006ae6] active:scale-95 text-white rounded-[14px] font-semibold text-[17px] flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20"
           >
-            {isPending ? "저장 중..." : "설정 완료"}
+            {isPending ? "저장 중..." : mode === "edit" ? "수정 완료" : "설정 완료"}
           </button>
         </div>
       </form>

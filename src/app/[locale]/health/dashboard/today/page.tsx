@@ -51,11 +51,11 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
 
         <div className="space-y-4 relative z-10">
           <div>
-            <h2 className="text-[22px] font-bold text-black dark:text-white">오늘의 운동 판단</h2>
+            <h2 className="text-[22px] font-bold text-black dark:text-white">오늘의 운동 가이드</h2>
             <p className="text-[17px] leading-relaxed text-gray-500 dark:text-gray-400 mt-1">
-              어제 수면 부족으로 인해
+              충분한 휴식으로 회복 상태가 좋습니다.
               <br />
-              컨디션이 <strong>80%</strong> 수준입니다.
+              오늘의 추천 강도는 <strong>RPE 8</strong>입니다.
             </p>
           </div>
 

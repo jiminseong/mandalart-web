@@ -160,7 +160,9 @@ export async function createGoal(previousState: any, formData: FormData) {
     return { error: "저장 중 오류가 발생했습니다." };
   }
 
-  redirect(`/${locale}/health/onboarding/schedule`);
+  const redirectTo =
+    (formData.get("redirect_to") as string) || `/${locale}/health/onboarding/schedule`;
+  redirect(redirectTo);
 }
 
 export async function updateSchedule(previousState: any, formData: FormData) {
