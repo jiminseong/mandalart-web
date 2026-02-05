@@ -41,7 +41,7 @@ export default async function GoalsPage({ params }: { params: Promise<{ locale: 
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2 pb-24">
-      <HealthPageHeader subtitle="TARGET" title={t("title")} nickname={nickname} locale={locale} />
+      <HealthPageHeader subtitle="GOALS" nickname={nickname} locale={locale} />
 
       <div className="space-y-4">
         {goals && goals.length > 0 ? (

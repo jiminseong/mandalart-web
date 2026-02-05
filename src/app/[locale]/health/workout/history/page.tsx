@@ -35,12 +35,7 @@ export default async function WorkoutHistoryPage({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2">
       <div className="space-y-1">
-        <HealthPageHeader
-          subtitle="HISTORY"
-          title={t("title")}
-          nickname={nickname}
-          locale={locale}
-        />
+        <HealthPageHeader subtitle="HISTORY" nickname={nickname} locale={locale} />
         <p className="text-[17px] text-gray-500 dark:text-gray-400 px-1 pb-4 border-b border-gray-100 dark:border-gray-800">
           {t("description")}
         </p>

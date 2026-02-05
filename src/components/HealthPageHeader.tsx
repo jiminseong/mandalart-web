@@ -1,20 +1,26 @@
 "use client";
 
 import { Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import OSSwitcher from "@/components/OSSwitcher";
 
 export default function HealthPageHeader({
   subtitle,
-  title,
   nickname,
   locale,
 }: {
   subtitle: string;
-  title: string;
   nickname: string;
   locale: string;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSettingsClick = () => {
+    // 현재 경로를 sessionStorage에 저장 (설정에서 돌아올 때 사용)
+    sessionStorage.setItem("settings_referrer", pathname);
+    router.push(`/${locale}/settings`);
+  };
 
   return (
     <div className="pt-2 px-1">
@@ -22,9 +28,7 @@ export default function HealthPageHeader({
         {subtitle}
       </span>
       <div className="flex items-end justify-between mt-1">
-        <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          {title}
-        </h1>
+        <OSSwitcher currentOS="Health" locale={locale} />
 
         <div className="flex items-center gap-2 mb-1">
           {/* Profile Image */}
@@ -36,7 +40,7 @@ export default function HealthPageHeader({
 
           {/* Settings Button */}
           <button
-            onClick={() => router.push(`/${locale}/health/settings`)}
+            onClick={handleSettingsClick}
             className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white transition-colors active:scale-95"
           >
             <Settings size={20} />
