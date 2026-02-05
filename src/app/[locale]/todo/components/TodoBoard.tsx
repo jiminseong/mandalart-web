@@ -3,7 +3,7 @@
 import { useState, useOptimistic, useTransition, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { TodoItem, Category } from "../types";
-import { createTodo, toggleTodoStatus, createCategory } from "../actions";
+import { createTodo, toggleTodoStatus, createCategory, deleteTodo } from "../actions";
 import { TodoCard } from "./TodoCard";
 import OSSwitcher from "@/components/OSSwitcher";
 import { Plus, SendHorizontal } from "lucide-react";
@@ -11,6 +11,46 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { cn } from "@/utils/cn";
+
+// Safelist for Tailwind to detect these classes on the /todo route
+const CATEGORY_COLORS = [
+  "bg-blue-500",
+  "bg-blue-600",
+  "bg-blue-400",
+  "bg-sky-500",
+  "bg-sky-600",
+  "bg-indigo-500",
+  "bg-indigo-600",
+  "bg-cyan-500",
+  "bg-cyan-600",
+  "bg-teal-500",
+  "bg-slate-500",
+  "bg-slate-600",
+  "bg-zinc-500",
+  "bg-neutral-500",
+  "bg-stone-500",
+  "bg-violet-500",
+  "bg-purple-500",
+  "bg-fuchsia-500",
+  "bg-pink-500",
+  "bg-rose-500",
+  "bg-emerald-500",
+  "bg-green-500",
+  "bg-lime-500",
+  "bg-amber-500",
+  "bg-orange-500",
+  "bg-red-500",
+  "bg-blue-300",
+  "bg-indigo-300",
+  "bg-sky-300",
+  "bg-slate-400",
+];
+
+const getCategoryColor = (category: Category, index: number) => {
+  if (category.colorClass) return category.colorClass;
+  // Deterministic fallback based on index (or char code sum if we wanted)
+  return CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+};
 
 interface TodoBoardProps {
   initialTodos: TodoItem[];
@@ -20,7 +60,8 @@ interface TodoBoardProps {
 
 type OptimisticAction =
   | { type: "ADD_TODO"; payload: TodoItem }
-  | { type: "TOGGLE_STATUS"; payload: { id: string } };
+  | { type: "TOGGLE_STATUS"; payload: { id: string } }
+  | { type: "DELETE_TODO"; payload: { id: string } };
 
 export default function TodoBoard({ initialTodos, initialCategories, locale }: TodoBoardProps) {
   const t = useTranslations("todo.stack");
@@ -49,6 +90,8 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
             }
             return item;
           });
+        case "DELETE_TODO":
+          return state.filter((item) => item.id !== action.payload.id);
         default:
           return state;
       }
@@ -60,6 +103,10 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
       setSelectedCategory(categories[0].id);
     }
   }, [categories, selectedCategory]);
+
+  useEffect(() => {
+    setCategories(initialCategories);
+  }, [initialCategories]);
 
   const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +124,7 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
     startTransition(async () => {
       dispatchOptimistic({ type: "ADD_TODO", payload: newTodo });
       setInputValue("");
-      await createTodo(inputValue, selectedCategory, undefined, locale);
+      await createTodo(inputValue, selectedCategory, undefined, locale, optimisticId);
     });
   };
 
@@ -88,6 +135,13 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
     startTransition(async () => {
       dispatchOptimistic({ type: "TOGGLE_STATUS", payload: { id } });
       await toggleTodoStatus(id, item.status, locale);
+    });
+  };
+
+  const handleDeleteTodo = async (id: string) => {
+    startTransition(async () => {
+      dispatchOptimistic({ type: "DELETE_TODO", payload: { id } });
+      await deleteTodo(id, locale);
     });
   };
 
@@ -136,10 +190,10 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
       {/* Main Content: Single Stack View */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         {/* Stack View */}
-        <div className="flex-1 overflow-y-auto pb-4 no-scrollbar flex flex-col-reverse gap-3 p-1 relative">
+        <div className="flex-1 overflow-y-auto pb-4 no-scrollbar flex flex-col justify-end gap-3 p-1 relative">
           <div className="absolute top-0 left-0 w-full h-8 bg-linear-to-b from-white dark:from-black to-transparent z-10 pointer-events-none" />
 
-          <AnimatePresence mode="popLayout" initial={false}>
+          <AnimatePresence initial={false}>
             {currentItems.length === 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -149,7 +203,7 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
                 {activeTab === "todo" ? t("empty") : t("emptyDone")}
               </motion.div>
             )}
-            {currentItems.map((item) => {
+            {[...currentItems].reverse().map((item) => {
               const category = categories.find((c) => c.id === item.categoryId);
               return (
                 <TodoCard
@@ -157,6 +211,7 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
                   item={item}
                   category={category}
                   onClick={handleToggleStatus}
+                  onDelete={handleDeleteTodo}
                 />
               );
             })}
@@ -170,21 +225,24 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="mt-4 pb-2 bg-white dark:bg-black relative z-20"
+              className="pt-4 pb-2 mb-6 bg-white dark:bg-black relative z-20 border-t border-gray-100 dark:border-zinc-800"
             >
-              <div className="flex gap-2 mb-2 overflow-x-auto pb-1 no-scrollbar pt-2">
-                {categories.map((cat) => (
+              <div className="flex flex-wrap gap-2 mb-2 pt-2">
+                {categories.map((cat, index) => (
                   <button
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
                     className={cn(
-                      "text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition-all",
+                      "text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition-all flex items-center gap-1.5",
                       selectedCategory === cat.id
                         ? "bg-black text-white dark:bg-white dark:text-black font-semibold shadow-md"
-                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200",
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700",
                     )}
                   >
+                    <span
+                      className={cn("w-1.5 h-1.5 rounded-full", getCategoryColor(cat, index))}
+                    />
                     {cat.name}
                   </button>
                 ))}

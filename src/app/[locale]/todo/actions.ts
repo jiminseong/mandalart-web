@@ -112,6 +112,7 @@ export async function createTodo(
   categoryId: string,
   time: string | undefined,
   locale: string,
+  id?: string,
 ) {
   const supabase = await createClient();
   const {
@@ -122,6 +123,7 @@ export async function createTodo(
   const { data, error } = await supabase
     .from("todos")
     .insert({
+      id,
       user_id: user.id,
       title,
       category_id: categoryId,
