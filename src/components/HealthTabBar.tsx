@@ -20,7 +20,7 @@ export function HealthTabBar({ locale }: { locale: string }) {
 
   const tabs = [
     {
-      label: t("today"),
+      label: t("home"),
       href: `/${locale}/health/dashboard/today`,
       icon: CalendarDays,
       isActive: (path: string) => path.includes("/dashboard"),

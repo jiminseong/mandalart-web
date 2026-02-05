@@ -32,12 +32,12 @@ export default function SettingsPage({ params }: { params: Promise<{ locale: str
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100">
       {/* Header */}
       <div className="flex items-center px-4 py-4 safe-top bg-white dark:bg-black border-b border-gray-100 dark:border-white/5 sticky top-0 z-10">
-        <Link
-          href={`/${locale}/health/dashboard/today`}
+        <button
+          onClick={() => router.back()}
           className="p-2 -ml-2 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
         >
           <ArrowLeft size={24} />
-        </Link>
+        </button>
         <h1 className="ml-2 text-[17px] font-semibold">{t("title")}</h1>
       </div>
 

@@ -29,7 +29,7 @@ export default async function TodoPage({ params }: { params: Promise<{ locale: s
         currentOS="Todo"
         locale={locale}
         nickname={profile?.nickname}
-        settingsPath={`/${locale}/todo/settings`}
+        settingsPath={`/${locale}/health/settings`}
       />
       <TodoBoard initialTodos={todos} initialCategories={categories} locale={locale} />
     </div>
