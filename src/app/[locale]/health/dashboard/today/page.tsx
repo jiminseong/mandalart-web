@@ -49,7 +49,7 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
         currentOS="Health"
         locale={locale}
         nickname={profile?.nickname || "User"}
-        settingsPath={`/${locale}/health/settings`}
+        settingsPath={`/${locale}/settings`}
       />
 
       {/* Main Action Card (iOS Widget Style) */}

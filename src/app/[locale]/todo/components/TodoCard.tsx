@@ -55,9 +55,9 @@ export function TodoCard({ item, category, onClick, onDelete, isFocused }: TodoC
         mass: 1,
       }}
       className={cn(
-        "relative w-full p-3.5 mb-2.5 rounded-2xl transition-all shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] select-none group focus:ring-2 focus:ring-blue-500 focus:outline-none",
+        "relative w-full p-3.5 mb-2.5 rounded-2xl transition-all shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] select-none group focus:ring-2 focus:ring-blue-500 focus:ring-inset focus:outline-none",
         "bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800",
-        isFocused && "ring-2 ring-primary ring-offset-2",
+        isFocused && "ring-2 ring-primary ring-inset",
       )}
       tabIndex={0}
       onKeyDown={handleKeyDown}
