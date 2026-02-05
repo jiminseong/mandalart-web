@@ -46,3 +46,60 @@ export async function saveWorkout(workoutData: any) {
 
   return { success: true };
 }
+
+export async function updateWorkout(workoutId: string, workoutData: any) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({
+      exercises: workoutData.exercises,
+      condition_note: workoutData.note || "",
+    })
+    .eq("id", workoutId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error updating workout:", error);
+    return { error: "운동 수정에 실패했습니다." };
+  }
+
+  revalidatePath("/(locale)/health/dashboard/today", "page");
+  revalidatePath("/(locale)/health/workout/history", "page");
+
+  return { success: true };
+}
+
+export async function deleteWorkout(workoutId: string, locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabase
+    .from("workouts")
+    .delete()
+    .eq("id", workoutId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error deleting workout:", error);
+    return { error: "운동 삭제에 실패했습니다." };
+  }
+
+  revalidatePath("/(locale)/health/dashboard/today", "page");
+  revalidatePath("/(locale)/health/workout/history", "page");
+
+  return { success: true };
+}

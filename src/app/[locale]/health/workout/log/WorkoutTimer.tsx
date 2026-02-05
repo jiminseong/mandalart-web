@@ -38,46 +38,87 @@ export default function WorkoutTimer() {
 
         if (left <= 0) {
           // Timer Finished
-          return { ...prev, remaining: 0, isFinished: true };
+          const finishedState = { ...prev, remaining: 0, isFinished: true };
+          localStorage.setItem("workoutTimer", JSON.stringify(finishedState));
+          return finishedState;
         }
 
-        return { ...prev, remaining: left };
+        const updatedState = { ...prev, remaining: left };
+        localStorage.setItem("workoutTimer", JSON.stringify(updatedState));
+        return updatedState;
       });
     }, 200);
 
     return () => clearInterval(interval);
   }, [timerState?.isPaused, timerState?.isFinished]);
 
+  // Restore timer from localStorage on mount
+  useEffect(() => {
+    const savedTimer = localStorage.getItem("workoutTimer");
+    if (savedTimer) {
+      try {
+        const parsed = JSON.parse(savedTimer);
+        // Convert endTime string back to Date
+        if (parsed.endTime) {
+          parsed.endTime = new Date(parsed.endTime);
+          // Check if timer should still be running
+          const now = new Date();
+          const left = Math.ceil((parsed.endTime.getTime() - now.getTime()) / 1000);
+
+          if (left <= 0 && !parsed.isFinished) {
+            // Timer expired while app was closed
+            setTimerState({ ...parsed, remaining: 0, isFinished: true });
+          } else if (!parsed.isFinished) {
+            // Update remaining time
+            setTimerState({ ...parsed, remaining: left });
+          } else {
+            // Timer was already finished
+            setTimerState(parsed);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to restore timer:", e);
+        localStorage.removeItem("workoutTimer");
+      }
+    }
+  }, []);
+
   const startTimer = (seconds: number) => {
     const now = new Date();
     const end = new Date(now.getTime() + seconds * 1000);
-    setTimerState({
+    const newState = {
       duration: seconds,
       remaining: seconds,
       endTime: end,
       isPaused: false,
       isFinished: false,
-    });
+    };
+    setTimerState(newState);
+    localStorage.setItem("workoutTimer", JSON.stringify(newState));
     setIsSelectorOpen(false); // Close selector
   };
 
   const togglePause = () => {
     setTimerState((prev) => {
       if (!prev) return null;
+      let newState;
       if (prev.isPaused) {
         // Resume: Recalculate endTime based on remaining
         const now = new Date();
         const end = new Date(now.getTime() + prev.remaining * 1000);
-        return { ...prev, isPaused: false, endTime: end };
+        newState = { ...prev, isPaused: false, endTime: end };
       } else {
         // Pause
-        return { ...prev, isPaused: true };
+        newState = { ...prev, isPaused: true };
       }
+      localStorage.setItem("workoutTimer", JSON.stringify(newState));
+      return newState;
     });
   };
 
   const cancelTimer = () => {
     setTimerState(null);
+    localStorage.removeItem("workoutTimer");
   };
 
   const handleCustomStart = () => {

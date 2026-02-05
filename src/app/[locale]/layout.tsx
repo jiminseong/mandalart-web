@@ -6,6 +6,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Analytics } from "@vercel/analytics/next";
+import { AuthErrorHandler } from "@/components/AuthErrorHandler";
 
 import "../globals.css";
 
@@ -55,6 +56,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <Analytics />
       <body className="antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
+        <AuthErrorHandler />
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import WorkoutTimer from "./WorkoutTimer";
 import Link from "next/link";
-import { saveWorkout } from "../actions";
+import { saveWorkout, updateWorkout, deleteWorkout } from "../actions";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -33,6 +33,11 @@ type WorkoutSet = {
   weight: string;
   reps: string;
   completed: boolean;
+  // Cardio fields
+  duration_min?: string;
+  distance_km?: string;
+  calories?: string;
+  heart_rate?: string;
 };
 
 type WorkoutExercise = Exercise & {
@@ -44,10 +49,14 @@ export default function WorkoutSession({
   exercisesList,
   initialRoutine,
   locale,
+  existingWorkout,
+  workoutId,
 }: {
   exercisesList: Exercise[];
   initialRoutine?: any;
   locale: string;
+  existingWorkout?: any;
+  workoutId?: string;
 }) {
   const t = useTranslations("health.session");
   const router = useRouter();
@@ -66,6 +75,31 @@ export default function WorkoutSession({
   const [selectedExerciseForAdd, setSelectedExerciseForAdd] = useState<Exercise | null>(null);
 
   useEffect(() => {
+    // Load existing workout data if provided
+    if (existingWorkout && existingWorkout.exercises) {
+      const loadedExercises: WorkoutExercise[] = existingWorkout.exercises.map((ex: any) => ({
+        id: ex.id || crypto.randomUUID(),
+        name: ex.name,
+        target_part: ex.target_part || "",
+        category: ex.category || "strength",
+        unit: "kg",
+        sets:
+          ex.sets?.map((set: any) => ({
+            id: set.id || crypto.randomUUID(),
+            type: set.type || "working",
+            weight: set.weight?.toString() || "",
+            reps: set.reps?.toString() || "",
+            completed: set.completed || false,
+            duration_min: set.duration_min?.toString() || "",
+            distance_km: set.distance_km?.toString() || "",
+            calories: set.calories?.toString() || "",
+            heart_rate: set.heart_rate?.toString() || "",
+          })) || [],
+      }));
+      setActiveExercises(loadedExercises);
+      return;
+    }
+
     if (initialRoutine && initialRoutine.exercises) {
       // Group by exercise ID
       const groupedMap = new Map<string, WorkoutExercise>();
@@ -106,7 +140,7 @@ export default function WorkoutSession({
 
       setActiveExercises(Array.from(groupedMap.values()));
     }
-  }, [initialRoutine]);
+  }, [initialRoutine, existingWorkout]);
 
   const categories = ["All", ...Array.from(new Set(exercisesList.map((e) => e.target_part)))];
 
@@ -214,17 +248,32 @@ export default function WorkoutSession({
       exercises: activeExercises.map((e) => ({
         id: e.id,
         name: e.name,
+        target_part: e.target_part,
+        category: e.category,
         sets: e.sets.map((s) => ({
           weight: Number(s.weight) || 0,
           reps: Number(s.reps) || 0,
-          type: s.type, // Pass set type to backend if supported, or just ignore
+          type: s.type,
           unit: e.unit,
+          completed: s.completed,
+          duration_min: Number(s.duration_min) || undefined,
+          distance_km: Number(s.distance_km) || undefined,
+          calories: Number(s.calories) || undefined,
+          heart_rate: Number(s.heart_rate) || undefined,
         })),
       })),
     };
 
     try {
-      const result = await saveWorkout(payload);
+      let result;
+      if (workoutId) {
+        // Update existing workout
+        result = await updateWorkout(workoutId, payload);
+      } else {
+        // Create new workout
+        result = await saveWorkout(payload);
+      }
+
       if (result.success) {
         router.push(`/${locale}/health/workout/history`);
       } else {
@@ -238,10 +287,36 @@ export default function WorkoutSession({
     }
   };
 
+  const handleDelete = async () => {
+    if (!workoutId) return;
+
+    if (!confirm("이 운동 기록을 삭제하시겠습니까?")) return;
+
+    setIsSaving(true);
+    try {
+      const result = await deleteWorkout(workoutId, locale);
+
+      if (result.success) {
+        router.push(`/${locale}/health/workout/history`);
+      } else {
+        alert(result.error || "삭제에 실패했습니다.");
+        setIsSaving(false);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("삭제에 실패했습니다.");
+      setIsSaving(false);
+    }
+  };
+
   const filteredExercises =
     selectedCategory === "All"
       ? exercisesList
       : exercisesList.filter((e) => e.target_part === selectedCategory);
+
+  const isCardio = (exercise: WorkoutExercise) => {
+    return exercise.category?.toLowerCase() === "cardio";
+  };
 
   const getSetTypeLabel = (type: SetType) => {
     switch (type) {
@@ -268,8 +343,17 @@ export default function WorkoutSession({
         >
           <ArrowLeft size={24} />
         </Link>
-        <span className="font-semibold text-[17px]">{t("title")}</span>
-        <div className="w-10 flex justify-end">
+        <span className="font-semibold text-[17px]">{workoutId ? "운동 수정" : t("title")}</span>
+        <div className="flex items-center gap-2">
+          {workoutId && (
+            <button
+              onClick={handleDelete}
+              disabled={isSaving}
+              className="p-2 text-red-500 hover:text-red-400 transition-colors disabled:opacity-50"
+            >
+              <Trash2 size={20} />
+            </button>
+          )}
           <WorkoutTimer />
         </div>
       </div>
@@ -347,30 +431,113 @@ export default function WorkoutSession({
               </div>
 
               <div className="p-4 space-y-3">
-                <div className="grid grid-cols-12 gap-2 text-[11px] text-gray-500 font-medium text-center mb-1 uppercase tracking-wider">
-                  <div className="col-span-2">{t("tableType")}</div>
-                  <div className="col-span-3">
-                    {t("tableWeight")} ({exercise.unit})
+                {isCardio(exercise) ? (
+                  // Cardio Header
+                  <div className="grid grid-cols-12 gap-2 text-[11px] text-gray-500 font-medium text-center mb-1 uppercase tracking-wider">
+                    <div className="col-span-2">시간(분)</div>
+                    <div className="col-span-2">거리(km)</div>
+                    <div className="col-span-2">칼로리</div>
+                    <div className="col-span-3">심박수</div>
+                    <div className="col-span-2">{t("tableDone")}</div>
+                    <div className="col-span-1"></div>
                   </div>
-                  <div className="col-span-3">{t("tableReps")}</div>
-                  <div className="col-span-2">{t("tableDone")}</div>
-                  <div className="col-span-2"></div>
-                </div>
+                ) : (
+                  // Strength Header
+                  <div className="grid grid-cols-12 gap-2 text-[11px] text-gray-500 font-medium text-center mb-1 uppercase tracking-wider">
+                    <div className="col-span-2">{t("tableType")}</div>
+                    <div className="col-span-3">
+                      {t("tableWeight")} ({exercise.unit})
+                    </div>
+                    <div className="col-span-3">{t("tableReps")}</div>
+                    <div className="col-span-2">{t("tableDone")}</div>
+                    <div className="col-span-2"></div>
+                  </div>
+                )}
 
                 {exercise.sets.map((set, setIndex) => (
                   <div key={set.id} className="grid grid-cols-12 gap-2 items-center">
-                    <div className="col-span-2 flex justify-center relative">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveTypeSelector(
-                            activeTypeSelector?.exIndex === exIndex &&
-                              activeTypeSelector?.setIndex === setIndex
-                              ? null
-                              : { exIndex, setIndex },
-                          );
-                        }}
-                        className={`text-[10px] w-full h-[26px] flex items-center justify-center rounded font-bold uppercase transition-colors
+                    {isCardio(exercise) ? (
+                      // Cardio Input Row
+                      <>
+                        <div className="col-span-2">
+                          <input
+                            type="number"
+                            value={set.duration_min || ""}
+                            onChange={(e) =>
+                              updateSet(exIndex, setIndex, "duration_min", e.target.value)
+                            }
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={set.distance_km || ""}
+                            onChange={(e) =>
+                              updateSet(exIndex, setIndex, "distance_km", e.target.value)
+                            }
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <input
+                            type="number"
+                            value={set.calories || ""}
+                            onChange={(e) =>
+                              updateSet(exIndex, setIndex, "calories", e.target.value)
+                            }
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <input
+                            type="number"
+                            value={set.heart_rate || ""}
+                            onChange={(e) =>
+                              updateSet(exIndex, setIndex, "heart_rate", e.target.value)
+                            }
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                          <button
+                            onClick={() =>
+                              updateSet(exIndex, setIndex, "completed", !set.completed)
+                            }
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${set.completed ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]" : "bg-white/10 text-gray-500"}`}
+                          >
+                            <CheckCircle2 size={18} />
+                          </button>
+                        </div>
+                        <div className="col-span-1 flex justify-center">
+                          <button
+                            onClick={() => removeSet(exIndex, setIndex)}
+                            className="p-2 text-gray-600 hover:text-red-500"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      // Strength Input Row
+                      <>
+                        <div className="col-span-2 flex justify-center relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveTypeSelector(
+                                activeTypeSelector?.exIndex === exIndex &&
+                                  activeTypeSelector?.setIndex === setIndex
+                                  ? null
+                                  : { exIndex, setIndex },
+                              );
+                            }}
+                            className={`text-[10px] w-full h-[26px] flex items-center justify-center rounded font-bold uppercase transition-colors
                           ${
                             set.type === "top_set"
                               ? "bg-red-500/20 text-red-500"
@@ -380,95 +547,99 @@ export default function WorkoutSession({
                                   ? "bg-yellow-500/20 text-yellow-400"
                                   : "bg-blue-500/20 text-blue-400"
                           }`}
-                      >
-                        {getSetTypeLabel(set.type)}
-                      </button>
+                          >
+                            {getSetTypeLabel(set.type)}
+                          </button>
 
-                      {/* Custom Picker Dropdown */}
-                      {activeTypeSelector?.exIndex === exIndex &&
-                        activeTypeSelector?.setIndex === setIndex && (
-                          <div className="absolute top-full left-0 mt-1 w-full min-w-full bg-[#2C2C2E] border border-white/10 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-100">
-                            <button
-                              onClick={() => {
-                                updateSet(exIndex, setIndex, "type", "warmup");
-                                setActiveTypeSelector(null);
-                              }}
-                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
-                            >
-                              <span className="text-[10px] text-yellow-500 font-bold">
-                                {t("typeWarm")}
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                updateSet(exIndex, setIndex, "type", "top_set");
-                                setActiveTypeSelector(null);
-                              }}
-                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
-                            >
-                              <span className="text-[10px] text-red-500 font-bold">
-                                {t("typeTop")}
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                updateSet(exIndex, setIndex, "type", "back_off");
-                                setActiveTypeSelector(null);
-                              }}
-                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
-                            >
-                              <span className="text-[10px] text-orange-500 font-bold">
-                                {t("typeBack")}
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                updateSet(exIndex, setIndex, "type", "working");
-                                setActiveTypeSelector(null);
-                              }}
-                              className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
-                            >
-                              <span className="text-[10px] text-blue-500 font-bold">
-                                {t("typeWork")}
-                              </span>
-                            </button>
-                          </div>
-                        )}
-                    </div>
-                    <div className="col-span-3">
-                      <input
-                        type="number"
-                        value={set.weight}
-                        onChange={(e) => updateSet(exIndex, setIndex, "weight", e.target.value)}
-                        placeholder="0"
-                        className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
-                      />
-                    </div>
-                    <div className="col-span-3">
-                      <input
-                        type="number"
-                        value={set.reps}
-                        onChange={(e) => updateSet(exIndex, setIndex, "reps", e.target.value)}
-                        placeholder="0"
-                        className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
-                      />
-                    </div>
-                    <div className="col-span-2 flex justify-center">
-                      <button
-                        onClick={() => updateSet(exIndex, setIndex, "completed", !set.completed)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${set.completed ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]" : "bg-white/10 text-gray-500"}`}
-                      >
-                        <CheckCircle2 size={18} />
-                      </button>
-                    </div>
-                    <div className="col-span-2 flex justify-center">
-                      <button
-                        onClick={() => removeSet(exIndex, setIndex)}
-                        className="p-2 text-gray-600 hover:text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                          {/* Custom Picker Dropdown */}
+                          {activeTypeSelector?.exIndex === exIndex &&
+                            activeTypeSelector?.setIndex === setIndex && (
+                              <div className="absolute top-full left-0 mt-1 w-full min-w-full bg-[#2C2C2E] border border-white/10 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-50 overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-100">
+                                <button
+                                  onClick={() => {
+                                    updateSet(exIndex, setIndex, "type", "warmup");
+                                    setActiveTypeSelector(null);
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                                >
+                                  <span className="text-[10px] text-yellow-500 font-bold">
+                                    {t("typeWarm")}
+                                  </span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    updateSet(exIndex, setIndex, "type", "top_set");
+                                    setActiveTypeSelector(null);
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                                >
+                                  <span className="text-[10px] text-red-500 font-bold">
+                                    {t("typeTop")}
+                                  </span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    updateSet(exIndex, setIndex, "type", "back_off");
+                                    setActiveTypeSelector(null);
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                                >
+                                  <span className="text-[10px] text-orange-500 font-bold">
+                                    {t("typeBack")}
+                                  </span>
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    updateSet(exIndex, setIndex, "type", "working");
+                                    setActiveTypeSelector(null);
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
+                                >
+                                  <span className="text-[10px] text-blue-500 font-bold">
+                                    {t("typeWork")}
+                                  </span>
+                                </button>
+                              </div>
+                            )}
+                        </div>
+                        <div className="col-span-3">
+                          <input
+                            type="number"
+                            value={set.weight}
+                            onChange={(e) => updateSet(exIndex, setIndex, "weight", e.target.value)}
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <input
+                            type="number"
+                            value={set.reps}
+                            onChange={(e) => updateSet(exIndex, setIndex, "reps", e.target.value)}
+                            placeholder="0"
+                            className="w-full h-9 bg-[#2C2C2E] rounded-lg text-center text-white font-semibold focus:bg-[#3A3A3C] focus:outline-none transition-colors"
+                          />
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                          <button
+                            onClick={() =>
+                              updateSet(exIndex, setIndex, "completed", !set.completed)
+                            }
+                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${set.completed ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]" : "bg-white/10 text-gray-500"}`}
+                          >
+                            <CheckCircle2 size={18} />
+                          </button>
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                          <button
+                            onClick={() => removeSet(exIndex, setIndex)}
+                            className="p-2 text-gray-600 hover:text-red-500"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
 
@@ -498,7 +669,7 @@ export default function WorkoutSession({
           disabled={isSaving || activeExercises.length === 0}
           className="w-full h-[56px] bg-[#007AFF] rounded-[28px] font-bold text-[20px] text-white flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSaving ? t("saving") : t("finish")}
+          {isSaving ? t("saving") : workoutId ? "수정 완료" : t("finish")}
         </button>
       </div>
 

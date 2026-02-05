@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/utils/supabase/server";
 import HealthPageHeader from "@/components/HealthPageHeader";
+import { WorkoutCard } from "./WorkoutCard";
 
 export default async function WorkoutHistoryPage({
   params,
@@ -23,6 +24,14 @@ export default async function WorkoutHistoryPage({
 
   const nickname = profile?.nickname || "";
 
+  // Fetch workout history
+  const { data: workouts } = await supabase
+    .from("workouts")
+    .select("*")
+    .eq("user_id", user?.id)
+    .order("date", { ascending: false })
+    .limit(30);
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 px-5 pt-2">
       <div className="space-y-1">
@@ -37,17 +46,27 @@ export default async function WorkoutHistoryPage({
         </p>
       </div>
 
-      <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-3xl">
-          📝
+      {!workouts || workouts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-3xl">
+            📝
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-[20px] font-semibold text-black dark:text-white">
+              {t("emptyTitle")}
+            </h3>
+            <p className="text-[15px] text-gray-500 max-w-[200px] mx-auto">
+              {t("emptyDescription")}
+            </p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <h3 className="text-[20px] font-semibold text-black dark:text-white">
-            {t("emptyTitle")}
-          </h3>
-          <p className="text-[15px] text-gray-500 max-w-[200px] mx-auto">{t("emptyDescription")}</p>
+      ) : (
+        <div className="space-y-4 pb-10">
+          {workouts.map((workout: any) => (
+            <WorkoutCard key={workout.id} workout={workout} locale={locale} />
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
