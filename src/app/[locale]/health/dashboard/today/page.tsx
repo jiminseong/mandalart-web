@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import NutritionSection from "./NutritionSection";
-import HealthHeader from "./HealthHeader";
+import CommonHeader from "@/components/CommonHeader";
 import { getTranslations } from "next-intl/server";
 
 export default async function TodayPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -44,10 +44,12 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
   return (
     <div className="min-h-full space-y-8 animate-in fade-in duration-700 pb-20">
       {/* iOS Large Title Header with Settings */}
-      <HealthHeader
-        dateString={dateString}
-        nickname={profile?.nickname || "User"}
+      <CommonHeader
+        subTitle={dateString}
+        currentOS="Health"
         locale={locale}
+        nickname={profile?.nickname || "User"}
+        settingsPath={`/${locale}/health/settings`}
       />
 
       {/* Main Action Card (iOS Widget Style) */}

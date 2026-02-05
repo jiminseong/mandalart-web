@@ -243,5 +243,31 @@
         "before_sleep": "Before Sleep"
       }
     }
+  },
+  "todo": {
+    "nav": {
+      "home": "Home",
+      "routine": "Routine",
+      "category": "Category"
+    },
+    "categoryManager": {
+      "title": "Manage Categories",
+      "add": "Add Category",
+      "edit": "Edit Category",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "namePlaceholder": "Category Name",
+      "deleteConfirm": "Delete this category? All related tasks will be deleted."
+    },
+    "stack": {
+      "productivity": "Productivity",
+      "today": "To Do",
+      "done": "Done",
+      "empty": "No tasks yet.",
+      "emptyDone": "No completed tasks.",
+      "new": "New",
+      "inputPlaceholder": "Add a new task..."
+    }
   }
 }
