@@ -24,6 +24,16 @@ interface DBCategory {
   created_at: string;
 }
 
+export interface DBRoutine {
+  id: string;
+  user_id: string;
+  title: string;
+  category_id: string;
+  frequency: "daily" | "weekly";
+  days?: string[];
+  created_at: string;
+}
+
 export async function getTodosAndCategories(locale: string) {
   const supabase = await createClient();
   const {
@@ -163,4 +173,111 @@ export async function deleteCategory(id: string, locale: string) {
   if (error) throw error;
   revalidatePath(`/${locale}/todo`);
   revalidatePath(`/${locale}/todo/category`);
+}
+
+// ------ Routine Actions ------
+
+export async function getRoutines(locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("routines")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  return (data || []) as DBRoutine[];
+}
+
+export async function createRoutine(
+  title: string,
+  categoryId: string,
+  frequency: "daily" | "weekly",
+  days: string[] | null,
+  locale: string,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const { error } = await supabase.from("routines").insert({
+    user_id: user.id,
+    title,
+    category_id: categoryId,
+    frequency,
+    days,
+  });
+
+  if (error) throw error;
+  revalidatePath(`/${locale}/todo/routine`);
+}
+
+export async function deleteRoutine(id: string, locale: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("routines").delete().eq("id", id);
+  if (error) throw error;
+  revalidatePath(`/${locale}/todo/routine`);
+}
+
+export async function checkAndGenerateDailyTodos(locale: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  // 1. Get All Routines
+  const { data: routines } = await supabase.from("routines").select("*").eq("user_id", user.id);
+  if (!routines || routines.length === 0) return;
+
+  // 2. Define Today (KST)
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const kstGap = 9 * 60 * 60 * 1000;
+  const todayKst = new Date(utc + kstGap);
+  const todayDateString = todayKst.toISOString().split("T")[0]; // YYYY-MM-DD
+  const todayDayName = todayKst.toLocaleDateString("en-US", { weekday: "short" }); // Mon, Tue...
+
+  // 3. Filter Routines to run
+  const routinesToRun = routines.filter((r: DBRoutine) => {
+    if (r.frequency === "daily") return true;
+    if (r.frequency === "weekly" && r.days?.includes(todayDayName)) return true;
+    return false;
+  });
+
+  if (routinesToRun.length === 0) return;
+
+  // 4. Check existing instances
+  const routineIds = routinesToRun.map((r) => r.id);
+  const { data: existingTodos } = await supabase
+    .from("todos")
+    .select("routine_id")
+    .eq("user_id", user.id)
+    .eq("routine_date", todayDateString)
+    .in("routine_id", routineIds);
+
+  const existingRoutineIds = new Set(existingTodos?.map((t) => t.routine_id));
+
+  // 5. Insert new todos
+  const newTodos = routinesToRun
+    .filter((r) => !existingRoutineIds.has(r.id))
+    .map((r) => ({
+      user_id: user.id,
+      title: r.title,
+      category_id: r.category_id,
+      status: "todo",
+      routine_id: r.id,
+      routine_date: todayDateString,
+      // created_at will use default now()
+    }));
+
+  if (newTodos.length > 0) {
+    await supabase.from("todos").insert(newTodos);
+    revalidatePath(`/${locale}/todo`);
+  }
 }

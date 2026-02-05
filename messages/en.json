@@ -258,7 +258,8 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "namePlaceholder": "Category Name",
-      "deleteConfirm": "Delete this category? All related tasks will be deleted."
+      "deleteConfirm": "Delete this category? All related tasks will be deleted.",
+      "empty": "No categories yet."
     },
     "stack": {
       "productivity": "Productivity",
@@ -268,6 +269,16 @@
       "emptyDone": "No completed tasks.",
       "new": "New",
       "inputPlaceholder": "Add a new task..."
+    },
+    "routine": {
+      "placeholder": "New Routine...",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "add": "Add Routine",
+      "adding": "Adding...",
+      "myRoutines": "My Routines",
+      "empty": "No routines yet. Start building habits!",
+      "deleteConfirm": "Delete this routine?"
     }
   }
 }

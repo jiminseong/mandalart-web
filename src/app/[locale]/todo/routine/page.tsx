@@ -1,10 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { getTranslations } from "next-intl/server";
-import { getTodosAndCategories, checkAndGenerateDailyTodos } from "./actions";
-import TodoBoard from "./components/TodoBoard";
 import CommonHeader from "@/components/CommonHeader";
+import { getRoutines, getTodosAndCategories } from "../actions";
+import RoutineList from "../components/RoutineList";
+import { DBRoutine } from "../actions";
 
-export default async function TodoPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function RoutinePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "todo.stack" });
 
@@ -13,17 +14,14 @@ export default async function TodoPage({ params }: { params: Promise<{ locale: s
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch profile for nickname
   const { data: profile } = await supabase
     .from("profiles")
     .select("nickname")
     .eq("id", user?.id)
     .single();
 
-  // Generate routines for today if needed
-  await checkAndGenerateDailyTodos(locale);
-
-  const { todos, categories } = await getTodosAndCategories(locale);
+  const routines = await getRoutines(locale);
+  const { categories } = await getTodosAndCategories(locale);
 
   return (
     <div className="flex flex-col h-screen bg-white dark:bg-black px-4 pt-2">
@@ -34,7 +32,10 @@ export default async function TodoPage({ params }: { params: Promise<{ locale: s
         nickname={profile?.nickname}
         settingsPath={`/${locale}/health/settings`}
       />
-      <TodoBoard initialTodos={todos} initialCategories={categories} locale={locale} />
+
+      <div className="mt-4 flex-1 overflow-hidden">
+        <RoutineList routines={routines} categories={categories} locale={locale} />
+      </div>
     </div>
   );
 }
