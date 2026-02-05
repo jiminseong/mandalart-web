@@ -3,6 +3,7 @@
 import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import OSSwitcher from "@/components/OSSwitcher";
 
 export default function HealthHeader({
   dateString,
@@ -22,9 +23,7 @@ export default function HealthHeader({
         {dateString}
       </span>
       <div className="flex items-end justify-between mt-1">
-        <h1 className="text-[34px] leading-tight font-bold tracking-tight text-black dark:text-white">
-          {t("title")}
-        </h1>
+        <OSSwitcher currentOS="Health" locale={locale} />
 
         <div className="flex items-center gap-2 mb-1">
           {/* Profile Image */}
