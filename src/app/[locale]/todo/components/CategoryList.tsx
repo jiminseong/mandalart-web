@@ -12,7 +12,7 @@ interface CategoryListProps {
   locale: string;
 }
 
-// Blue-themed palette (30 colors) - focusing on blue, sky, indigo, cyan, slate, teal, and harmonious accents
+// Blue-themed palette (26 colors) - focusing on blue, sky, indigo, cyan, slate, teal, and harmonious accents
 const CATEGORY_COLORS = [
   "bg-blue-500",
   "bg-blue-600",
@@ -29,21 +29,17 @@ const CATEGORY_COLORS = [
   "bg-zinc-500",
   "bg-neutral-500",
   "bg-stone-500",
-  "bg-violet-500",
   "bg-purple-500",
   "bg-fuchsia-500",
   "bg-pink-500",
-  "bg-rose-500",
   "bg-emerald-500",
   "bg-green-500",
   "bg-lime-500",
   "bg-amber-500",
   "bg-orange-500",
   "bg-red-500",
-  "bg-blue-300",
   "bg-indigo-300",
   "bg-sky-300",
-  "bg-slate-400",
 ];
 
 export default function CategoryList({ categories, locale }: CategoryListProps) {
@@ -124,7 +120,7 @@ export default function CategoryList({ categories, locale }: CategoryListProps) 
         </form>
 
         {/* Color Picker for New Category */}
-        <div className="flex flex-wrap gap-2 pt-1">
+        <div className="flex flex-wrap gap-2  justify-center pt-2">
           {CATEGORY_COLORS.map((color) => (
             <button
               key={color}

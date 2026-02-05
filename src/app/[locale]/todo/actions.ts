@@ -29,8 +29,9 @@ export interface DBRoutine {
   user_id: string;
   title: string;
   category_id: string;
-  frequency: "daily" | "weekly";
-  days?: string[];
+  frequency: "daily" | "weekly" | "monthly" | "every-other-day";
+  days?: string[]; // For weekly (Mon, Tue, etc.)
+  dates?: number[]; // For monthly (1-31)
   created_at: string;
 }
 
@@ -197,8 +198,9 @@ export async function getRoutines(locale: string) {
 export async function createRoutine(
   title: string,
   categoryId: string,
-  frequency: "daily" | "weekly",
+  frequency: "daily" | "weekly" | "monthly" | "every-other-day",
   days: string[] | null,
+  dates: number[] | null,
   locale: string,
 ) {
   const supabase = await createClient();
@@ -213,6 +215,7 @@ export async function createRoutine(
     category_id: categoryId,
     frequency,
     days,
+    dates,
   });
 
   if (error) throw error;

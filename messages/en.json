@@ -4,7 +4,9 @@
     "home": "Back to Home",
     "login": "Login",
     "editor": "Back to Editor",
-    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file."
+    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file.",
+    "switchTo": "Switch to...",
+    "current": "Current"
   },
   "home": {
     "badge": "Mandalart 2026",
@@ -274,11 +276,31 @@
       "placeholder": "New Routine...",
       "daily": "Daily",
       "weekly": "Weekly",
+      "monthly": "Monthly",
+      "everyOtherDay": "Every Other Day",
+      "weeklyFull": "Weekly (select days)",
+      "monthlyFull": "Monthly (select dates)",
       "add": "Add Routine",
       "adding": "Adding...",
       "myRoutines": "My Routines",
       "empty": "No routines yet. Start building habits!",
-      "deleteConfirm": "Delete this routine?"
+      "deleteConfirm": "Delete this routine?",
+      "inputPlaceholder": "Add a new task...",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "frequencyLabels": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly on {dates}",
+        "everyOtherDay": "Every Other Day"
+      }
     }
   }
 }

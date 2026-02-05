@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Activity, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type OS = "Health" | "Todo";
 
@@ -11,6 +12,7 @@ export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; local
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -59,7 +61,7 @@ export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; local
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-[#1C1C1E] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-2 z-50 animate-in fade-in zoom-in-95 duration-200">
           <div className="text-[11px] font-semibold text-gray-400 px-3 py-2 uppercase tracking-wide">
-            Switch to...
+            {t("switchTo")}
           </div>
           {osList.map((os) => {
             const Icon = os.icon;
@@ -85,7 +87,7 @@ export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; local
                   <div className="font-semibold text-[15px] text-black dark:text-white">
                     {os.name}
                   </div>
-                  {isCurrent && <div className="text-[12px] text-gray-500">Current</div>}
+                  {isCurrent && <div className="text-[12px] text-gray-500">{t("current")}</div>}
                 </div>
               </Link>
             );

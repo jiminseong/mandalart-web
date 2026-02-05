@@ -190,7 +190,12 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
       {/* Main Content: Single Stack View */}
       <div className="flex-1 flex flex-col relative overflow-hidden">
         {/* Stack View */}
-        <div className="flex-1 overflow-y-auto pb-4 no-scrollbar flex flex-col justify-end gap-3 p-1 relative">
+        <div
+          className={cn(
+            "flex-1 overflow-y-auto no-scrollbar flex flex-col justify-end gap-3  relative",
+            activeTab === "done" ? "pb-4" : "md:pb-48 pb-55",
+          )}
+        >
           <div className="absolute top-0 left-0 w-full h-8 bg-linear-to-b from-white dark:from-black to-transparent z-10 pointer-events-none" />
 
           <AnimatePresence initial={false}>
@@ -225,7 +230,7 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="pt-4 pb-2 mb-6 bg-white dark:bg-black relative z-20 border-t border-gray-100 dark:border-zinc-800"
+              className="absolute bottom-0 left-0 right-0 pt-4 pb-2 mb-4 bg-white dark:bg-black z-20 border-t border-gray-100 dark:border-zinc-800"
             >
               <div className="flex flex-wrap gap-2 mb-2 pt-2">
                 {categories.map((cat, index) => (
