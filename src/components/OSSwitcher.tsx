@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Activity, CheckSquare, Briefcase } from "lucide-react";
+import { ChevronDown, Activity, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type OS = "Health" | "Todo" | "Work";
+type OS = "Health" | "Todo";
 
 export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; locale: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,15 +40,6 @@ export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; local
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
-    {
-      id: "Work",
-      name: "Work OS",
-      icon: Briefcase,
-      href: "#", // Not implemented yet
-      color: "text-orange-500",
-      bgColor: "bg-orange-500/10",
-      disabled: true,
-    },
   ];
 
   return (
@@ -73,25 +64,6 @@ export default function OSSwitcher({ currentOS, locale }: { currentOS: OS; local
           {osList.map((os) => {
             const Icon = os.icon;
             const isCurrent = currentOS === os.id;
-
-            if (os.disabled) {
-              return (
-                <div
-                  key={os.id}
-                  className="flex items-center gap-3 w-full p-3 rounded-xl opacity-40 cursor-not-allowed"
-                >
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${os.bgColor} ${os.color}`}
-                  >
-                    <Icon size={20} />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold text-[15px]">{os.name}</div>
-                    <div className="text-[12px] text-gray-500">Coming Soon</div>
-                  </div>
-                </div>
-              );
-            }
 
             return (
               <Link
