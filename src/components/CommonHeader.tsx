@@ -1,7 +1,7 @@
 "use client";
 
 import { Settings } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import OSSwitcher from "@/components/OSSwitcher";
 
 interface CommonHeaderProps {
@@ -20,6 +20,13 @@ export default function CommonHeader({
   settingsPath,
 }: CommonHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSettingsClick = () => {
+    // 현재 경로를 sessionStorage에 저장 (설정에서 돌아올 때 사용)
+    sessionStorage.setItem("settings_referrer", pathname);
+    router.push(settingsPath);
+  };
 
   return (
     <section className="pt-2 px-1">
@@ -39,7 +46,7 @@ export default function CommonHeader({
 
           {/* Settings Button */}
           <button
-            onClick={() => router.push(settingsPath)}
+            onClick={handleSettingsClick}
             className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white transition-colors active:scale-95"
           >
             <Settings size={20} />

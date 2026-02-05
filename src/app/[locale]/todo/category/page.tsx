@@ -28,7 +28,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ local
         currentOS="Todo"
         locale={locale}
         nickname={profile?.nickname}
-        settingsPath={`/${locale}/health/settings`}
+        settingsPath={`/${locale}/settings`}
       />
       <div className="mt-4 flex-1 overflow-hidden">
         <CategoryList categories={categories} locale={locale} />
