@@ -442,3 +442,18 @@ AI의 출력은 다음 JSON 스키마를 엄격히 따라야 한다. 애매한 �
 ## 6. 핵심 철학
 
 > **"Health OS는 나를 더 몰아붙이지 않는다. 대신, 나 대신 냉정해진다."**
+
+---
+
+## 7. Future Roadmap (Backlog)
+
+### 7.1 Gym Equipment Registration (나의 헬스장 머신 등록)
+> **Goal**: 헬스장 환경에 맞춘 초개인화 운동 경험 제공
+
+*   **User Story**:
+    *   사용자가 처음 가는 헬스장에 입장하면, 해당 헬스장에 있는 머신들을 앱에 '마이 짐(My Gym)'으로 등록한다.
+    *   예: "여기 해머스트렝스 MTS 숄더 프레스 있네? 등록."
+*   **Feature Details**:
+    *   **Brand & Machine DB**: 주요 헬스 머신 브랜드(Hammer Strength, Cybex, Life Fitness, Technogym, Panatta 등)와 세부 모델명 데이터베이스 구축.
+    *   **Preset Management**: '강남 헬스장', '동네 헬스장' 등 장소별 머신 보유 현황을 프리셋으로 저장.
+    *   **Workout Start Integration**: 운동 시작 시 "어디서 운동하시나요?"를 묻고, 선택된 장소의 보유 머신 위주로 운동 추천 또는 기록 UI 최적화.

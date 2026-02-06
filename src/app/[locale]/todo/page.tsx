@@ -26,7 +26,7 @@ export default async function TodoPage({ params }: { params: Promise<{ locale: s
   const { todos, categories } = await getTodosAndCategories(locale);
 
   return (
-    <div className="flex flex-col flex-1 w-full bg-white dark:bg-black px-4 pt-2">
+    <div className="flex flex-col flex-1 w-full min-h-0 overflow-hidden bg-white dark:bg-black px-4 pt-2">
       <CommonHeader
         subTitle={t("productivity")}
         currentOS="Todo"

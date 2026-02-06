@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/providers";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -9,6 +9,14 @@ import { Analytics } from "@vercel/analytics/next";
 import { AuthErrorHandler } from "@/components/AuthErrorHandler";
 
 import "../globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  interactiveWidget: "resizes-content",
+};
 
 export const metadata: Metadata = {
   title: "만다라트 2026 - 오타니 쇼헤이의 목표 달성법",

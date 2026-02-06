@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useOptimistic, useTransition, useEffect, useRef } from "react";
+import { useState, useOptimistic, useTransition, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { TodoItem, Category } from "../types";
 import { createTodo, toggleTodoStatus, createCategory, deleteTodo } from "../actions";
@@ -70,30 +70,6 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
   const [inputValue, setInputValue] = useState("");
   const [activeTab, setActiveTab] = useState<"todo" | "done">("todo");
   const [isPending, startTransition] = useTransition();
-
-  // Dynamic bottom padding for input area
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const [bottomHeight, setBottomHeight] = useState(0);
-
-  useEffect(() => {
-    if (activeTab !== "todo") {
-      setBottomHeight(0);
-      return;
-    }
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setBottomHeight(entry.contentRect.height);
-      }
-    });
-
-    const element = bottomRef.current;
-    if (element) {
-      observer.observe(element);
-    }
-
-    return () => observer.disconnect();
-  }, [activeTab, categories]);
 
   // Optimistic Todos
   const [optimisticTodos, dispatchOptimistic] = useOptimistic(
@@ -216,20 +192,10 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
         {/* Stack View */}
         <div
           className={cn(
-            "flex-1 overflow-y-auto no-scrollbar flex flex-col justify-end gap-3 relative min-h-0",
-            activeTab === "done" && "pb-4",
+            "flex-1 overflow-y-auto no-scrollbar space-y-3 relative min-h-0 pb-52",
+            activeTab === "done" && "pb-24",
           )}
-          style={{
-            paddingBottom:
-              activeTab === "todo" && bottomHeight > 0
-                ? `calc(${bottomHeight}px + 80px + env(safe-area-inset-bottom) + 20px)`
-                : activeTab === "done"
-                  ? "calc(80px + env(safe-area-inset-bottom) + 1rem)"
-                  : "calc(80px + env(safe-area-inset-bottom) + 1rem)", // Fallback
-          }}
         >
-          <div className="absolute top-0 left-0 w-full h-8  bg-linear-to-b from-white dark:from-black to-transparent z-10 pointer-events-none" />
-
           <AnimatePresence initial={false}>
             {currentItems.length === 0 && (
               <motion.div
@@ -240,7 +206,7 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
                 {activeTab === "todo" ? t("empty") : t("emptyDone")}
               </motion.div>
             )}
-            {[...currentItems].reverse().map((item) => {
+            {[...currentItems].map((item) => {
               const category = categories.find((c) => c.id === item.categoryId);
               return (
                 <TodoCard
@@ -259,11 +225,11 @@ export default function TodoBoard({ initialTodos, initialCategories, locale }: T
         <AnimatePresence>
           {activeTab === "todo" && (
             <motion.div
-              ref={bottomRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-[calc(80px+env(safe-area-inset-bottom))] left-0 right-0 pt-4 pb-2 mb-4 bg-white dark:bg-black z-20 border-t border-gray-100 dark:border-zinc-800"
+              style={{ bottom: "calc(24px + env(safe-area-inset-bottom))" }}
+              className="absolute left-0 right-0 pt-4 bg-white dark:bg-black z-20 border-t border-gray-100 dark:border-zinc-800"
             >
               <div className="flex flex-wrap gap-2 mb-2 pt-2">
                 {categories.map((cat, index) => (
