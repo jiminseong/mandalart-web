@@ -12,13 +12,13 @@ export default async function Home() {
       {/* iOS-style Navigation Bar */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
         <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
-          <TrackedLink
+          {/* <TrackedLink
             href="/health"
             eventParams={{ entry: "header_health" }}
             className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-wider"
           >
             Health OS
-          </TrackedLink>
+          </TrackedLink> */}
           <LanguageSwitcher />
         </div>
       </header>
@@ -71,7 +71,7 @@ export default async function Home() {
               />
             </TrackedLink>
 
-            <div className="flex gap-3 pt-2">
+            {/* <div className="flex gap-3 pt-2">
               <TrackedLink
                 href="/health"
                 eventParams={{ entry: "header_health" }}
@@ -86,7 +86,7 @@ export default async function Home() {
                 {t("todoOS")}
                 <span className="text-[10px] ml-1 font-normal opacity-80">({t("comingSoon")})</span>
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>

@@ -3,7 +3,7 @@ import { ArrowLeft, Share2, MessageSquarePlus } from "lucide-react";
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
-import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
+// import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -61,21 +61,15 @@ export default async function EditorPage() {
               href="/share"
               className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl transition-colors"
             >
-              <Share2
-                size={18}
-                className="text-white"
-                strokeWidth={2}
-              />
-              <span className="text-sm font-semibold text-white">
-                {t("share")}
-              </span>
+              <Share2 size={18} className="text-white" strokeWidth={2} />
+              <span className="text-sm font-semibold text-white">{t("share")}</span>
             </Link>
           </div>
         </div>
       </main>
 
       <NodeEditor />
-      <AuthSyncManager />
+      {/* <AuthSyncManager /> */}
     </div>
   );
 }
