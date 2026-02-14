@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
-import { Download, Share2, ArrowLeft, Image as ImageIcon, ArrowRight } from "lucide-react";
+import { Download, Share2, ArrowLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toPng, toBlob } from "html-to-image";
 import { Link } from "@/i18n/routing";
@@ -18,8 +18,6 @@ export default function SharePage() {
   // Options
   const [showTitle, setShowTitle] = useState(true);
   const [showWatermark, setShowWatermark] = useState(true);
-  // Default to light mode export for "Paper" feel
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleDownload = async () => {
     if (!containerRef.current) return;
@@ -27,7 +25,7 @@ export default function SharePage() {
     try {
       const dataUrl = await toPng(containerRef.current, {
         cacheBust: true,
-        backgroundColor: "#ffffff", // Always white paper background for nordic style
+        backgroundColor: "#ffffff",
       });
 
       const link = document.createElement("a");
@@ -69,7 +67,6 @@ export default function SharePage() {
             text: "Check out my Mandalart plan!",
           });
         } else {
-          // Fallback
           alert("Sharing is not supported on this device.");
         }
       } catch (err) {
@@ -84,7 +81,7 @@ export default function SharePage() {
     <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20 flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-screen-md mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/editor"
             className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
@@ -97,13 +94,13 @@ export default function SharePage() {
             <span className="font-medium tracking-wide uppercase text-sm">Editor</span>
           </Link>
 
-          <span className="font-serif font-bold text-lg tracking-tight">{t("title")}</span>
+          <span className="font-bold text-lg tracking-tight font-sans">{t("title")}</span>
 
           <div className="w-16" />
         </div>
       </header>
 
-      <main className="flex-1 max-w-screen-md mx-auto w-full px-6 py-8 space-y-8 pb-20">
+      <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-8 space-y-8 pb-20">
         {/* Preview Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-end">
@@ -117,11 +114,11 @@ export default function SharePage() {
             {/* Capture Area - Fixed Ratio Box */}
             <div
               ref={containerRef}
-              className="bg-white text-slate-900 w-full max-w-[500px] aspect-[4/5] p-8 flex flex-col gap-6 shadow-2xl items-center relative"
+              className="bg-white text-slate-900 w-full max-w-[500px] aspect-4/5 p-8 flex flex-col gap-6 shadow-2xl items-center relative"
             >
               {showTitle && (
                 <div className="text-center space-y-2 w-full pt-4">
-                  <h1 className="text-3xl font-serif font-bold text-slate-900 tracking-tight">
+                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight font-sans">
                     Mandalart 2026
                   </h1>
                   <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
@@ -155,7 +152,7 @@ export default function SharePage() {
             className={cn(
               "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
               showTitle
-                ? "bg-text-primary text-base border-text-primary"
+                ? "bg-text-primary text-base border-text-primary text-white"
                 : "bg-surface text-text-secondary border-border hover:border-text-primary",
             )}
           >
@@ -168,7 +165,7 @@ export default function SharePage() {
             className={cn(
               "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
               showWatermark
-                ? "bg-text-primary text-base border-text-primary"
+                ? "bg-text-primary text-base border-text-primary text-white"
                 : "bg-surface text-text-secondary border-border hover:border-text-primary",
             )}
           >
@@ -201,7 +198,13 @@ export default function SharePage() {
 
 // Nordic Style Clean Grid Renderer
 function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
-  // Helper to get color based on position/type
+  // 1. Core Logic: Find Core Node
+  const coreNode = nodes.find((n) => n.level === 0);
+  // 2. Sub Logic: Find Sub Nodes
+  const subNodes = nodes.filter((n) => n.level === 1);
+  // 3. Action Logic: Find Action Nodes
+  const actionNodes = nodes.filter((n) => n.level === 2);
+
   const getStyles = (type: "core" | "sub" | "action", isCenter: boolean) => {
     const styles: React.CSSProperties = {
       width: "100%",
@@ -215,18 +218,16 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
       whiteSpace: "pre-wrap",
       padding: "2px",
       boxSizing: "border-box",
-      backgroundColor: "#ffffff", // Default white
-      color: "#334155", // Slate 700
+      backgroundColor: "#ffffff",
+      color: "#334155",
       fontSize: "8px",
       fontWeight: "400",
     };
 
     if (type === "core") {
-      // Center Core Cell
       styles.color = "#0F766E"; // Growth Color
       styles.fontWeight = "900";
       styles.fontSize = "10px";
-      // styles.backgroundColor = "#F0FDFA"; // Very light teal bg option
     } else if (type === "sub") {
       if (isCenter) {
         styles.color = "#1E293B"; // Slate 800
@@ -243,41 +244,46 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
     return styles;
   };
 
-  const renderCell = (content: string, type: "core" | "sub" | "action", isCenter: boolean) => {
-    let displayContent = content;
-    // ... logic for default text ...
+  const renderCell = (node: any, type: "core" | "sub" | "action", isCenter: boolean) => {
+    let displayContent = node?.content || "";
+
+    // Default Text Logic with Translation
+    if (!displayContent) {
+      if (type === "core" && isCenter) displayContent = t("defaultCore");
+      else if (type === "sub") displayContent = t("defaultSub");
+      else if (type === "action") displayContent = t("defaultAction");
+    }
 
     return <div style={getStyles(type, isCenter)}>{displayContent}</div>;
   };
 
   const renderBlock = (blockIdx: number) => {
     const isCoreBlock = blockIdx === 4;
-    const coreNode = nodes.find((n) => n.level === 0);
-    // ... logic to find subNodes ... (Simplified for brevity, assuming logic exists)
 
-    // Using simple placeholder logic if nodes are missing for preview robustness
-    const subNodes = nodes.filter((n) => n.level === 1).sort((a, b) => a.position - b.position);
+    let cellNodes: any[] = new Array(9).fill(null);
+    let cellTypes: ("core" | "sub" | "action")[] = new Array(9).fill("action");
 
-    let cellNodes: any[] = Array(9).fill(null);
+    if (isCoreBlock) {
+      // Core Block Logic
+      cellTypes = cellTypes.map((_, i) => (i === 4 ? "core" : "sub"));
 
-    // Re-implement or Copy Logic for filling cellNodes
-    if (isCoreBlock && coreNode) {
-      // Fill Core Block
-      const getSubNodeAt = (pos: number) => subNodes.find((n) => n.position === pos);
-      cellNodes = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((p) => {
-        if (p === 4) return coreNode;
-        return getSubNodeAt(p);
+      cellNodes = cellNodes.map((_, i) => {
+        if (i === 4) return coreNode;
+        return subNodes.find((n) => n.position === i);
       });
     } else {
-      // Fill Action Block
-      let subPos = blockIdx;
-      if (blockIdx > 4) subPos = blockIdx - 1;
-      const blockCenterNode = subNodes.find((n) => n.position === subPos);
-      if (blockCenterNode) {
-        const actions = nodes.filter((n) => n.level === 2 && n.parent_id === blockCenterNode.id);
-        cellNodes = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((p) => {
-          if (p === 4) return blockCenterNode;
-          return actions.find((n) => n.position === p);
+      // Action Block Logic
+      const subNodePos = blockIdx;
+      const currentSubNode = subNodes.find((n) => n.position === subNodePos);
+
+      cellTypes = cellTypes.map((_, i) => (i === 4 ? "sub" : "action"));
+
+      if (currentSubNode) {
+        const currentActions = actionNodes.filter((n) => n.parent_id === currentSubNode.id);
+
+        cellNodes = cellNodes.map((_, i) => {
+          if (i === 4) return currentSubNode;
+          return currentActions.find((n) => n.position === i);
         });
       }
     }
@@ -288,8 +294,8 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
           gridTemplateRows: "repeat(3, 1fr)",
-          gap: "0px", // No gap, just borders
-          backgroundColor: "#CBD5E1", // Border color
+          gap: "0px",
+          backgroundColor: "#CBD5E1",
           border: "1px solid #CBD5E1",
           aspectRatio: "1/1",
           width: "100%",
@@ -298,7 +304,7 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
       >
         {cellNodes.map((n, i) => {
           const isCenter = i === 4;
-          const type = isCoreBlock ? (isCenter ? "core" : "sub") : isCenter ? "sub" : "action";
+          const type = cellTypes[i];
           return (
             <div
               key={i}
@@ -309,7 +315,7 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
                 border: "0.5px solid #E2E8F0",
               }}
             >
-              {renderCell(n?.content || "", type, isCenter)}
+              {renderCell(n, type, isCenter)}
             </div>
           );
         })}
@@ -324,7 +330,7 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gridTemplateRows: "repeat(3, 1fr)",
-        gap: "4px", // Gap between blocks
+        gap: "4px",
         aspectRatio: "1/1",
       }}
     >

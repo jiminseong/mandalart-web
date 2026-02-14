@@ -23,17 +23,31 @@ export const metadata: Metadata = {
   description:
     "오타니 쇼헤이의 성공 비결, 만다라트 기법으로 2026년 목표를 체계적으로 계획하고 AI 코칭과 함께 달성해보세요.",
   metadataBase: new URL("https://mandalart.life"),
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "만다라트 2026",
     description: "꿈을 현실로 만드는 가장 확실한 방법, 만다라트 계획표",
     url: "https://mandalart.life",
     siteName: "Mandalart 2026",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "만다라트 2026 미리보기",
+      },
+    ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "만다라트 2026",
     description: "2026년 목표 달성을 위한 AI 만다라트 플래너",
+    images: ["/og-image.png"],
   },
   verification: {
     other: {
