@@ -2,96 +2,50 @@
 
 @font-face {
   font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2")
-    format("woff2");
-  font-weight: 100;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2")
-    format("woff2");
-  font-weight: 200;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2")
-    format("woff2");
-  font-weight: 300;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2")
-    format("woff2");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2")
-    format("woff2");
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2")
-    format("woff2");
-  font-weight: 600;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2")
-    format("woff2");
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2")
-    format("woff2");
-  font-weight: 800;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2")
-    format("woff2");
-  font-weight: 900;
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.3.9/dist/web/static/pretendard-dynamic-subset.css");
+  font-weight: 45 920;
   font-display: swap;
 }
 
 @theme {
-  --font-sans: "Pretendard", sans-serif;
+  --font-sans: "Pretendard", system-ui, sans-serif;
 
-  --color-primary: #3b82f6; /* Blue 500 */
-  --color-secondary: #60a5fa; /* Blue 400 */
+  /* Nordic Editorial Palette */
+  --color-base: #f5f5f0; /* Main BG: Warm Off-white */
+  --color-surface: #ebebe6; /* Cards: Slightly darker warm gray */
+  --color-white: #ffffff; /* Highlight */
 
-  --color-background-light: #ffffff;
-  --color-background-dark: #1e293b; /* Slate 800 */
+  --color-text-primary: #1c1c1b; /* Main Text: Soft Black */
+  --color-text-secondary: #5a5a55; /* Sub Text: Warm Dark Gray */
+  --color-border: #d1d1c7; /* Warm Gray Line */
 
-  --color-slate-900: #0f172a; /* Make sure these exist or are extended */
-  /* Re-declare standard colors if needed, but 'slate' is usually included or I can use zinc/gray. 
-     Tailwind v4 includes all colors by default. */
+  --color-growth: #4a5d44; /* Main Accent: Deep Moss Green */
+  --color-focus: #2e3a45; /* Sub Accent: Muted Slate */
+  --color-action: #c45c44; /* Point Accent: Burnt Orange */
+
+  /* Legacy Compatibility (Mapping to new system where possible) */
+  --color-primary: var(--color-growth);
+  --color-background: var(--color-base);
+  --color-foreground: var(--color-text-primary);
 }
 
-/* Material Symbols Settings */
+@layer base {
+  body {
+    @apply antialiased font-sans text-text-primary bg-base;
+  }
+
+  /* Reset selection color for better aesthetics */
+  ::selection {
+    @apply bg-growth/20 text-growth;
+  }
+}
+
+/* Material Symbols Settings - Keeping for legacy support if needed */
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
   font-weight: normal;
   font-style: normal;
-  font-size: 24px; /* Preferred icon size */
+  font-size: 24px;
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -99,16 +53,9 @@
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
-
   font-variation-settings:
     "FILL" 0,
     "wght" 400,
     "GRAD" 0,
     "opsz" 24;
-}
-
-@layer base {
-  body {
-    @apply antialiased;
-  }
 }
