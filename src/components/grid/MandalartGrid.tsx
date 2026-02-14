@@ -49,9 +49,7 @@ export const MandalartGrid = () => {
     if (!zoomedNodeId) return null;
     const subNode = Object.values(subNodesMap).find((n) => n.id === zoomedNodeId);
     if (subNode) return subNode.position;
-
     if (coreNode && coreNode.id === zoomedNodeId) return 4;
-
     return null;
   }, [zoomedNodeId, subNodesMap, coreNode]);
 
@@ -67,9 +65,7 @@ export const MandalartGrid = () => {
       centerNode = coreNode;
       surroundingNodes = subNodesMap;
     } else {
-      // For outer blocks, the center is the Sub Node at this position in the Core Grid
       centerNode = subNodesMap[blockIndex];
-      // Surrounding are its children
       if (centerNode) {
         surroundingNodes = actionNodesMap[centerNode.id] || {};
       }
@@ -79,27 +75,25 @@ export const MandalartGrid = () => {
       <div
         key={blockIndex}
         className={cn(
-          "grid grid-cols-3 gap-1 p-1 rounded-xl transition-all duration-300 relative",
+          "grid grid-cols-3 bg-border gap-px border border-border transition-all duration-300 relative",
           isZoomedView
-            ? "w-full h-full gap-2 p-4 bg-white dark:bg-slate-900 shadow-none border-0"
+            ? "w-full h-full p-0 shadow-none"
             : isCenterBlock
-              ? "bg-white dark:bg-slate-900 shadow-xl z-10 scale-[1.02] ring-1 ring-slate-200 dark:ring-slate-700"
-              : "bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 cursor-pointer group/block",
+              ? "relative z-10 scale-[1.02] shadow-sm ring-1 ring-border bg-white"
+              : "bg-surface hover:bg-white cursor-pointer group/block",
         )}
         onClick={() => {
-          // New Interaction 1: Click Outer Block to Zoom In
           if (!isZoomedView && !isCenterBlock && centerNode) {
             setZoomedNodeId(centerNode.id);
           }
         }}
       >
-        {/* Hover Hint for Outer Blocks */}
+        {/* Helper Badge on Hover (only for outer blocks) */}
         {!isZoomedView && !isCenterBlock && centerNode && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity pointer-events-none z-20">
-            <div className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
-              <ZoomOut size={12} className="rotate-180" />
-              {t("zoomIn")}
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity z-20 pointer-events-none">
+            <span className="bg-text-primary text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-widest shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <ZoomOut size={10} className="stroke-[2.5]" /> Zoom In
+            </span>
           </div>
         )}
 
@@ -131,7 +125,6 @@ export const MandalartGrid = () => {
               isCenter={isCellCenter}
               isActive={!!isSelected}
               onZoom={
-                // Show Zoom Icon logic...
                 (!isZoomedView &&
                   ((isCenterBlock && !isCellCenter) || (!isCenterBlock && isCellCenter))) ||
                 (isZoomedView && isCellCenter)
@@ -140,8 +133,7 @@ export const MandalartGrid = () => {
               }
               isZoomed={isZoomedView}
               onClick={(e: React.MouseEvent) => {
-                e.stopPropagation(); // Essential!
-
+                e.stopPropagation();
                 if (isZoomedView) {
                   if (node) setSelectedNodeId(node.id);
                 } else {
@@ -152,21 +144,20 @@ export const MandalartGrid = () => {
                       if (node) setZoomedNodeId(node.id);
                     }
                   } else {
-                    // For outer blocks, we generally want to Zoom In on click anywhere,
-                    // but if they clicked a specific cell that has content, wait..
-                    // Actually, UX-wise, clicking ANYWHERE in an Outer Block (Overview) should Zoom In first.
-                    // Editing directly from Overview is too small.
                     if (centerNode) setZoomedNodeId(centerNode.id);
                   }
                 }
               }}
+              // Pass contextual styling
               className={cn(
-                // Style adjustments
-                isCenterBlock && isCellCenter && "bg-primary text-black font-black text-sm",
-                isCenterBlock && !isCellCenter && "font-bold",
-                !isCenterBlock && isCellCenter && "font-bold bg-slate-100 dark:bg-slate-800",
-                isZoomedView && "text-sm sm:text-base",
-                isZoomedView && isCellCenter && "text-lg sm:text-xl",
+                // Core Center Cell (The absolute center of Mandalart)
+                isCenterBlock &&
+                  isCellCenter &&
+                  "bg-growth text-white font-bold text-sm tracking-wide",
+                // Sub Center Cells (The centers of outer blocks)
+                !isCenterBlock && isCellCenter && "bg-focus/10 text-focus font-semibold",
+                // Grid Lines handled by parent gap-px
+                "w-full h-full aspect-square",
               )}
             />
           );
@@ -176,33 +167,33 @@ export const MandalartGrid = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative overscroll-none">
-      {/* Zoom Mode Header (Floating) */}
+    <div className="w-full h-full flex flex-col items-center justify-center relative bg-base overscroll-none">
+      {/* Zoom Back Button */}
       {zoomedBlockIndex !== null && (
-        <div className="absolute top-4 z-20 flex justify-center w-full pointer-events-none">
+        <div className="absolute top-6 left-6 z-30">
           <button
             onClick={() => setZoomedNodeId(null)}
-            className="pointer-events-auto flex items-center gap-2 px-6 py-3 bg-white/95 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xl rounded-full text-sm font-bold border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all animate-in slide-in-from-top-4 fade-in z-50 hover:scale-105 active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 bg-white text-text-primary rounded-full text-xs font-bold border border-border shadow-sm hover:border-text-primary transition-all active:scale-95 uppercase tracking-widest"
           >
-            <ArrowLeft size={16} />
-            전체 보기
+            <ArrowLeft size={14} />
+            Back to Overview
           </button>
         </div>
       )}
 
-      {/* Main Container */}
+      {/* Main Grid Container */}
       {zoomedBlockIndex !== null ? (
-        // Zoomed View: Fit to screen, no scroll needed usually
-        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-4">
-          <div className="w-full aspect-square max-w-[500px]">
+        // Zoomed View
+        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8">
+          <div className="w-full max-w-[600px] aspect-square shadow-2xl shadow-black/5">
             {renderBlock(zoomedBlockIndex, true)}
           </div>
         </div>
       ) : (
-        // Overview: Scrollable on mobile
-        <div className="w-full h-full overflow-auto flex items-center lg:justify-center p-4 custom-scrollbar">
-          <div className="min-w-[600px] min-h-[600px] w-full max-w-[800px] aspect-square mx-auto relative">
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full h-full">
+        // Overview (Full 9x9 Grid)
+        <div className="w-full h-full overflow-auto flex items-center lg:justify-center p-8 custom-scrollbar">
+          <div className="min-w-[600px] w-full max-w-[900px] aspect-square mx-auto">
+            <div className="grid grid-cols-3 gap-3 w-full h-full">
               {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
             </div>
           </div>

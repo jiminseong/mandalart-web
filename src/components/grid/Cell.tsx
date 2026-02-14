@@ -1,10 +1,9 @@
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
-
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
-
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 interface CellProps {
   node?: Node;
@@ -12,9 +11,11 @@ interface CellProps {
   isCenter?: boolean;
   isActive?: boolean;
   isPlaceholder?: boolean;
+  width?: string;
+  height?: string;
   onClick?: (e: React.MouseEvent) => void;
-  onZoom?: () => void; // New prop for zoom action
-  isZoomed?: boolean; // To show zoom-out icon instead
+  onZoom?: () => void;
+  isZoomed?: boolean;
   className?: string;
 }
 
@@ -22,7 +23,6 @@ export const Cell = ({
   node,
   isCenter,
   isActive,
-  isPlaceholder,
   onClick,
   onZoom,
   isZoomed,
@@ -30,42 +30,60 @@ export const Cell = ({
 }: CellProps) => {
   const t = useTranslations("editor");
 
+  // Design System Colors mapping
+  // Core Center (Level 0): Growth Theme
+  // Sub Center (Level 1): Focus Theme
+
   return (
     <div
       onClick={onClick}
       className={cn(
-        "relative group aspect-square flex items-center justify-center p-2 text-center text-xs break-keep cursor-pointer transition-all duration-200 select-none rounded-lg border",
-        // Default styles
-        "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-primary/50",
-        // Center cell styles (Core/Sub goals)
-        isCenter &&
-          "bg-primary/10 dark:bg-primary/20 font-bold text-slate-900 dark:text-white border-primary/30 ring-1 ring-primary/20",
-        // Active/Selected state
-        isActive && "ring-2 ring-primary border-primary z-10 shadow-lg scale-105",
-        // Placeholder/Empty state
-        !node?.content &&
-          !isCenter &&
-          "bg-slate-50 dark:bg-slate-800/50 border-dashed text-slate-400 dark:text-slate-500",
+        // Base Layout
+        "relative group w-full h-full flex items-center justify-center p-3 text-center transition-all duration-200 cursor-pointer",
+        "break-keep select-none",
+
+        // Default Background (Editorial style: clean white or very light gray)
+        "bg-white hover:bg-surface",
+
+        // Interaction
+        isActive && "z-10 ring-2 ring-growth bg-white shadow-lg scale-[1.02]",
+
+        // Center Node Styling (The 'Core' of any 3x3 block)
+        isCenter && "font-bold bg-base text-text-primary",
+
+        // Empty State
+        !node?.content && !isCenter && "text-text-secondary/30 bg-gray-50/50",
+
         className,
       )}
     >
       <span
-        className={cn("line-clamp-3", !node?.content && "text-[10px] opacity-60 dark:opacity-80")}
+        className={cn(
+          "line-clamp-4 leading-relaxed",
+          !node?.content && "text-[10px]",
+          // Typography differentiation
+          isCenter
+            ? "text-sm md:text-base font-bold text-text-primary"
+            : "text-xs md:text-sm text-text-secondary font-medium",
+        )}
       >
         {node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || ""}
       </span>
 
-      {/* Zoom Action Button */}
+      {/* Zoom Icon - Minimalist */}
       {onZoom && node?.content && (
         <button
           onClick={(e) => {
             e.stopPropagation();
             onZoom();
           }}
-          className="absolute top-1 right-1 p-1 rounded-full bg-white/80 dark:bg-black/50 text-slate-500 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity"
-          title={isZoomed ? t("viewAll") : t("zoomIn")}
+          className="absolute top-1 right-1 p-1.5 text-text-secondary/50 hover:text-growth opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          {isZoomed ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+          {isZoomed ? (
+            <Minimize2 size={14} strokeWidth={1.5} />
+          ) : (
+            <Maximize2 size={14} strokeWidth={1.5} />
+          )}
         </button>
       )}
     </div>
