@@ -61,7 +61,14 @@
     "progress": "Progress",
     "freeAiRemaining": "Free AI: {count} left",
     "zoomIn": "Zoom In",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "defineGoal": "Define Your Goal",
+    "goalTitleLabel": "Goal Title",
+    "goalTitlePlaceholder": "What is your goal?",
+    "detailsLabel": "Details & Notes",
+    "detailsPlaceholder": "Add specific details or memo...",
+    "cancel": "Cancel",
+    "saveGoal": "Save Goal"
   },
   "share": {
     "title": "Export & Share Mandalart",

@@ -4,92 +4,91 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export default async function Home() {
-  const t = await getTranslations("home");
-  const _navT = await getTranslations("nav");
+  const t = await getTranslations("home"); // Assuming 'home' namespace is correct based on prev file
+  const navT = await getTranslations("nav");
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      {/* iOS-style Navigation Bar */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
-        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
-          {/* <TrackedLink
-            href="/health"
-            eventParams={{ entry: "header_health" }}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-wider"
-          >
-            Health OS
-          </TrackedLink> */}
+    <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20 selection:text-growth flex flex-col">
+      {/* Editorial Header */}
+      <header className="w-full max-w-[1400px] mx-auto px-6 py-8 flex justify-between items-center z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 bg-growth rounded-full" />
+          <span className="font-medium tracking-widest text-xs text-text-secondary uppercase">
+            Mandalart 2026
+          </span>
+        </div>
+        <div>
           <LanguageSwitcher />
         </div>
       </header>
 
-      {/* Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-20 -mt-11">
-        <div className="w-full max-w-sm flex flex-col items-center text-center space-y-6">
-          {/* Badge */}
-          <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10">
-            <span className="text-xs font-semibold tracking-wide text-slate-600 dark:text-slate-400">
+      {/* Main Content - Left Aligned Editorial Layout */}
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center pb-24">
+        <div className="max-w-4xl w-full">
+          {/* Badge / Label */}
+          <div className="mb-8 inline-block">
+            <span className="px-3 py-1 border border-border rounded-full text-xs font-medium text-text-secondary tracking-wide uppercase bg-white/50 backdrop-blur-sm">
               {t("badge")}
             </span>
           </div>
 
-          {/* Title */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+          {/* Hero Typography */}
+          <div className="space-y-8 mb-16">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold leading-[1.2] -ml-[0.05em] tracking-tighter text-text-primary break-keep">
               {t("title")}
+              <br />
+              <span className="text-text-secondary/80 font-medium italic">
+                {t("titleHighlight")}
+              </span>
             </h1>
-            <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent leading-tight">
-              {t("titleHighlight")}
-            </h2>
+
+            <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-lg font-light break-keep border-l border-growth pl-6 py-2">
+              {t("description")} {t("descriptionSub")}
+            </p>
           </div>
 
-          {/* Description */}
-          <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs">
-            {t("description")}
-            <br />
-            {t("descriptionSub")}
-          </p>
-
-          {/* CTA Button */}
-          <div className="pt-4 w-full space-y-3">
-            <TrackedLink
-              href="/about"
-              eventParams={{ entry: "hero_about" }}
-              className="group flex items-center justify-center gap-2 w-full px-6 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 dark:active:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-2xl transition-colors shadow-sm"
-            >
-              <span>{_navT("about")}</span>
-            </TrackedLink>
+          {/* Action Area */}
+          <div className="flex flex-col sm:flex-row gap-5 items-start">
             <TrackedLink
               href="/editor"
               eventParams={{ entry: "hero" }}
-              className="group flex items-center justify-center gap-2 w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors shadow-sm"
+              className="group relative inline-flex items-center gap-3 px-10 py-5 bg-text-primary text-base text-white rounded-full transition-all hover:-translate-y-1 hover:shadow-lg"
             >
-              <span>{t("cta")}</span>
+              <span className="font-medium tracking-wide">{t("cta")}</span>
               <ArrowRight
-                className="w-5 h-5 transition-transform group-hover:translate-x-0.5"
-                strokeWidth={2.5}
+                className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                strokeWidth={2}
               />
             </TrackedLink>
 
-            {/* <div className="flex gap-3 pt-2">
-              <TrackedLink
-                href="/health"
-                eventParams={{ entry: "header_health" }}
-                className="flex-1 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-bold text-slate-900 dark:text-white rounded-2xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
-              >
-                {t("healthOS")}
-              </TrackedLink>
-              <button
-                disabled
-                className="flex-1 flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white rounded-2xl border border-transparent opacity-50 cursor-not-allowed"
-              >
-                {t("todoOS")}
-                <span className="text-[10px] ml-1 font-normal opacity-80">({t("comingSoon")})</span>
-              </button>
-            </div> */}
+            <TrackedLink
+              href="/about"
+              eventParams={{ entry: "hero_about" }}
+              className="group inline-flex items-center gap-2 px-8 py-5 text-text-primary font-medium border-b border-border hover:border-text-primary transition-colors text-base"
+            >
+              <span>{navT("about")}</span>
+            </TrackedLink>
           </div>
         </div>
+
+        {/* Decorative Lines */}
+        <div className="fixed top-0 right-[15%] w-px h-full bg-border/40 -z-10 hidden xl:block" />
+        <div className="fixed bottom-[15%] left-0 w-full h-px bg-border/40 -z-10" />
       </main>
+
+      {/* Footer */}
+      <footer className="w-full max-w-[1400px] mx-auto px-6 py-8 border-t border-border/40">
+        <div className="flex justify-between items-end text-[10px] md:text-xs text-text-secondary uppercase tracking-widest font-medium">
+          <div className="flex flex-col gap-1">
+            <span>© 2026 Mandalart Project</span>
+            <span className="text-text-secondary/50">All rights reserved.</span>
+          </div>
+          <div className="flex gap-6">
+            <span>Nordic Editorial Standard</span>
+            <span>Design System v2</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

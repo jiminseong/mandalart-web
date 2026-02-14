@@ -36,7 +36,7 @@
     - **여백**: 섹션 간 여백을 시원하게(`py-24` 이상) 확보.
     - **버튼**: `rounded-full`과 `hover:scale` 효과 적용.
 
-### 3. 만다라트 에디터 UI (`Grid` & `NodeEditor`) 리스타일링
+### 3. 만다라트 에디터 UI (`Grid` & `NodeEditor`) 리스타일링 (완료)
 - **파일**: `src/components/grid/MandalartGrid.tsx`, `src/components/grid/Cell.tsx`, `src/components/editor/NodeEditor.tsx`
 - **작업**:
     - **Grid**: 그림자(Shadow)를 제거하고 `gap-px bg-border` 방식을 사용하여 얇고 선명한 그리드 라인 구현.
@@ -46,11 +46,13 @@
         - 세부 목표(Sub): **Focus Color** (`#2E3A45`) 적용.
     - **NodeEditor**: 바텀 시트/사이드 패널 디자인을 "종이 카드" 느낌으로 변경(`border` 강조, `shadow` 축소).
 
-### 4. 공통 UI 컴포넌트 업데이트
-- **파일**: `src/components/CommonHeader.tsx`, `src/components/LanguageSwitcher.tsx` 등
+### 4. 공통 UI 컴포넌트 업데이트 (완료)
+- **파일**: `src/app/[locale]/editor/page.tsx`, `src/components/LanguageSwitcher.tsx`
 - **작업**:
     - 네비게이션 바의 배경을 글래스모피즘(Blur) 대신 불투명한 종이 질감(`bg-base`)으로 변경이 나을지 검토.
     - 아이콘 사용을 최소화하고 텍스트 레이블(Label) 강화.
+    - `LanguageSwitcher`: 텍스트 기반 토글(`KO / EN`)로 변경.
+    - `EditorPage`: 헤더 및 하단 액션 버튼 스타일 북유럽풍으로 변경.
 
 ## 확인 사항
 - 모든 텍스트가 `Pretendard`로 렌더링되는지 확인.

@@ -5,6 +5,7 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { X, ArrowRight } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
+import { useTranslations } from "next-intl";
 
 const getNodeSection = (level: number) => {
   if (level === 0) return "center";
@@ -13,6 +14,7 @@ const getNodeSection = (level: number) => {
 };
 
 export const NodeEditor = () => {
+  const t = useTranslations("editor");
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const getNode = useMandalartStore((state) => state.getNode);
@@ -70,7 +72,7 @@ export const NodeEditor = () => {
       ? "text-focus border-focus"
       : "text-text-primary border-border";
 
-  const tagLabel = isCore ? "Core Goal" : isSub ? "Sub Goal" : "Action Plan";
+  const tagLabel = isCore ? t("coreGoal") : isSub ? t("subGoal") : t("actionPlan");
 
   return (
     <>
@@ -85,9 +87,9 @@ export const NodeEditor = () => {
         className={cn(
           "fixed z-50 bg-base transition-transform duration-300 ease-out flex flex-col",
           // Mobile: Bottom Sheet
-          "bottom-0 left-0 right-0 rounded-t-[2rem] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-border max-h-[85vh]",
+          "bottom-0 left-0 right-0 rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-border max-h-[85vh]",
           // Desktop: Right Side Panel
-          "lg:top-4 lg:bottom-4 lg:right-4 lg:left-auto lg:w-[420px] lg:h-auto lg:max-h-[calc(100vh-2rem)] lg:rounded-[2rem] lg:border lg:border-border lg:shadow-xl",
+          "lg:top-4 lg:bottom-4 lg:right-4 lg:left-auto lg:w-[420px] lg:h-auto lg:max-h-[calc(100vh-2rem)] lg:rounded-3xl lg:border lg:border-border lg:shadow-xl",
         )}
       >
         {/* Header */}
@@ -101,8 +103,8 @@ export const NodeEditor = () => {
             >
               {tagLabel}
             </span>
-            <h2 className="text-xl font-serif md:text-2xl font-bold text-text-primary">
-              Define Your Goal
+            <h2 className="text-xl md:text-2xl font-bold text-text-primary font-sans">
+              {t("defineGoal")}
             </h2>
           </div>
           <button
@@ -118,16 +120,16 @@ export const NodeEditor = () => {
           {/* Main Content Input */}
           <div className="space-y-4">
             <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest">
-              Goal Title
+              {t("goalTitleLabel")}
             </label>
             <input
               type="text"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="What is your goal?"
+              placeholder={t("goalTitlePlaceholder")}
               className={cn(
-                "w-full text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none py-2 placeholder:text-text-secondary/20 transition-colors",
+                "w-full text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none py-2 placeholder:text-text-secondary/20 transition-colors font-sans",
                 levelStyle,
                 "focus:border-black",
               )}
@@ -138,14 +140,14 @@ export const NodeEditor = () => {
           {/* Note Input */}
           <div className="space-y-4">
             <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest">
-              Details & Notes
+              {t("detailsLabel")}
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Add specific details or memo..."
+              placeholder={t("detailsPlaceholder")}
               rows={8}
-              className="w-full text-base leading-relaxed bg-surface/50 p-4 rounded-xl border border-border/50 focus:border-text-primary outline-none transition-all resize-none placeholder:text-text-secondary/40 text-text-primary"
+              className="w-full text-base leading-relaxed bg-surface/50 p-4 rounded-xl border border-border/50 focus:border-text-primary outline-none transition-all resize-none placeholder:text-text-secondary/40 text-text-primary font-sans"
             />
           </div>
 
@@ -154,19 +156,19 @@ export const NodeEditor = () => {
         </div>
 
         {/* Footer */}
-        <div className="flex-none p-6 border-t border-border/40 bg-base/50 backdrop-blur-sm rounded-b-[2rem]">
+        <div className="flex-none p-6 border-t border-border/40 bg-base/50 backdrop-blur-sm rounded-b-3xl">
           <div className="flex gap-4">
             <button
               onClick={() => setSelectedNodeId(null)}
               className="flex-1 py-4 text-sm font-bold text-text-secondary hover:text-text-primary transition-colors uppercase tracking-widest"
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               onClick={handleSave}
               className="flex-[2] py-4 bg-text-primary text-white rounded-full text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/5 hover:-translate-y-0.5"
             >
-              <span>Save Goal</span>
+              <span>{t("saveGoal")}</span>
               <ArrowRight size={16} />
             </button>
           </div>

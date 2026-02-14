@@ -13,12 +13,13 @@ import {
   Settings,
   Archive,
   MessageSquareQuote,
+  CheckCircle2,
 } from "lucide-react";
 import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 import { getTranslations } from "next-intl/server";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-
 import { Metadata } from "next";
+import { cn } from "@/utils/cn";
 
 export const metadata: Metadata = {
   title: "만다라트 기법이란? - 오타니 쇼헤이 성공 비결",
@@ -28,7 +29,6 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const t = await getTranslations("about");
-  const navT = await getTranslations("nav");
 
   const steps = [
     {
@@ -103,82 +103,79 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      {/* iOS-style Navigation Bar */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
-        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
+    <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-screen-md mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
+            className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
           >
-            <ArrowLeft size={20} strokeWidth={2.5} />
-            <span className="font-semibold">{navT("home")}</span>
+            <ArrowLeft
+              size={20}
+              strokeWidth={1.5}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="font-medium tracking-wide uppercase text-sm">HOME</span>
           </Link>
-
-          <TrackedLink
-            href="/editor"
-            eventParams={{ entry: "onboarding_end" }}
-            className="text-blue-600 dark:text-blue-400 font-semibold active:opacity-50 transition-opacity"
-          >
-            {t("ctaCreate")}
-          </TrackedLink>
+          <div className="font-bold text-lg tracking-tight">Mandalart</div>
+          <div className="w-16" /> {/* Spacer for centering if needed, or actions */}
         </div>
       </header>
 
-      <main className="max-w-screen-sm mx-auto px-6 pb-20">
-        {/* Hero */}
-        <section className="pt-8 pb-12 text-center space-y-3">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight whitespace-pre-wrap">
-            {t("title")}
-          </h1>
-          <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
+      <main className="max-w-screen-md mx-auto px-6 py-12 md:py-20 space-y-24">
+        {/* Hero Section */}
+        <section className="space-y-8 text-center">
+          <div className="space-y-4">
+            <span className="text-growth font-medium uppercase tracking-widest text-xs">
+              Philosophy
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-text-primary">
+              {t("title")}
+            </h1>
+          </div>
+          <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-normal">
             {t("description")}
           </p>
         </section>
 
         {/* How it works */}
-        <section className="space-y-3 pb-12">
-          {steps.map((item, index) => (
+        <section className="grid md:grid-cols-3 gap-8">
+          {steps.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-slate-900 p-6 rounded-2xl space-y-3 border border-black/5 dark:border-white/5"
+              className="flex flex-col items-center text-center space-y-4 p-6 rounded-2xl bg-surface border border-border/50 hover:border-growth/30 transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-600/10 dark:bg-blue-400/10 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <item.icon size={24} strokeWidth={2} />
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  {item.title}
-                </h3>
+              <div className="w-12 h-12 rounded-full bg-base border border-border flex items-center justify-center text-text-primary">
+                <item.icon size={24} strokeWidth={1.5} />
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed pl-15">
-                {item.desc}
-              </p>
+              <h3 className="text-xl font-bold text-text-primary">{item.title}</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </section>
 
         {/* 8 Criteria */}
-        <section className="space-y-6 pb-12">
-          <h2 className="text-2xl font-bold leading-tight whitespace-pre-wrap text-center">
-            {t("criteriaTitle")}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <section className="space-y-12">
+          <div className="text-center space-y-4">
+            <span className="text-growth font-medium uppercase tracking-widest text-xs">
+              Guidelines
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold">{t("criteriaTitle")}</h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
             {criteria.map((item) => (
               <div
                 key={item.id}
-                className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-black/5 dark:border-white/5 flex gap-4"
+                className="group flex gap-5 p-6 rounded-xl bg-surface border border-border/50 hover:border-growth/50 transition-colors"
               >
-                <div className="shrink-0 text-blue-600 dark:text-blue-400 mt-0.5">
-                  <item.icon size={24} />
+                <div className="shrink-0 pt-1 text-text-tertiary group-hover:text-growth transition-colors">
+                  <item.icon size={24} strokeWidth={1.5} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {item.desc}
-                  </p>
+                <div className="space-y-2">
+                  <h3 className="font-medium text-text-primary text-lg">{item.title}</h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -186,27 +183,36 @@ export default async function AboutPage() {
         </section>
 
         {/* Example (Ohtani) */}
-        <section className="bg-slate-900 dark:bg-slate-800 text-white rounded-3xl p-8 space-y-6">
-          <h2 className="text-2xl font-bold leading-tight whitespace-pre-wrap text-center">
-            {t("ohtaniTitle")}
-          </h2>
+        <section className="space-y-12 bg-text-primary text-base rounded-[2.5rem] p-8 md:p-12 overflow-hidden relative">
+          <div className="relative z-10 space-y-8 text-center max-w-2xl mx-auto">
+            <div className="space-y-4">
+              <span className="text-growth font-medium uppercase tracking-widest text-xs">
+                Example
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">{t("ohtaniTitle")}</h2>
+            </div>
 
-          <div className="py-4">
-            <OhtaniGrid />
+            <p className="text-white/70 text-lg leading-relaxed">{t("ohtaniDesc")}</p>
+
+            <div className="py-6">
+              {/* OhtaniGrid might need styling adjustments for dark bg, assuming it handles it */}
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+                <OhtaniGrid />
+              </div>
+            </div>
+
+            <TrackedLink
+              href="/editor"
+              eventParams={{ entry: "example_use" }}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-growth text-text-primary font-bold rounded-full hover:bg-growth/90 transition-all hover:scale-105 active:scale-95"
+            >
+              <span>{t("ctaCreate")}</span>
+              <ArrowRight size={20} strokeWidth={2} />
+            </TrackedLink>
           </div>
 
-          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap text-center">
-            {t("ohtaniDesc")}
-          </p>
-
-          <TrackedLink
-            href="/editor"
-            eventParams={{ entry: "example_use" }}
-            className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors"
-          >
-            <span>{t("ctaCreate")}</span>
-            <ArrowRight size={20} strokeWidth={2.5} />
-          </TrackedLink>
+          {/* Decorative background blur */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-growth/5 blur-3xl rounded-full" />
         </section>
       </main>
     </div>

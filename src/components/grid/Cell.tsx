@@ -7,16 +7,14 @@ type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 interface CellProps {
   node?: Node;
-  position: number;
+  // position prop removed as it was unused in rendering logic
   isCenter?: boolean;
   isActive?: boolean;
-  isPlaceholder?: boolean;
-  width?: string;
-  height?: string;
+  // isPlaceholder removed
   onClick?: (e: React.MouseEvent) => void;
   onZoom?: () => void;
   isZoomed?: boolean;
-  className?: string;
+  className?: string; // Additional classes passed from parent (e.g. background colors)
 }
 
 export const Cell = ({
@@ -30,10 +28,6 @@ export const Cell = ({
 }: CellProps) => {
   const t = useTranslations("editor");
 
-  // Design System Colors mapping
-  // Core Center (Level 0): Growth Theme
-  // Sub Center (Level 1): Focus Theme
-
   return (
     <div
       onClick={onClick}
@@ -42,16 +36,16 @@ export const Cell = ({
         "relative group w-full h-full flex items-center justify-center p-3 text-center transition-all duration-200 cursor-pointer",
         "break-keep select-none",
 
-        // Default Background (Editorial style: clean white or very light gray)
+        // Default Background
         "bg-white hover:bg-surface",
 
-        // Interaction
+        // Interaction: Selected State
         isActive && "z-10 ring-2 ring-growth bg-white shadow-lg scale-[1.02]",
 
-        // Center Node Styling (The 'Core' of any 3x3 block)
+        // Center Node Styling (Generic base style, specific colors usually passed via className)
         isCenter && "font-bold bg-base text-text-primary",
 
-        // Empty State
+        // Empty State Styling
         !node?.content && !isCenter && "text-text-secondary/30 bg-gray-50/50",
 
         className,
@@ -70,7 +64,7 @@ export const Cell = ({
         {node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || ""}
       </span>
 
-      {/* Zoom Icon - Minimalist */}
+      {/* Zoom Icon - Minimalist Style */}
       {onZoom && node?.content && (
         <button
           onClick={(e) => {
@@ -78,6 +72,7 @@ export const Cell = ({
             onZoom();
           }}
           className="absolute top-1 right-1 p-1.5 text-text-secondary/50 hover:text-growth opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label={isZoomed ? t("zoomOut") : t("zoomIn")} // Accessibility
         >
           {isZoomed ? (
             <Minimize2 size={14} strokeWidth={1.5} />

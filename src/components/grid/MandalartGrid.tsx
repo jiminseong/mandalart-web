@@ -26,6 +26,14 @@ export const MandalartGrid = () => {
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const zoomedNodeId = useMandalartStore((state) => state.zoomedNodeId);
   const setZoomedNodeId = useMandalartStore((state) => state.setZoomedNodeId);
+  const initializeEmptyProject = useMandalartStore((state) => state.initializeEmptyProject);
+
+  // Initialize empty project if no nodes exist
+  React.useEffect(() => {
+    if (nodes.length === 0) {
+      initializeEmptyProject();
+    }
+  }, [nodes.length, initializeEmptyProject]);
 
   // Parse Data Structure
   const { coreNode, subNodesMap, actionNodesMap } = useMemo(() => {
@@ -120,7 +128,6 @@ export const MandalartGrid = () => {
           return (
             <Cell
               key={`${blockIndex}-${cellPos}`}
-              position={cellPos}
               node={node}
               isCenter={isCellCenter}
               isActive={!!isSelected}

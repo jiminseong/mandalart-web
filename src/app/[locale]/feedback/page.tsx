@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { ArrowLeft, Star, Link as LinkIcon, Check } from "lucide-react";
+import { ArrowLeft, Check, Send } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
@@ -64,199 +64,158 @@ export default function FeedbackPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-6">
-        <div className="max-w-sm w-full text-center space-y-6">
-          <div className="w-16 h-16 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto">
-            <Check size={32} strokeWidth={3} />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t("thankYou")}</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{t("thankYouDesc")}</p>
-
-          <div className="space-y-3 pt-4">
-            <Link
-              href="/editor"
-              className="flex items-center justify-center gap-2 w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors"
-            >
-              <span>{t("backToEditor")}</span>
-            </Link>
-            <button className="flex items-center justify-center gap-2 w-full py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 active:bg-slate-300 dark:hover:bg-slate-700 dark:active:bg-slate-600 text-slate-900 dark:text-white font-semibold rounded-2xl transition-colors">
-              <LinkIcon size={18} strokeWidth={2.5} />
-              <span>{t("copyLink")}</span>
-            </button>
-          </div>
+      <div className="min-h-screen bg-base flex flex-col items-center justify-center p-6 text-center space-y-8 font-sans">
+        <div className="w-20 h-20 bg-growth/10 text-growth rounded-full flex items-center justify-center mx-auto ring-1 ring-growth/20">
+          <Check size={40} strokeWidth={1.5} />
         </div>
+        <div className="space-y-4 max-w-sm">
+          <h2 className="text-3xl font-bold text-text-primary">{t("thankYou")}</h2>
+          <p className="text-text-secondary leading-relaxed">{t("thankYouDesc")}</p>
+        </div>
+
+        <Link
+          href="/editor"
+          className="inline-flex items-center gap-2 px-8 py-3 bg-text-primary text-base font-semibold rounded-full hover:bg-text-secondary transition-colors text-white"
+        >
+          <span>{t("backToEditor")}</span>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      {/* iOS-style Navigation Bar */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80 border-b border-black/5 dark:border-white/5">
-        <div className="max-w-screen-sm mx-auto px-4 h-11 flex items-center justify-between">
+    <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-screen-md mx-auto px-6 h-14 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 text-blue-600 dark:text-blue-400 active:opacity-50 transition-opacity"
+            className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
           >
-            <ArrowLeft size={20} strokeWidth={2.5} />
-            <span className="font-semibold">{t("title")}</span>
+            <ArrowLeft
+              size={20}
+              strokeWidth={1.5}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="font-medium tracking-wide uppercase text-sm">Home</span>
           </Link>
+
           <LanguageSwitcher />
         </div>
       </header>
 
-      <main className="max-w-screen-sm mx-auto px-6 py-8 pb-20 space-y-6">
-        <section className="space-y-2">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("pageTitle")}</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            {t("pageDesc")}
-          </p>
+      <main className="max-w-screen-md mx-auto px-6 py-12 space-y-16">
+        {/* Intro */}
+        <section className="space-y-4 text-center max-w-lg mx-auto">
+          <h1 className="text-3xl font-bold text-text-primary">{t("pageTitle")}</h1>
+          <p className="text-text-secondary leading-relaxed">{t("pageDesc")}</p>
         </section>
 
-        {/* Interest Rating */}
-        <section className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-black/5 dark:border-white/5 space-y-4">
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
-            <Star size={18} fill="currentColor" strokeWidth={0} />
-            {t("interestScore")}
-          </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{t("interestQuestion")}</p>
-          <div className="grid grid-cols-5 gap-2">
-            {[1, 2, 3, 4, 5].map((score) => (
-              <button
-                key={score}
-                onClick={() => setRating(score)}
-                className={cn(
-                  "py-3 rounded-xl font-semibold transition-colors",
-                  rating === score
-                    ? "bg-green-600 text-white"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 active:opacity-70",
-                )}
-              >
-                {score}
-                {score === 5 && (
-                  <span className="ml-1 text-[10px] hidden sm:inline">{t("veryHigh")}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Detailed Questions */}
-        <section className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-black/5 dark:border-white/5 space-y-5">
-          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="21" y1="10" x2="3" y2="10"></line>
-              <line x1="21" y1="6" x2="3" y2="6"></line>
-              <line x1="21" y1="14" x2="3" y2="14"></line>
-              <line x1="21" y1="18" x2="3" y2="18"></line>
-            </svg>
-            {t("detailedOpinion")}
-          </div>
-
-          {/* Question 1 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-900 dark:text-white">
-              {t("q1Label")}
+        {/* Rating */}
+        <section className="space-y-8">
+          <div className="flex flex-col items-center space-y-4">
+            <label className="text-sm font-medium uppercase tracking-widest text-text-tertiary">
+              {t("interestQuestion")}
             </label>
-            <textarea
-              value={removalFeature}
-              onChange={(e) => setRemovalFeature(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
-              placeholder={t("q1Placeholder")}
-            />
-          </div>
-
-          {/* Question 2 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-900 dark:text-white">
-              {t("q2Label")}
-            </label>
-            <textarea
-              value={wantedFeature}
-              onChange={(e) => setWantedFeature(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
-              placeholder={t("q2Placeholder")}
-            />
-          </div>
-
-          {/* Question 3 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-900 dark:text-white">
-              {t("q3Label")}
-            </label>
-            <textarea
-              value={bestFeature}
-              onChange={(e) => setBestFeature(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
-              placeholder={t("q3Placeholder")}
-            />
-          </div>
-
-          {/* Question 4 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-900 dark:text-white">
-              {t("q4Label")}
-            </label>
-            <textarea
-              value={reasonNotUsing}
-              onChange={(e) => setReasonNotUsing(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
-              placeholder={t("q4Placeholder")}
-            />
-          </div>
-
-          {/* Question 5 */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-900 dark:text-white">
-              {t("q5Label")}
-            </label>
-            <textarea
-              value={reasonUsing}
-              onChange={(e) => setReasonUsing(e.target.value)}
-              className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-blue-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
-              placeholder={t("q5Placeholder")}
-            />
+            <div className="flex items-center gap-3">
+              {[1, 2, 3, 4, 5].map((score) => (
+                <button
+                  key={score}
+                  onClick={() => setRating(score)}
+                  className={cn(
+                    "w-12 h-12 rounded-full font-bold text-lg transition-all border",
+                    rating === score
+                      ? "bg-growth text-text-primary border-growth"
+                      : "bg-surface text-text-secondary border-border hover:border-growth/50 hover:bg-base",
+                  )}
+                >
+                  {score}
+                </button>
+              ))}
+            </div>
+            {rating === 5 && (
+              <span className="text-xs text-growth font-medium">{t("veryHigh")}</span>
+            )}
           </div>
         </section>
 
-        <section className="bg-indigo-50 dark:bg-indigo-900/10 p-5 rounded-2xl border border-indigo-200/50 dark:border-indigo-800/30 space-y-3">
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold">
-            <Star size={18} fill="currentColor" strokeWidth={0} />
-            {t("waitlistTitle")}
-          </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{t("waitlistDesc")}</p>
+        {/* Questions form */}
+        <section className="space-y-12">
+          {[
+            {
+              label: t("q1Label"),
+              placeholder: t("q1Placeholder"),
+              value: removalFeature,
+              setter: setRemovalFeature,
+            },
+            {
+              label: t("q2Label"),
+              placeholder: t("q2Placeholder"),
+              value: wantedFeature,
+              setter: setWantedFeature,
+            },
+            {
+              label: t("q3Label"),
+              placeholder: t("q3Placeholder"),
+              value: bestFeature,
+              setter: setBestFeature,
+            },
+            {
+              label: t("q4Label"),
+              placeholder: t("q4Placeholder"),
+              value: reasonNotUsing,
+              setter: setReasonNotUsing,
+            },
+            {
+              label: t("q5Label"),
+              placeholder: t("q5Placeholder"),
+              value: reasonUsing,
+              setter: setReasonUsing,
+            },
+          ].map((item, idx) => (
+            <div key={idx} className="space-y-3 group">
+              <label className="block font-medium text-text-primary text-lg">{item.label}</label>
+              <textarea
+                value={item.value}
+                onChange={(e) => item.setter(e.target.value)}
+                placeholder={item.placeholder}
+                className="w-full bg-transparent border-b border-border py-2 focus:border-growth focus:outline-none transition-colors min-h-[4rem] resize-none placeholder:text-text-tertiary/50 text-text-secondary"
+              />
+            </div>
+          ))}
+        </section>
 
+        {/* Contact / Waitlist */}
+        <section className="space-y-6 pt-8 border-t border-border">
+          <div className="space-y-2">
+            <label className="block text-xl font-bold text-text-primary">
+              {t("waitlistTitle")}
+            </label>
+            <p className="text-sm text-text-secondary">{t("waitlistDesc")}</p>
+          </div>
           <textarea
             value={contact}
             onChange={(e) => setContact(e.target.value)}
             placeholder={t("todoAppIdeaPlaceholder")}
-            className="w-full p-3 bg-white dark:bg-slate-900 rounded-xl border border-black/5 dark:border-white/5 focus:ring-2 focus:ring-indigo-600 outline-none resize-none h-24 text-sm text-slate-900 dark:text-white"
+            className="w-full bg-surface border border-border rounded-xl p-4 focus:border-growth focus:outline-none transition-colors min-h-[6rem] resize-none placeholder:text-text-tertiary/50 text-text-secondary"
           />
-          {/* <p className="text-xs text-green-600 dark:text-green-500 flex items-center gap-1">
-            <Check size={12} strokeWidth={3} /> {t("privacyNote")}
-          </p> */}
         </section>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold rounded-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? t("submitting") : t("submit")}
-        </button>
+        {/* Submit Action */}
+        <div className="pt-8 flex justify-center">
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="flex items-center gap-3 px-12 py-4 bg-text-primary text-base font-bold rounded-full hover:bg-black/80 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-white"
+          >
+            <span>{loading ? t("submitting") : t("submit")}</span>
+            {!loading && <Send size={18} strokeWidth={2} />}
+          </button>
+        </div>
       </main>
 
-      <footer className="py-6 text-center text-xs text-slate-400 dark:text-slate-600">
-        © 2026 Mandalart Plan. 목표 달성을 응원합니다.
+      <footer className="py-12 text-center text-xs text-text-tertiary">
+        © 2026 Mandalart Plan.
       </footer>
     </div>
   );

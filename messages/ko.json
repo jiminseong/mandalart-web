@@ -61,7 +61,14 @@
     "progress": "진행도",
     "freeAiRemaining": "무료 AI 잔여 {count}회",
     "zoomIn": "확대하기",
-    "viewAll": "전체 보기"
+    "viewAll": "전체 보기",
+    "defineGoal": "목표 정의하기",
+    "goalTitleLabel": "목표 제목",
+    "goalTitlePlaceholder": "당신의 목표는 무엇인가요?",
+    "detailsLabel": "상세 내용 및 메모",
+    "detailsPlaceholder": "구체적인 내용이나 메모를 입력하세요...",
+    "cancel": "취소",
+    "saveGoal": "목표 저장"
   },
   "share": {
     "title": "만다라트 내보내기 및 공유",
