@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, use } from "react";
 import { updateNickname } from "../../actions";
 import { ArrowRight } from "lucide-react";
 
-export default function NicknamePage({ params }: { params: { locale: string } }) {
+export default function NicknamePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
   // @ts-ignore
   const [state, action, isPending] = useActionState(updateNickname, null);
 
@@ -21,7 +22,7 @@ export default function NicknamePage({ params }: { params: { locale: string } })
       </div>
 
       <form action={action} className="space-y-8 mt-10">
-        <input type="hidden" name="locale" value={params.locale} />
+        <input type="hidden" name="locale" value={locale} />
 
         <div className="group relative">
           <input

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, use } from "react";
 import { updateSchedule } from "../../actions";
 import { Check } from "lucide-react";
 
@@ -21,7 +21,8 @@ const TIME_SLOTS = [
   { id: "night", label: "심야", sub: "22:00 ~" },
 ];
 
-export default function SchedulePage({ params }: { params: { locale: string } }) {
+export default function SchedulePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
   // @ts-ignore
   const [state, action, isPending] = useActionState(updateSchedule, null);
 
@@ -37,7 +38,7 @@ export default function SchedulePage({ params }: { params: { locale: string } })
       </div>
 
       <form action={action} className="space-y-8 mt-8 pb-32">
-        <input type="hidden" name="locale" value={params.locale} />
+        <input type="hidden" name="locale" value={locale} />
 
         <div className="space-y-3">
           <label className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide ml-4">

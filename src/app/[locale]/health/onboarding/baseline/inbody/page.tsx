@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, use } from "react";
 import { updateInbody } from "../../../actions";
 
-export default function InbodyPage({ params }: { params: { locale: string } }) {
+export default function InbodyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
   // @ts-ignore
   const [state, action, isPending] = useActionState(updateInbody, null);
 
@@ -19,7 +20,7 @@ export default function InbodyPage({ params }: { params: { locale: string } }) {
       </div>
 
       <form action={action} className="space-y-8 mt-8">
-        <input type="hidden" name="locale" value={params.locale} />
+        <input type="hidden" name="locale" value={locale} />
 
         <div className="bg-white dark:bg-[#1C1C1E] rounded-[14px] overflow-hidden border border-gray-200 dark:border-gray-800">
           {/* Weight (Required) */}

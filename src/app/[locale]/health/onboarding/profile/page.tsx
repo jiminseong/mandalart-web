@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, use } from "react";
 import { updateProfile } from "../../actions";
 
-export default function ProfilePage({ params }: { params: { locale: string } }) {
+export default function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = use(params);
   // @ts-ignore
   const [state, action, isPending] = useActionState(updateProfile, null);
 
@@ -19,7 +20,7 @@ export default function ProfilePage({ params }: { params: { locale: string } }) 
       </div>
 
       <form action={action} className="space-y-8 mt-8">
-        <input type="hidden" name="locale" value={params.locale} />
+        <input type="hidden" name="locale" value={locale} />
 
         {/* iOS Grouped Inset List Style */}
         <div className="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-[14px] overflow-hidden">
