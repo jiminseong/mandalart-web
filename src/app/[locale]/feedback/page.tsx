@@ -8,6 +8,7 @@ import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export default function FeedbackPage() {
   const t = useTranslations("feedback");
@@ -75,7 +76,7 @@ export default function FeedbackPage() {
 
         <Link
           href="/editor"
-          className="inline-flex items-center gap-2 px-8 py-3 bg-text-primary text-base font-semibold rounded-full hover:bg-text-secondary transition-colors text-white"
+          className="inline-flex items-center gap-2 rounded-full bg-text-primary px-8 py-3 text-base font-semibold text-accent-contrast transition-colors hover:bg-text-secondary"
         >
           <span>{t("backToEditor")}</span>
         </Link>
@@ -100,7 +101,10 @@ export default function FeedbackPage() {
             <span className="font-medium tracking-wide uppercase text-sm">Home</span>
           </Link>
 
-          <LanguageSwitcher />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
 
@@ -125,7 +129,7 @@ export default function FeedbackPage() {
                   className={cn(
                     "w-12 h-12 rounded-full font-bold text-lg transition-all border",
                     rating === score
-                      ? "bg-growth text-text-primary border-growth"
+                      ? "bg-growth text-accent-contrast border-growth"
                       : "bg-surface text-text-secondary border-border hover:border-growth/50 hover:bg-base",
                   )}
                 >
@@ -206,7 +210,7 @@ export default function FeedbackPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-3 px-12 py-4 bg-text-primary text-base font-bold rounded-full hover:bg-black/80 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-white"
+            className="flex items-center gap-3 rounded-full bg-text-primary px-12 py-4 text-base font-bold text-accent-contrast transition-all hover:scale-105 hover:bg-text-secondary active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span>{loading ? t("submitting") : t("submit")}</span>
             {!loading && <Send size={18} strokeWidth={2} />}

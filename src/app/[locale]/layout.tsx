@@ -24,9 +24,12 @@ export const metadata: Metadata = {
     "오타니 쇼헤이의 성공 비결, 만다라트 기법으로 2026년 목표를 체계적으로 계획하고 AI 코칭과 함께 달성해보세요.",
   metadataBase: new URL("https://mandalart.life"),
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: ["/favicon.ico"],
+    apple: [{ url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
   },
   openGraph: {
     title: "만다라트 2026",
@@ -64,9 +67,10 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const localeCandidate = locale as (typeof routing.locales)[number];
 
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(localeCandidate)) {
     notFound();
   }
 
@@ -75,9 +79,9 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className="white" suppressHydrationWarning>
       <Analytics />
-      <body className="antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
+      <body className="font-sans antialiased">
         {/* <AuthErrorHandler /> */}
         <NextIntlClientProvider messages={messages}>
           <Providers>{children}</Providers>

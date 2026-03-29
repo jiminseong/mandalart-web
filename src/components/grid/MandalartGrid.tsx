@@ -5,8 +5,7 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { Cell } from "./Cell";
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
-import { ArrowLeft, ZoomOut } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { ZoomOut } from "lucide-react";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -20,7 +19,6 @@ const getNodesByPosition = (nodes: Node[]) => {
 };
 
 export const MandalartGrid = () => {
-  const t = useTranslations("editor");
   const nodes = useMandalartStore((state) => state.nodes);
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
@@ -87,8 +85,8 @@ export const MandalartGrid = () => {
           isZoomedView
             ? "w-full h-full p-0 shadow-none"
             : isCenterBlock
-              ? "relative z-10 scale-[1.02] shadow-sm ring-1 ring-border bg-white"
-              : "bg-surface hover:bg-white cursor-pointer group/block",
+              ? "relative z-10 scale-[1.02] bg-surface-strong shadow-sm ring-1 ring-border"
+              : "cursor-pointer bg-surface hover:bg-surface-strong group/block",
         )}
         onClick={() => {
           if (!isZoomedView && !isCenterBlock && centerNode) {
@@ -99,7 +97,7 @@ export const MandalartGrid = () => {
         {/* Helper Badge on Hover (only for outer blocks) */}
         {!isZoomedView && !isCenterBlock && centerNode && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity z-20 pointer-events-none">
-            <span className="bg-text-primary text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-widest shadow-lg backdrop-blur-sm flex items-center gap-1">
+            <span className="flex items-center gap-1 rounded-full bg-text-primary px-2 py-1 text-[10px] font-bold text-accent-contrast uppercase tracking-widest shadow-lg backdrop-blur-sm">
               <ZoomOut size={10} className="stroke-[2.5]" /> Zoom In
             </span>
           </div>
@@ -160,7 +158,7 @@ export const MandalartGrid = () => {
                 // Core Center Cell (The absolute center of Mandalart)
                 isCenterBlock &&
                   isCellCenter &&
-                  "bg-growth text-white font-bold text-sm tracking-wide",
+                  "bg-growth text-accent-contrast font-bold text-sm tracking-wide",
                 // Sub Center Cells (The centers of outer blocks)
                 !isCenterBlock && isCellCenter && "bg-focus/10 text-focus font-semibold",
                 // Grid Lines handled by parent gap-px
@@ -175,24 +173,11 @@ export const MandalartGrid = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative bg-base overscroll-none">
-      {/* Zoom Back Button */}
-      {zoomedBlockIndex !== null && (
-        <div className="absolute top-6 left-6 z-30">
-          <button
-            onClick={() => setZoomedNodeId(null)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-text-primary rounded-full text-xs font-bold border border-border shadow-sm hover:border-text-primary transition-all active:scale-95 uppercase tracking-widest"
-          >
-            <ArrowLeft size={14} />
-            Back to Overview
-          </button>
-        </div>
-      )}
-
       {/* Main Grid Container */}
       {zoomedBlockIndex !== null ? (
         // Zoomed View
         <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8">
-          <div className="w-full max-w-[600px] aspect-square shadow-2xl shadow-black/5">
+          <div className="aspect-square w-full max-w-[600px] shadow-2xl shadow-black/5 dark:shadow-black/30">
             {renderBlock(zoomedBlockIndex, true)}
           </div>
         </div>

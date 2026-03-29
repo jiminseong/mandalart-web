@@ -8,6 +8,14 @@
     "switchTo": "Switch to...",
     "current": "Current"
   },
+  "theme": {
+    "label": "Theme",
+    "white": "White",
+    "editorial": "Editorial",
+    "dark": "Dark",
+    "pink": "Pink",
+    "rainbow": "Rainbow"
+  },
   "home": {
     "badge": "Mandalart 2026",
     "title": "Start with small goals",
@@ -55,6 +63,8 @@
     "aiCoach": "AI Coach",
     "share": "Share",
     "feedback": "Feedback",
+    "back": "Back",
+    "backToOverview": "Back to Overview",
     "coreGoal": "Core Goal",
     "subGoal": "Sub Goal",
     "actionPlan": "Action Plan",

@@ -13,13 +13,11 @@ import {
   Settings,
   Archive,
   MessageSquareQuote,
-  CheckCircle2,
 } from "lucide-react";
 import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 import { getTranslations } from "next-intl/server";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { Metadata } from "next";
-import { cn } from "@/utils/cn";
 
 export const metadata: Metadata = {
   title: "만다라트 기법이란? - 오타니 쇼헤이 성공 비결",
@@ -183,20 +181,26 @@ export default async function AboutPage() {
         </section>
 
         {/* Example (Ohtani) */}
-        <section className="space-y-12 bg-text-primary text-base rounded-[2.5rem] p-8 md:p-12 overflow-hidden relative">
+        <section className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-[#20211e] px-6 py-8 text-base shadow-[0_24px_80px_-36px_rgba(0,0,0,0.45)] md:px-10 md:py-12">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_50%)]" />
+          <div className="absolute inset-x-12 bottom-0 h-40 rounded-full bg-growth/12 blur-3xl" />
+
           <div className="relative z-10 space-y-8 text-center max-w-2xl mx-auto">
             <div className="space-y-4">
               <span className="text-growth font-medium uppercase tracking-widest text-xs">
                 Example
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">{t("ohtaniTitle")}</h2>
+              <h2 className="whitespace-pre-line text-3xl font-bold text-white md:text-4xl">
+                {t("ohtaniTitle")}
+              </h2>
             </div>
 
-            <p className="text-white/70 text-lg leading-relaxed">{t("ohtaniDesc")}</p>
+            <p className="mx-auto max-w-xl whitespace-pre-line break-keep text-base leading-8 text-white/85 md:text-lg">
+              {t("ohtaniDesc")}
+            </p>
 
-            <div className="py-6">
-              {/* OhtaniGrid might need styling adjustments for dark bg, assuming it handles it */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <div className="py-2 md:py-4">
+              <div className="rounded-[1.75rem] border border-white/12 bg-white/[0.04] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm md:p-4">
                 <OhtaniGrid />
               </div>
             </div>
@@ -204,15 +208,12 @@ export default async function AboutPage() {
             <TrackedLink
               href="/editor"
               eventParams={{ entry: "example_use" }}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-growth text-text-primary font-bold rounded-full hover:bg-growth/90 transition-all hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-3 rounded-full bg-growth px-8 py-4 font-bold text-accent-contrast shadow-lg shadow-growth/20 transition-all hover:scale-[1.02] hover:bg-growth/90 active:scale-95"
             >
               <span>{t("ctaCreate")}</span>
               <ArrowRight size={20} strokeWidth={2} />
             </TrackedLink>
           </div>
-
-          {/* Decorative background blur */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-growth/5 blur-3xl rounded-full" />
         </section>
       </main>
     </div>

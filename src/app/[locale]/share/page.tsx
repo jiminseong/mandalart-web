@@ -2,12 +2,17 @@
 
 import { useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
+import { Database } from "@/types/supabase";
 import { Download, Share2, ArrowLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toPng, toBlob } from "html-to-image";
 import { Link } from "@/i18n/routing";
 import { analytics } from "@/utils/gtm";
 import { useTranslations, useLocale } from "next-intl";
+
+type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
+type ShareTranslator = (key: ShareTranslationKey) => string;
 
 export default function SharePage() {
   const t = useTranslations("share");
@@ -137,7 +142,7 @@ export default function SharePage() {
 
               {showWatermark && (
                 <div className="absolute bottom-4 right-6 text-[10px] text-slate-400 font-medium tracking-wider">
-                  CREATED WITH MANDALART
+                  Created with mandalart.life
                 </div>
               )}
             </div>
@@ -152,7 +157,7 @@ export default function SharePage() {
             className={cn(
               "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
               showTitle
-                ? "bg-text-primary text-base border-text-primary text-white"
+                ? "bg-text-primary text-base border-text-primary text-accent-contrast"
                 : "bg-surface text-text-secondary border-border hover:border-text-primary",
             )}
           >
@@ -165,7 +170,7 @@ export default function SharePage() {
             className={cn(
               "p-4 rounded-xl border flex flex-col items-center gap-2 transition-all",
               showWatermark
-                ? "bg-text-primary text-base border-text-primary text-white"
+                ? "bg-text-primary text-base border-text-primary text-accent-contrast"
                 : "bg-surface text-text-secondary border-border hover:border-text-primary",
             )}
           >
@@ -178,7 +183,7 @@ export default function SharePage() {
         <div className="space-y-3 pt-4">
           <button
             onClick={handleDownload}
-            className="w-full py-4 bg-growth text-white font-bold rounded-full hover:bg-growth/90 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-growth/20"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-growth py-4 font-bold text-accent-contrast shadow-lg shadow-growth/20 transition-all hover:scale-[1.02] hover:bg-growth/90 active:scale-95"
           >
             <Download size={20} strokeWidth={2} />
             <span>{t("downloadPng")}</span>
@@ -197,7 +202,7 @@ export default function SharePage() {
 }
 
 // Nordic Style Clean Grid Renderer
-function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
+function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
   // 1. Core Logic: Find Core Node
   const coreNode = nodes.find((n) => n.level === 0);
   // 2. Sub Logic: Find Sub Nodes
@@ -244,7 +249,11 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
     return styles;
   };
 
-  const renderCell = (node: any, type: "core" | "sub" | "action", isCenter: boolean) => {
+  const renderCell = (
+    node: Node | undefined,
+    type: "core" | "sub" | "action",
+    isCenter: boolean,
+  ) => {
     let displayContent = node?.content || "";
 
     // Default Text Logic with Translation
@@ -260,7 +269,7 @@ function ExportGrid({ nodes, t }: { nodes: any[]; t: any }) {
   const renderBlock = (blockIdx: number) => {
     const isCoreBlock = blockIdx === 4;
 
-    let cellNodes: any[] = new Array(9).fill(null);
+    let cellNodes: Array<Node | undefined> = new Array(9).fill(undefined);
     let cellTypes: ("core" | "sub" | "action")[] = new Array(9).fill("action");
 
     if (isCoreBlock) {

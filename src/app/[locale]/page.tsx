@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export default async function Home() {
   const t = await getTranslations("home"); // Assuming 'home' namespace is correct based on prev file
@@ -17,7 +18,8 @@ export default async function Home() {
             Mandalart 2026
           </span>
         </div>
-        <div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeSwitcher />
           <LanguageSwitcher />
         </div>
       </header>
@@ -27,7 +29,7 @@ export default async function Home() {
         <div className="max-w-4xl w-full">
           {/* Badge / Label */}
           <div className="mb-8 inline-block">
-            <span className="px-3 py-1 border border-border rounded-full text-xs font-medium text-text-secondary tracking-wide uppercase bg-white/50 backdrop-blur-sm">
+            <span className="rounded-full border border-border bg-surface-strong/80 px-3 py-1 text-xs font-medium tracking-wide text-text-secondary uppercase backdrop-blur-sm">
               {t("badge")}
             </span>
           </div>
@@ -52,7 +54,7 @@ export default async function Home() {
             <TrackedLink
               href="/editor"
               eventParams={{ entry: "hero" }}
-              className="group relative inline-flex items-center gap-3 px-10 py-5 bg-text-primary text-base text-white rounded-full transition-all hover:-translate-y-1 hover:shadow-lg"
+              className="group relative inline-flex items-center gap-3 rounded-full bg-text-primary px-10 py-5 text-base text-accent-contrast transition-all hover:-translate-y-1 hover:bg-text-secondary hover:shadow-lg"
             >
               <span className="font-medium tracking-wide">{t("cta")}</span>
               <ArrowRight

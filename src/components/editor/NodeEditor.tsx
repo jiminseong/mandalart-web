@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { X, ArrowRight } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
 import { useTranslations } from "next-intl";
+import { Database } from "@/types/supabase";
+
+type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 const getNodeSection = (level: number) => {
   if (level === 0) return "center";
@@ -14,33 +17,30 @@ const getNodeSection = (level: number) => {
 };
 
 export const NodeEditor = () => {
-  const t = useTranslations("editor");
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
-  const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const getNode = useMandalartStore((state) => state.getNode);
-  const updateNodeContent = useMandalartStore((state) => state.updateNodeContent);
-  const nodes = useMandalartStore((state) => state.nodes);
-
-  // Local state for smooth typing
-  const [content, setContent] = useState("");
-  const [note, setNote] = useState("");
 
   const node = selectedNodeId ? getNode(selectedNodeId) : null;
 
-  useEffect(() => {
-    if (node) {
-      setContent(node.content || "");
-      setNote(node.note || "");
-    }
-  }, [node?.id]);
-
   if (!selectedNodeId || !node) return null;
+
+  return <NodeEditorPanel key={node.id} node={node} />;
+};
+
+function NodeEditorPanel({ node }: { node: Node }) {
+  const t = useTranslations("editor");
+  const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
+  const updateNodeContent = useMandalartStore((state) => state.updateNodeContent);
+  const nodes = useMandalartStore((state) => state.nodes);
+
+  const [content, setContent] = useState(() => node.content || "");
+  const [note, setNote] = useState(() => node.note || "");
 
   const handleSave = () => {
     const isNewContent = node.content !== content;
     const filledCountTotal = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
 
-    updateNodeContent(selectedNodeId, content, note);
+    updateNodeContent(node.id, content, note);
 
     if (isNewContent) {
       analytics.cellEdit({
@@ -166,7 +166,7 @@ export const NodeEditor = () => {
             </button>
             <button
               onClick={handleSave}
-              className="flex-[2] py-4 bg-text-primary text-white rounded-full text-sm font-bold hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/5 hover:-translate-y-0.5"
+              className="flex flex-[2] items-center justify-center gap-2 rounded-full bg-text-primary py-4 text-sm font-bold text-accent-contrast shadow-lg shadow-black/5 transition-all hover:-translate-y-0.5 hover:bg-text-secondary"
             >
               <span>{t("saveGoal")}</span>
               <ArrowRight size={16} />
@@ -176,4 +176,4 @@ export const NodeEditor = () => {
       </div>
     </>
   );
-};
+}

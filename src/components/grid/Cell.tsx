@@ -37,16 +37,16 @@ export const Cell = ({
         "break-keep select-none",
 
         // Default Background
-        "bg-white hover:bg-surface",
+        "bg-surface-strong hover:bg-surface",
 
         // Interaction: Selected State
-        isActive && "z-10 ring-2 ring-growth bg-white shadow-lg scale-[1.02]",
+        isActive && "z-10 scale-[1.02] bg-surface-strong ring-2 ring-growth shadow-lg",
 
         // Center Node Styling (Generic base style, specific colors usually passed via className)
         isCenter && "font-bold bg-base text-text-primary",
 
         // Empty State Styling
-        !node?.content && !isCenter && "text-text-secondary/30 bg-gray-50/50",
+        !node?.content && !isCenter && "bg-surface text-text-secondary/30",
 
         className,
       )}

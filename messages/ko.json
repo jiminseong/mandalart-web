@@ -8,6 +8,14 @@
     "switchTo": "전환하기...",
     "current": "현재"
   },
+  "theme": {
+    "label": "테마",
+    "white": "화이트",
+    "editorial": "에디토리얼",
+    "dark": "다크",
+    "pink": "핑크",
+    "rainbow": "레인보우"
+  },
   "home": {
     "badge": "만다라트 2026",
     "title": "작은 목표부터",
@@ -55,6 +63,8 @@
     "aiCoach": "AI 코치",
     "share": "공유하기",
     "feedback": "피드백",
+    "back": "뒤로",
+    "backToOverview": "전체 보기",
     "coreGoal": "핵심 목표",
     "subGoal": "세부 목표",
     "actionPlan": "실행 계획",

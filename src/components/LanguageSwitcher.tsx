@@ -14,23 +14,20 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {routing.locales.map((loc, index) => (
+    <div className="inline-flex items-center rounded-full border border-border/80 bg-surface/80 p-1 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+      {routing.locales.map((loc) => (
         <div key={loc} className="flex items-center">
           <button
             onClick={() => switchLanguage(loc as "ko" | "en")}
             className={cn(
-              "text-xs font-bold transition-colors uppercase tracking-widest",
+              "rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors",
               locale === loc
-                ? "text-text-primary underline decoration-2 decoration-growth underline-offset-4"
-                : "text-text-secondary/40 hover:text-text-secondary",
+                ? "bg-surface-strong text-text-primary shadow-sm"
+                : "text-text-secondary hover:text-text-primary",
             )}
           >
             {loc}
           </button>
-          {index < routing.locales.length - 1 && (
-            <span className="ml-2 text-[10px] text-border">/</span>
-          )}
         </div>
       ))}
     </div>
