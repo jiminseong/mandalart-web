@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing";
-import { Share2, MessageSquarePlus } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
@@ -29,13 +29,13 @@ export default async function EditorPage() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3 pl-4 border-l border-border/50">
-              <Link
+              {/* <Link
                 href="/feedback"
                 className="p-2 text-text-secondary hover:text-growth transition-colors"
                 title={t("feedback")}
               >
                 <MessageSquarePlus size={20} strokeWidth={1.5} />
-              </Link>
+              </Link> */}
               <Link
                 href="/share"
                 className="p-2 text-text-secondary hover:text-focus transition-colors"
@@ -59,12 +59,12 @@ export default async function EditorPage() {
 
           {/* Mobile Bottom Actions (Floating) - Only Visible on Mobile */}
           <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-4">
-            <Link
+            {/* <Link
               href="/feedback"
               className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface-strong shadow-lg text-text-secondary transition-colors hover:text-growth"
             >
               <MessageSquarePlus size={20} strokeWidth={1.5} />
-            </Link>
+            </Link> */}
             <Link
               href="/share"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-text-primary text-accent-contrast shadow-lg transition-transform hover:scale-105 hover:bg-text-secondary"
