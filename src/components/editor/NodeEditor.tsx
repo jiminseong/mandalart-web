@@ -34,13 +34,12 @@ function NodeEditorPanel({ node }: { node: Node }) {
   const nodes = useMandalartStore((state) => state.nodes);
 
   const [content, setContent] = useState(() => node.content || "");
-  const [note, setNote] = useState(() => node.note || "");
 
   const handleSave = () => {
     const isNewContent = node.content !== content;
     const filledCountTotal = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
 
-    updateNodeContent(node.id, content, note);
+    updateNodeContent(node.id, content);
 
     if (isNewContent) {
       analytics.cellEdit({
@@ -93,20 +92,8 @@ function NodeEditorPanel({ node }: { node: Node }) {
         )}
       >
         {/* Header */}
-        <div className="flex-none flex items-center justify-between px-8 py-6 border-b border-border/40">
-          <div className="flex flex-col">
-            <span
-              className={cn(
-                "text-[10px] font-bold uppercase tracking-widest mb-1",
-                isCore ? "text-growth" : isSub ? "text-focus" : "text-text-secondary",
-              )}
-            >
-              {tagLabel}
-            </span>
-            <h2 className="text-xl md:text-2xl font-bold text-text-primary font-sans">
-              {t("defineGoal")}
-            </h2>
-          </div>
+        <div className="flex-none flex items-center justify-between px-4 py-4 ">
+          <div className="flex flex-col"></div>
           <button
             onClick={() => setSelectedNodeId(null)}
             className="p-2 hover:bg-border/20 rounded-full transition-colors text-text-secondary"
@@ -116,12 +103,9 @@ function NodeEditorPanel({ node }: { node: Node }) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8">
+        <div className="flex-1 overflow-y-auto px-8 pb-6 space-y-6">
           {/* Main Content Input */}
           <div className="space-y-4">
-            <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest">
-              {t("goalTitleLabel")}
-            </label>
             <input
               type="text"
               value={content}
@@ -134,20 +118,6 @@ function NodeEditorPanel({ node }: { node: Node }) {
                 "focus:border-text-primary",
               )}
               autoFocus
-            />
-          </div>
-
-          {/* Note Input */}
-          <div className="space-y-4">
-            <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest">
-              {t("detailsLabel")}
-            </label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={t("detailsPlaceholder")}
-              rows={8}
-              className="w-full text-base leading-relaxed bg-surface/50 p-4 rounded-xl border border-border/50 focus:border-text-primary outline-none transition-all resize-none placeholder:text-text-secondary/60 text-text-primary font-sans"
             />
           </div>
 

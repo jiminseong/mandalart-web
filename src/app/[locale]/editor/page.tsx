@@ -18,7 +18,7 @@ export default async function EditorPage() {
       {/* Editorial Header */}
       <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border transition-all">
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
-          <EditorBackButton backLabel={t("back")} overviewLabel={t("backToOverview")} />
+          <EditorBackButton backLabel={t("back")} />
 
           <h1 className="text-xl font-serif font-bold tracking-tight text-text-primary absolute left-1/2 -translate-x-1/2">
             Mandalart

@@ -1,6 +1,5 @@
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
-import { Maximize2, Minimize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
@@ -12,10 +11,7 @@ interface CellProps {
   // position prop removed as it was unused in rendering logic
   isCenter?: boolean;
   isActive?: boolean;
-  // isPlaceholder removed
   onClick?: (e: React.MouseEvent) => void;
-  onZoom?: () => void;
-  isZoomed?: boolean;
   className?: string; // Additional classes passed from parent (e.g. background colors)
 }
 
@@ -24,8 +20,6 @@ export const Cell = ({
   isCenter,
   isActive,
   onClick,
-  onZoom,
-  isZoomed,
   className,
 }: CellProps) => {
   const t = useTranslations("editor");
@@ -70,24 +64,6 @@ export const Cell = ({
         fitHeightRatio={typographyPreset.fitHeightRatio}
         emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
       />
-
-      {/* Zoom Icon - Minimalist Style */}
-      {onZoom && node?.content && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onZoom();
-          }}
-          className="absolute top-1 right-1 p-1.5 text-text-secondary hover:text-growth opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label={isZoomed ? t("zoomOut") : t("zoomIn")} // Accessibility
-        >
-          {isZoomed ? (
-            <Minimize2 size={14} strokeWidth={1.5} />
-          ) : (
-            <Maximize2 size={14} strokeWidth={1.5} />
-          )}
-        </button>
-      )}
     </div>
   );
 };

@@ -82,24 +82,34 @@ export const getCellTypographyPreset = ({
   }
 
   if (isCenter) {
-    const maxFontSize = length > 24 ? 10.8 : length > 14 ? 13.4 : 16;
+    const minFontSize = placeholder ? 8 : 9;
+    const maxFontSize = placeholder
+      ? length > 12
+        ? 12.5
+        : 14
+      : 15;
     return {
-      minFontSize: 3.2,
+      minFontSize,
       maxFontSize,
       fontWeight: placeholder ? 600 : 700,
-      fitWidthRatio: 0.92,
-      fitHeightRatio: 0.86,
-      emergencyMinFontSize: 3.2,
+      fitWidthRatio: 0.98,
+      fitHeightRatio: 0.94,
+      emergencyMinFontSize: 4.8,
     };
   }
 
-  const maxFontSize = length > 28 ? 7.8 : length > 18 ? 9.8 : 14;
+  const minFontSize = placeholder ? 7.6 : 8.8;
+  const maxFontSize = placeholder
+    ? length > 12
+      ? 11.8
+      : 13.2
+    : 15;
   return {
-    minFontSize: 2.8,
+    minFontSize,
     maxFontSize,
     fontWeight: placeholder ? 500 : 600,
-    fitWidthRatio: 0.9,
-    fitHeightRatio: 0.84,
-    emergencyMinFontSize: 2.8,
+    fitWidthRatio: 0.98,
+    fitHeightRatio: 0.93,
+    emergencyMinFontSize: 4.4,
   };
 };

@@ -75,8 +75,6 @@
     "increaseGridSize": "Increase board size",
     "zoomIn": "Zoom In",
     "viewAll": "View All",
-    "defineGoal": "Define Your Goal",
-    "goalTitleLabel": "Goal Title",
     "goalTitlePlaceholder": "What is your goal?",
     "detailsLabel": "Details & Notes",
     "detailsPlaceholder": "Add specific details or memo...",
