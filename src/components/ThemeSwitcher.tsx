@@ -6,9 +6,9 @@ import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { cn } from "@/utils/cn";
 import {
-  APP_THEMES,
   DEFAULT_THEME,
-  type AppTheme,
+  APP_THEMES,
+  normalizeAppTheme,
   THEME_LABEL_KEYS,
   THEME_SWATCHES,
 } from "@/utils/themes";
@@ -48,9 +48,7 @@ export function ThemeSwitcher() {
     };
   }, [open]);
 
-  const activeTheme = mounted && theme && APP_THEMES.includes(theme as AppTheme)
-    ? (theme as AppTheme)
-    : DEFAULT_THEME;
+  const activeTheme = mounted ? (normalizeAppTheme(theme) ?? DEFAULT_THEME) : DEFAULT_THEME;
 
   return (
     <div ref={containerRef} className="relative">
@@ -60,7 +58,7 @@ export function ThemeSwitcher() {
         className={cn(
           "inline-flex h-10 items-center gap-2 rounded-full border border-border/80",
           "bg-surface/80 px-3.5 text-[11px] font-semibold tracking-[0.16em]",
-          "text-text-primary uppercase shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)]",
+          "text-text-primary uppercase shadow-[0_10px_30px_-24px_rgba(0,0,0,0.28)]",
           "backdrop-blur-xl transition-colors hover:border-growth/40 hover:bg-surface-strong/80",
         )}
         aria-expanded={open}
@@ -88,7 +86,7 @@ export function ThemeSwitcher() {
         <div
           className={cn(
             "absolute right-0 z-50 mt-3 w-[240px] rounded-[1.35rem] border border-border/80",
-            "bg-base/95 p-2.5 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.55)] backdrop-blur-2xl",
+            "bg-base/95 p-2.5 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.36)] backdrop-blur-2xl",
           )}
           role="listbox"
           aria-label={t("label")}

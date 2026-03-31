@@ -10,9 +10,10 @@
   },
   "theme": {
     "label": "테마",
-    "white": "화이트",
-    "editorial": "에디토리얼",
+    "light": "라이트",
     "dark": "다크",
+    "blue": "블루",
+    "editorial": "에디토리얼",
     "pink": "핑크",
     "rainbow": "레인보우"
   },
@@ -70,6 +71,8 @@
     "actionPlan": "실행 계획",
     "progress": "진행도",
     "freeAiRemaining": "무료 AI 잔여 {count}회",
+    "decreaseGridSize": "만다라트 크기 줄이기",
+    "increaseGridSize": "만다라트 크기 키우기",
     "zoomIn": "확대하기",
     "viewAll": "전체 보기",
     "defineGoal": "목표 정의하기",

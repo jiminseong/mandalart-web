@@ -3,6 +3,7 @@ import { Share2 } from "lucide-react";
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
+import { GridSizeControls } from "@/components/editor/GridSizeControls";
 import { EditorBackButton } from "@/components/editor/EditorBackButton";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 // import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
@@ -50,8 +51,11 @@ export default async function EditorPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 min-h-0 flex flex-col relative w-full overflow-hidden">
-        <div className="shrink-0 px-6 pt-5 pb-1">
-          <ProgressBar />
+        <div className="shrink-0 px-6 pt-5 pb-2">
+          <div className="mx-auto flex w-full max-w-[420px] items-center justify-center gap-3">
+            <ProgressBar />
+            <GridSizeControls />
+          </div>
         </div>
 
         <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative w-full overflow-hidden">

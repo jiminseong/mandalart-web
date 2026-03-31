@@ -5,38 +5,70 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { Database } from "@/types/supabase";
 import { Download, Share2, ArrowLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { toPng, toBlob } from "html-to-image";
+import { toBlob } from "html-to-image";
 import { Link } from "@/i18n/routing";
 import { analytics } from "@/utils/gtm";
 import { useTranslations, useLocale } from "next-intl";
+import { getCellTypographyPreset } from "@/utils/cellTypography";
+import { AutoFitText } from "@/components/AutoFitText";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
 type ShareTranslator = (key: ShareTranslationKey) => string;
 
+const PREVIEW_CARD_WIDTH = 500;
+const EXPORT_CARD_WIDTH = 2000;
+const EXPORT_CARD_HEIGHT = 2500;
+const EXPORT_SCALE = EXPORT_CARD_WIDTH / PREVIEW_CARD_WIDTH;
+
+const waitForNextFrame = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+
 export default function SharePage() {
   const t = useTranslations("share");
   const locale = useLocale();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
   const [showWatermark, setShowWatermark] = useState(true);
 
+  const getExportBlob = async () => {
+    if (!exportRef.current) return null;
+
+    await document.fonts?.ready;
+    await waitForNextFrame();
+    await waitForNextFrame();
+
+    return toBlob(exportRef.current, {
+      cacheBust: true,
+      backgroundColor: "#ffffff",
+      width: EXPORT_CARD_WIDTH,
+      height: EXPORT_CARD_HEIGHT,
+      canvasWidth: EXPORT_CARD_WIDTH,
+      canvasHeight: EXPORT_CARD_HEIGHT,
+      pixelRatio: 1,
+      skipAutoScale: true,
+      preferredFontFormat: "woff2",
+    });
+  };
+
   const handleDownload = async () => {
-    if (!containerRef.current) return;
+    if (!exportRef.current) return;
 
     try {
-      const dataUrl = await toPng(containerRef.current, {
-        cacheBust: true,
-        backgroundColor: "#ffffff",
-      });
+      const blob = await getExportBlob();
+      if (!blob) return;
 
       const link = document.createElement("a");
-      link.href = dataUrl;
+      const objectUrl = URL.createObjectURL(blob);
+      link.href = objectUrl;
       link.download = `mandalart-2026-${Date.now()}.png`;
       link.click();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 
       // Track export_image event
       const filledCount = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
@@ -53,15 +85,11 @@ export default function SharePage() {
   };
 
   const handleShare = async () => {
-    if (!containerRef.current) return;
+    if (!exportRef.current) return;
 
     if (navigator.share) {
       try {
-        const blob = await toBlob(containerRef.current, {
-          cacheBust: true,
-          backgroundColor: "#ffffff",
-        });
-
+        const blob = await getExportBlob();
         if (!blob) return;
         const file = new File([blob], "mandalart-2026.png", { type: "image/png" });
 
@@ -116,35 +144,14 @@ export default function SharePage() {
           </div>
 
           <div className="p-8 rounded-2xl bg-surface border border-border flex items-center justify-center overflow-hidden shadow-sm">
-            {/* Capture Area - Fixed Ratio Box */}
-            <div
-              ref={containerRef}
-              className="bg-white text-slate-900 w-full max-w-[500px] aspect-4/5 p-8 flex flex-col gap-6 shadow-2xl items-center relative"
-            >
-              {showTitle && (
-                <div className="text-center space-y-2 w-full pt-4">
-                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight font-sans">
-                    Mandalart 2026
-                  </h1>
-                  <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
-                    {new Date().toLocaleDateString(locale, {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
-              )}
-
-              <div className="flex-1 w-full flex items-center justify-center">
-                <ExportGrid nodes={nodes} t={t} />
-              </div>
-
-              {showWatermark && (
-                <div className="absolute bottom-4 right-6 text-[10px] text-slate-400 font-medium tracking-wider">
-                  Created with mandalart.life
-                </div>
-              )}
+            <div className="w-full max-w-[500px]">
+              <ShareCaptureCard
+                locale={locale}
+                nodes={nodes}
+                showTitle={showTitle}
+                showWatermark={showWatermark}
+                t={t}
+              />
             </div>
           </div>
           <p className="text-center text-xs text-text-tertiary">{t("previewDisclaimer")}</p>
@@ -197,6 +204,77 @@ export default function SharePage() {
           </button>
         </div>
       </main>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-[-10000px] top-0 opacity-0"
+        style={{ width: EXPORT_CARD_WIDTH, height: EXPORT_CARD_HEIGHT }}
+      >
+        <div
+          ref={exportRef}
+          className="overflow-hidden bg-white"
+          style={{ width: EXPORT_CARD_WIDTH, height: EXPORT_CARD_HEIGHT }}
+        >
+          <div
+            style={{
+              width: PREVIEW_CARD_WIDTH,
+              transform: `scale(${EXPORT_SCALE})`,
+              transformOrigin: "top left",
+            }}
+          >
+            <ShareCaptureCard
+              locale={locale}
+              nodes={nodes}
+              showTitle={showTitle}
+              showWatermark={showWatermark}
+              t={t}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShareCaptureCard({
+  locale,
+  nodes,
+  showTitle,
+  showWatermark,
+  t,
+}: {
+  locale: string;
+  nodes: Node[];
+  showTitle: boolean;
+  showWatermark: boolean;
+  t: ShareTranslator;
+}) {
+  return (
+    <div className="bg-white text-slate-900 w-full aspect-4/5 p-6 flex flex-col gap-4 shadow-2xl items-center relative overflow-hidden">
+      {showTitle && (
+        <div className="text-center space-y-2 w-full pt-2">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight font-sans">
+            Mandalart 2026
+          </h1>
+          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
+            {new Date().toLocaleDateString(locale, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+      )}
+
+      <div className="flex-1 w-full flex items-center justify-center">
+        <ExportGrid nodes={nodes} t={t} />
+      </div>
+
+      {showWatermark && (
+        <div className="absolute bottom-3 right-5 text-[10px] text-slate-400 font-medium tracking-wider">
+          Created with mandalart.life
+        </div>
+      )}
     </div>
   );
 }
@@ -209,45 +287,6 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
   const subNodes = nodes.filter((n) => n.level === 1);
   // 3. Action Logic: Find Action Nodes
   const actionNodes = nodes.filter((n) => n.level === 2);
-
-  const getStyles = (type: "core" | "sub" | "action", isCenter: boolean) => {
-    const styles: React.CSSProperties = {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      textAlign: "center",
-      lineHeight: "1.2",
-      wordBreak: "keep-all",
-      whiteSpace: "pre-wrap",
-      padding: "2px",
-      boxSizing: "border-box",
-      backgroundColor: "#ffffff",
-      color: "#334155",
-      fontSize: "8px",
-      fontWeight: "400",
-    };
-
-    if (type === "core") {
-      styles.color = "#0F766E"; // Growth Color
-      styles.fontWeight = "900";
-      styles.fontSize = "10px";
-    } else if (type === "sub") {
-      if (isCenter) {
-        styles.color = "#1E293B"; // Slate 800
-        styles.fontWeight = "700";
-        styles.fontSize = "9px";
-      } else {
-        styles.color = "#475569"; // Slate 600
-      }
-    } else {
-      // Action
-      styles.color = "#64748B"; // Slate 500
-    }
-
-    return styles;
-  };
 
   const renderCell = (
     node: Node | undefined,
@@ -263,7 +302,38 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
       else if (type === "action") displayContent = t("defaultAction");
     }
 
-    return <div style={getStyles(type, isCenter)}>{displayContent}</div>;
+    const isPlaceholder = !node?.content?.trim();
+    const typographyPreset = getCellTypographyPreset({
+      content: displayContent,
+      isCenter,
+      compact: true,
+      placeholder: isPlaceholder,
+    });
+
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "1px",
+          boxSizing: "border-box",
+        }}
+      >
+        <AutoFitText
+          text={displayContent}
+          color={isPlaceholder ? "#6B7280" : isCenter ? "#111827" : "#374151"}
+          minFontSize={typographyPreset.minFontSize}
+          maxFontSize={typographyPreset.maxFontSize}
+          fontWeight={typographyPreset.fontWeight}
+          fitWidthRatio={typographyPreset.fitWidthRatio}
+          fitHeightRatio={typographyPreset.fitHeightRatio}
+          emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+        />
+      </div>
+    );
   };
 
   const renderBlock = (blockIdx: number) => {
@@ -304,8 +374,8 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
           gridTemplateColumns: "repeat(3, 1fr)",
           gridTemplateRows: "repeat(3, 1fr)",
           gap: "0px",
-          backgroundColor: "#CBD5E1",
-          border: "1px solid #CBD5E1",
+          backgroundColor: "#D1D5DB",
+          border: "1px solid #D1D5DB",
           aspectRatio: "1/1",
           width: "100%",
           height: "100%",
@@ -321,7 +391,7 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
                 width: "100%",
                 height: "100%",
                 backgroundColor: "#fff",
-                border: "0.5px solid #E2E8F0",
+                border: "0.5px solid #E5E7EB",
               }}
             >
               {renderCell(n, type, isCenter)}
@@ -339,7 +409,7 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gridTemplateRows: "repeat(3, 1fr)",
-        gap: "4px",
+        gap: "3px",
         aspectRatio: "1/1",
       }}
     >

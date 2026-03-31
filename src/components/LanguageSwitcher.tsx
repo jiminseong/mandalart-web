@@ -14,7 +14,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="inline-flex items-center rounded-full border border-border/80 bg-surface/80 p-1 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+    <div className="inline-flex items-center rounded-full border border-border/80 bg-surface/80 p-1 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.28)] backdrop-blur-xl">
       {routing.locales.map((loc) => (
         <div key={loc} className="flex items-center">
           <button

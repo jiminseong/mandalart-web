@@ -3,9 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { cn } from "@/utils/cn";
 
-export default async function Home() {
-  const t = await getTranslations("home"); // Assuming 'home' namespace is correct based on prev file
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations("home");
   const navT = await getTranslations("nav");
 
   return (
@@ -36,7 +38,14 @@ export default async function Home() {
 
           {/* Hero Typography */}
           <div className="space-y-8 mb-16">
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold leading-[1.2] -ml-[0.05em] tracking-tighter text-text-primary break-keep">
+            <h1
+              className={cn(
+                "font-bold leading-[1.2] -ml-[0.05em] tracking-tighter text-text-primary break-keep text-balance",
+                locale === "en"
+                  ? "text-5xl md:text-7xl lg:text-[7.5rem]"
+                  : "text-6xl md:text-8xl lg:text-9xl",
+              )}
+            >
               {t("title")}
               <br />
               <span className="text-text-secondary/80 font-medium italic">

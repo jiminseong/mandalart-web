@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { Database } from "@/types/supabase";
+import { DEFAULT_GRID_SIZE_INDEX, GRID_SIZE_PRESETS } from "@/utils/gridSize";
 
 // Define shorter types for convenience
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
@@ -15,6 +16,7 @@ interface MandalartState {
   isLoading: boolean;
   selectedNodeId: string | null; // For the side panel / bottom sheet
   zoomedNodeId: string | null; // For mobile zoom-in view or focus mode
+  gridSizeIndex: number;
 
   // Actions
   setProject: (project: Project) => void;
@@ -24,6 +26,7 @@ interface MandalartState {
   initializeEmptyProject: () => void;
   setSelectedNodeId: (id: string | null) => void;
   setZoomedNodeId: (id: string | null) => void;
+  setGridSizeIndex: (index: number) => void;
 
   // Computed / Selectors
   getNode: (id: string) => Node | undefined;
@@ -38,6 +41,7 @@ export const useMandalartStore = create<MandalartState>()(
         isLoading: false,
         selectedNodeId: null,
         zoomedNodeId: null,
+        gridSizeIndex: DEFAULT_GRID_SIZE_INDEX,
 
         setProject: (project) => set({ project }),
 
@@ -114,7 +118,7 @@ export const useMandalartStore = create<MandalartState>()(
             });
 
             // 3. Create Action Nodes (Level 2)
-            Object.entries(subNodeIds).forEach(([_, subId]) => {
+            Object.entries(subNodeIds).forEach(([, subId]) => {
               [0, 1, 2, 3, 5, 6, 7, 8].forEach((childPos) => {
                 newNodes.push({
                   id: generateId(),
@@ -138,6 +142,11 @@ export const useMandalartStore = create<MandalartState>()(
         setSelectedNodeId: (id) => set({ selectedNodeId: id }),
 
         setZoomedNodeId: (id) => set({ zoomedNodeId: id }),
+
+        setGridSizeIndex: (index) =>
+          set({
+            gridSizeIndex: Math.max(0, Math.min(GRID_SIZE_PRESETS.length - 1, index)),
+          }),
 
         getNode: (id) => get().nodes.find((n) => n.id === id),
       }),

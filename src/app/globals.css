@@ -32,19 +32,20 @@
 
 @layer base {
   :root,
+  html.light,
   html.white {
-    --theme-color-base: #fcfcf9;
-    --theme-color-surface: #f1f1eb;
+    --theme-color-base: #fafafa;
+    --theme-color-surface: #f4f4f5;
     --theme-color-surface-strong: #ffffff;
     --theme-color-white: #ffffff;
-    --theme-color-text-primary: #171714;
-    --theme-color-text-secondary: #616158;
-    --theme-color-text-tertiary: #919186;
-    --theme-color-border: #dfdfd7;
-    --theme-color-growth: #5f7360;
-    --theme-color-focus: #5c6c82;
-    --theme-color-action: #cb7d69;
-    --theme-color-accent-contrast: #fdfcf8;
+    --theme-color-text-primary: #111827;
+    --theme-color-text-secondary: #374151;
+    --theme-color-text-tertiary: #6b7280;
+    --theme-color-border: #d1d5db;
+    --theme-color-growth: #111827;
+    --theme-color-focus: #1f2937;
+    --theme-color-action: #4b5563;
+    --theme-color-accent-contrast: #fafafa;
     color-scheme: light;
   }
 
@@ -65,18 +66,34 @@
   }
 
   html.dark {
-    --theme-color-base: #101311;
-    --theme-color-surface: #181d19;
-    --theme-color-surface-strong: #202621;
+    --theme-color-base: #000000;
+    --theme-color-surface: #0a0a0a;
+    --theme-color-surface-strong: #171717;
     --theme-color-white: #ffffff;
-    --theme-color-text-primary: #f3efe4;
-    --theme-color-text-secondary: #b7b0a2;
-    --theme-color-text-tertiary: #8d8679;
-    --theme-color-border: #313831;
-    --theme-color-growth: #8ea780;
-    --theme-color-focus: #93aec7;
-    --theme-color-action: #d28f78;
-    --theme-color-accent-contrast: #121512;
+    --theme-color-text-primary: #fafafa;
+    --theme-color-text-secondary: #e5e7eb;
+    --theme-color-text-tertiary: #9ca3af;
+    --theme-color-border: #3f3f46;
+    --theme-color-growth: #f3f4f6;
+    --theme-color-focus: #d1d5db;
+    --theme-color-action: #9ca3af;
+    --theme-color-accent-contrast: #09090b;
+    color-scheme: dark;
+  }
+
+  html.blue {
+    --theme-color-base: #05070b;
+    --theme-color-surface: #0b1220;
+    --theme-color-surface-strong: #111827;
+    --theme-color-white: #ffffff;
+    --theme-color-text-primary: #d7e3f4;
+    --theme-color-text-secondary: #94a3b8;
+    --theme-color-text-tertiary: #64748b;
+    --theme-color-border: #1f2937;
+    --theme-color-growth: #60a5fa;
+    --theme-color-focus: #93c5fd;
+    --theme-color-action: #bfdbfe;
+    --theme-color-accent-contrast: #020617;
     color-scheme: dark;
   }
 

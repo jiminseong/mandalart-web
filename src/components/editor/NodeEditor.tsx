@@ -129,9 +129,9 @@ function NodeEditorPanel({ node }: { node: Node }) {
               onKeyDown={handleKeyDown}
               placeholder={t("goalTitlePlaceholder")}
               className={cn(
-                "w-full text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none py-2 placeholder:text-text-secondary/20 transition-colors font-sans",
+                "w-full text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none py-2 placeholder:text-text-secondary/45 transition-colors font-sans",
                 levelStyle,
-                "focus:border-black",
+                "focus:border-text-primary",
               )}
               autoFocus
             />
@@ -147,7 +147,7 @@ function NodeEditorPanel({ node }: { node: Node }) {
               onChange={(e) => setNote(e.target.value)}
               placeholder={t("detailsPlaceholder")}
               rows={8}
-              className="w-full text-base leading-relaxed bg-surface/50 p-4 rounded-xl border border-border/50 focus:border-text-primary outline-none transition-all resize-none placeholder:text-text-secondary/40 text-text-primary font-sans"
+              className="w-full text-base leading-relaxed bg-surface/50 p-4 rounded-xl border border-border/50 focus:border-text-primary outline-none transition-all resize-none placeholder:text-text-secondary/60 text-text-primary font-sans"
             />
           </div>
 

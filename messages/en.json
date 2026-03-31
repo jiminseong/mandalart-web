@@ -10,9 +10,10 @@
   },
   "theme": {
     "label": "Theme",
-    "white": "White",
-    "editorial": "Editorial",
+    "light": "Light",
     "dark": "Dark",
+    "blue": "Blue",
+    "editorial": "Editorial",
     "pink": "Pink",
     "rainbow": "Rainbow"
   },
@@ -70,6 +71,8 @@
     "actionPlan": "Action Plan",
     "progress": "Progress",
     "freeAiRemaining": "Free AI: {count} left",
+    "decreaseGridSize": "Decrease board size",
+    "increaseGridSize": "Increase board size",
     "zoomIn": "Zoom In",
     "viewAll": "View All",
     "defineGoal": "Define Your Goal",

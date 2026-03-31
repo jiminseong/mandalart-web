@@ -6,6 +6,8 @@ import { Cell } from "./Cell";
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
 import { ZoomOut } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { GRID_SIZE_PRESETS } from "@/utils/gridSize";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -19,12 +21,14 @@ const getNodesByPosition = (nodes: Node[]) => {
 };
 
 export const MandalartGrid = () => {
+  const t = useTranslations("editor");
   const nodes = useMandalartStore((state) => state.nodes);
   const selectedNodeId = useMandalartStore((state) => state.selectedNodeId);
   const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
   const zoomedNodeId = useMandalartStore((state) => state.zoomedNodeId);
   const setZoomedNodeId = useMandalartStore((state) => state.setZoomedNodeId);
   const initializeEmptyProject = useMandalartStore((state) => state.initializeEmptyProject);
+  const gridSizeIndex = useMandalartStore((state) => state.gridSizeIndex);
 
   // Initialize empty project if no nodes exist
   React.useEffect(() => {
@@ -58,6 +62,8 @@ export const MandalartGrid = () => {
     if (coreNode && coreNode.id === zoomedNodeId) return 4;
     return null;
   }, [zoomedNodeId, subNodesMap, coreNode]);
+
+  const currentGridSize = GRID_SIZE_PRESETS[gridSizeIndex];
 
   // Render a single 3x3 block
   const renderBlock = (blockIndex: number, isZoomedView = false) => {
@@ -98,7 +104,7 @@ export const MandalartGrid = () => {
         {!isZoomedView && !isCenterBlock && centerNode && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/block:opacity-100 transition-opacity z-20 pointer-events-none">
             <span className="flex items-center gap-1 rounded-full bg-text-primary px-2 py-1 text-[10px] font-bold text-accent-contrast uppercase tracking-widest shadow-lg backdrop-blur-sm">
-              <ZoomOut size={10} className="stroke-[2.5]" /> Zoom In
+              <ZoomOut size={10} className="stroke-[2.5]" /> {t("zoomIn")}
             </span>
           </div>
         )}
@@ -155,12 +161,8 @@ export const MandalartGrid = () => {
               }}
               // Pass contextual styling
               className={cn(
-                // Core Center Cell (The absolute center of Mandalart)
-                isCenterBlock &&
-                  isCellCenter &&
-                  "bg-growth text-accent-contrast font-bold text-sm tracking-wide",
-                // Sub Center Cells (The centers of outer blocks)
-                !isCenterBlock && isCellCenter && "bg-focus/10 text-focus font-semibold",
+                // All center cells share the same visual weight across themes.
+                isCellCenter && "bg-surface font-semibold",
                 // Grid Lines handled by parent gap-px
                 "w-full h-full aspect-square",
               )}
@@ -176,17 +178,22 @@ export const MandalartGrid = () => {
       {/* Main Grid Container */}
       {zoomedBlockIndex !== null ? (
         // Zoomed View
-        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8">
-          <div className="aspect-square w-full max-w-[600px] shadow-2xl shadow-black/5 dark:shadow-black/30">
+        <div className="w-full h-full flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-6 md:p-8">
+          <div
+            className="aspect-square shadow-2xl shadow-black/5 dark:shadow-black/30"
+            style={{ width: `${currentGridSize.zoomed}px` }}
+          >
             {renderBlock(zoomedBlockIndex, true)}
           </div>
         </div>
       ) : (
         // Overview (Full 9x9 Grid)
-        <div className="w-full h-full overflow-auto flex items-center lg:justify-center p-8 custom-scrollbar">
-          <div className="min-w-[600px] w-full max-w-[900px] aspect-square mx-auto">
-            <div className="grid grid-cols-3 gap-3 w-full h-full">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
+        <div className="w-full h-full overflow-auto p-6 md:p-8 custom-scrollbar">
+          <div className="flex min-h-full min-w-fit items-center justify-center">
+            <div className="aspect-square" style={{ width: `${currentGridSize.overview}px` }}>
+              <div className="grid grid-cols-3 gap-3 w-full h-full">
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => renderBlock(i))}
+              </div>
             </div>
           </div>
         </div>

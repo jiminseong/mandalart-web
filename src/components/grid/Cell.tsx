@@ -2,6 +2,8 @@ import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { getCellTypographyPreset } from "@/utils/cellTypography";
+import { AutoFitText } from "@/components/AutoFitText";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -27,14 +29,21 @@ export const Cell = ({
   className,
 }: CellProps) => {
   const t = useTranslations("editor");
+  const displayContent =
+    node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || "";
+  const hasContent = displayContent.trim().length > 0;
+  const typographyPreset = getCellTypographyPreset({
+    content: displayContent,
+    isCenter,
+    placeholder: !hasContent,
+  });
 
   return (
     <div
       onClick={onClick}
       className={cn(
         // Base Layout
-        "relative group w-full h-full flex items-center justify-center p-3 text-center transition-all duration-200 cursor-pointer",
-        "break-keep select-none",
+        "relative group w-full h-full min-w-0 min-h-0 overflow-hidden flex items-center justify-center p-3 text-center transition-all duration-200 cursor-pointer select-none",
 
         // Default Background
         "bg-surface-strong hover:bg-surface",
@@ -42,27 +51,25 @@ export const Cell = ({
         // Interaction: Selected State
         isActive && "z-10 scale-[1.02] bg-surface-strong ring-2 ring-growth shadow-lg",
 
-        // Center Node Styling (Generic base style, specific colors usually passed via className)
-        isCenter && "font-bold bg-base text-text-primary",
+        // Center Node Styling
+        isCenter && "font-bold",
 
         // Empty State Styling
-        !node?.content && !isCenter && "bg-surface text-text-secondary/30",
+        !node?.content && !isCenter && "bg-surface",
 
         className,
       )}
     >
-      <span
-        className={cn(
-          "line-clamp-4 leading-relaxed",
-          !node?.content && "text-[10px]",
-          // Typography differentiation
-          isCenter
-            ? "text-sm md:text-base font-bold text-text-primary"
-            : "text-xs md:text-sm text-text-secondary font-medium",
-        )}
-      >
-        {node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || ""}
-      </span>
+      <AutoFitText
+        text={displayContent}
+        color={hasContent ? "var(--theme-color-text-primary)" : "var(--theme-color-text-secondary)"}
+        minFontSize={typographyPreset.minFontSize}
+        maxFontSize={typographyPreset.maxFontSize}
+        fontWeight={typographyPreset.fontWeight}
+        fitWidthRatio={typographyPreset.fitWidthRatio}
+        fitHeightRatio={typographyPreset.fitHeightRatio}
+        emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+      />
 
       {/* Zoom Icon - Minimalist Style */}
       {onZoom && node?.content && (
@@ -71,7 +78,7 @@ export const Cell = ({
             e.stopPropagation();
             onZoom();
           }}
-          className="absolute top-1 right-1 p-1.5 text-text-secondary/50 hover:text-growth opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-1 right-1 p-1.5 text-text-secondary hover:text-growth opacity-0 group-hover:opacity-100 transition-opacity"
           aria-label={isZoomed ? t("zoomOut") : t("zoomIn")} // Accessibility
         >
           {isZoomed ? (

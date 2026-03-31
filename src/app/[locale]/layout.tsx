@@ -79,7 +79,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="white" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <Analytics />
       <body className="font-sans antialiased">
         {/* <AuthErrorHandler /> */}
