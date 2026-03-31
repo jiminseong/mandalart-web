@@ -4,6 +4,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { cn } from "@/utils/cn";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -87,19 +88,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div className="fixed bottom-[15%] left-0 w-full h-px bg-border/40 -z-10" />
       </main>
 
-      {/* Footer */}
-      <footer className="w-full max-w-[1400px] mx-auto px-6 py-8 border-t border-border/40">
-        <div className="flex justify-between items-end text-[10px] md:text-xs text-text-secondary uppercase tracking-widest font-medium">
-          <div className="flex flex-col gap-1">
-            <span>© 2026 Mandalart Project</span>
-            <span className="text-text-secondary/50">All rights reserved.</span>
-          </div>
-          <div className="flex gap-6">
-            <span>Nordic Editorial Standard</span>
-            <span>Design System v2</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

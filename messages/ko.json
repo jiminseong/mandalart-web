@@ -129,6 +129,11 @@
     "submitting": "제출 중...",
     "submit": "제출하기 ➤"
   },
+  "footer": {
+    "rights": "All rights reserved.",
+    "createdBy": "Created by",
+    "feedbackRequest": "피드백 및 개선 요청"
+  },
   "health": {
     "timer": {
       "title": "휴식 타이머 설정",

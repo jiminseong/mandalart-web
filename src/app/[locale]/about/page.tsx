@@ -18,6 +18,7 @@ import { OhtaniGrid } from "@/components/about/OhtaniGrid";
 import { getTranslations } from "next-intl/server";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { Metadata } from "next";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "만다라트 기법이란? - 오타니 쇼헤이 성공 비결",
@@ -216,6 +217,8 @@ export default async function AboutPage() {
           </div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

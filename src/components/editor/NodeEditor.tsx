@@ -71,8 +71,6 @@ function NodeEditorPanel({ node }: { node: Node }) {
       ? "text-focus border-focus"
       : "text-text-primary border-border";
 
-  const tagLabel = isCore ? t("coreGoal") : isSub ? t("subGoal") : t("actionPlan");
-
   return (
     <>
       {/* Backdrop */}
@@ -85,10 +83,9 @@ function NodeEditorPanel({ node }: { node: Node }) {
       <div
         className={cn(
           "fixed z-50 bg-base transition-transform duration-300 ease-out flex flex-col",
-          // Mobile: Bottom Sheet
           "bottom-0 left-0 right-0 rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-border max-h-[85vh]",
-          // Desktop: Right Side Panel
-          "lg:top-4 lg:bottom-4 lg:right-4 lg:left-auto lg:w-[420px] lg:h-auto lg:max-h-[calc(100vh-2rem)] lg:rounded-3xl lg:border lg:border-border lg:shadow-xl",
+          // Keep the same bottom-sheet interaction on larger screens.
+          "sm:left-1/2 sm:right-auto sm:w-full sm:max-w-[420px] sm:-translate-x-1/2",
         )}
       >
         {/* Header */}

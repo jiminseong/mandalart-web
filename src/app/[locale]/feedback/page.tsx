@@ -9,6 +9,7 @@ import { analytics } from "@/utils/gtm";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export default function FeedbackPage() {
   const t = useTranslations("feedback");
@@ -65,27 +66,31 @@ export default function FeedbackPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-base flex flex-col items-center justify-center p-6 text-center space-y-8 font-sans">
-        <div className="w-20 h-20 bg-growth/10 text-growth rounded-full flex items-center justify-center mx-auto ring-1 ring-growth/20">
-          <Check size={40} strokeWidth={1.5} />
-        </div>
-        <div className="space-y-4 max-w-sm">
-          <h2 className="text-3xl font-bold text-text-primary">{t("thankYou")}</h2>
-          <p className="text-text-secondary leading-relaxed">{t("thankYouDesc")}</p>
+      <div className="min-h-screen bg-base font-sans text-text-primary flex flex-col">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-8">
+          <div className="w-20 h-20 bg-growth/10 text-growth rounded-full flex items-center justify-center mx-auto ring-1 ring-growth/20">
+            <Check size={40} strokeWidth={1.5} />
+          </div>
+          <div className="space-y-4 max-w-sm">
+            <h2 className="text-3xl font-bold text-text-primary">{t("thankYou")}</h2>
+            <p className="text-text-secondary leading-relaxed">{t("thankYouDesc")}</p>
+          </div>
+
+          <Link
+            href="/editor"
+            className="inline-flex items-center gap-2 rounded-full bg-text-primary px-8 py-3 text-base font-semibold text-accent-contrast transition-colors hover:bg-text-secondary"
+          >
+            <span>{t("backToEditor")}</span>
+          </Link>
         </div>
 
-        <Link
-          href="/editor"
-          className="inline-flex items-center gap-2 rounded-full bg-text-primary px-8 py-3 text-base font-semibold text-accent-contrast transition-colors hover:bg-text-secondary"
-        >
-          <span>{t("backToEditor")}</span>
-        </Link>
+        <SiteFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20">
+    <div className="min-h-screen bg-base text-text-primary font-sans selection:bg-growth/20 flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border">
         <div className="max-w-screen-md mx-auto px-6 h-14 flex items-center justify-between">
@@ -108,7 +113,7 @@ export default function FeedbackPage() {
         </div>
       </header>
 
-      <main className="max-w-screen-md mx-auto px-6 py-12 space-y-16">
+      <main className="max-w-screen-md mx-auto w-full flex-1 px-6 py-12 space-y-16">
         {/* Intro */}
         <section className="space-y-4 text-center max-w-lg mx-auto">
           <h1 className="text-3xl font-bold text-text-primary">{t("pageTitle")}</h1>
@@ -218,9 +223,7 @@ export default function FeedbackPage() {
         </div>
       </main>
 
-      <footer className="py-12 text-center text-xs text-text-tertiary">
-        © 2026 Mandalart Plan.
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

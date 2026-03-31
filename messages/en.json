@@ -129,6 +129,11 @@
     "submitting": "Submitting...",
     "submit": "Submit ➤"
   },
+  "footer": {
+    "rights": "All rights reserved.",
+    "createdBy": "Created by",
+    "feedbackRequest": "Feedback and improvement requests"
+  },
   "health": {
     "timer": {
       "title": "Rest Timer Settings",
