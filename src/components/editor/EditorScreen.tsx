@@ -12,7 +12,7 @@ import { EditorStateHydrator } from "@/components/editor/EditorStateHydrator";
 
 export async function EditorScreen({ encoded }: { encoded?: string }) {
   const t = await getTranslations("editor");
-  const actionLabel = t("saveShare");
+  const actionLabel = t("saveMandalart");
 
   return (
     <div className="min-h-screen flex flex-col bg-base text-text-primary overflow-hidden">
@@ -29,17 +29,6 @@ export async function EditorScreen({ encoded }: { encoded?: string }) {
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeSwitcher />
             <LanguageSwitcher />
-
-            <div className="hidden md:flex items-center gap-3 pl-4 border-l border-border/50">
-              <Link
-                href="/share"
-                aria-label={actionLabel}
-                className="p-2 text-text-secondary hover:text-focus transition-colors"
-                title={actionLabel}
-              >
-                <Save size={20} strokeWidth={1.5} />
-              </Link>
-            </div>
           </div>
         </div>
       </header>
@@ -55,19 +44,21 @@ export async function EditorScreen({ encoded }: { encoded?: string }) {
 
         <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative w-full overflow-hidden">
           <MandalartGrid />
-
-          <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-4">
-            <Link
-              href="/share"
-              aria-label={actionLabel}
-              title={actionLabel}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-text-primary text-accent-contrast shadow-lg transition-transform hover:scale-105 hover:bg-text-secondary"
-            >
-              <Save size={20} strokeWidth={1.5} />
-            </Link>
-          </div>
         </div>
       </main>
+
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-4 pb-6 pt-12 sm:px-6">
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-base via-base/92 to-transparent" />
+        <Link
+          href="/share"
+          aria-label={actionLabel}
+          title={actionLabel}
+          className="pointer-events-auto relative flex h-14 w-full max-w-[320px] items-center justify-center gap-2 rounded-full bg-text-primary px-6 text-sm font-semibold text-accent-contrast shadow-[0_24px_48px_-24px_rgba(0,0,0,0.45)] transition-all hover:-translate-y-0.5 hover:bg-text-secondary"
+        >
+          <Save size={18} strokeWidth={1.8} />
+          <span>{actionLabel}</span>
+        </Link>
+      </div>
 
     </div>
   );

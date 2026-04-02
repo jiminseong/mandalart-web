@@ -117,7 +117,7 @@ export const MandalartGrid = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative bg-base overscroll-none">
-      <div className="w-full h-full overflow-auto p-6 md:p-8 custom-scrollbar">
+      <div className="w-full h-full overflow-auto px-6 pb-32 pt-6 md:px-8 md:pb-36 md:pt-8 custom-scrollbar">
         <div className="flex min-h-full min-w-fit items-center justify-center">
           <div className="aspect-square" style={{ width: `${currentGridSize.overview}px` }}>
             <div className="grid grid-cols-3 gap-3 w-full h-full">

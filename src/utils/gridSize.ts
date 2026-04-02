@@ -1,8 +1,8 @@
 export const GRID_SIZE_PRESETS = [
-  { overview: 600, zoomed: 400 },
-  { overview: 675, zoomed: 450 },
-  { overview: 780, zoomed: 520 },
-  { overview: 900, zoomed: 600 },
+  { overview: 560, zoomed: 380 },
+  { overview: 640, zoomed: 430 },
+  { overview: 740, zoomed: 500 },
+  { overview: 860, zoomed: 580 },
 ] as const;
 
-export const DEFAULT_GRID_SIZE_INDEX = 1;
+export const DEFAULT_GRID_SIZE_INDEX = 0;
