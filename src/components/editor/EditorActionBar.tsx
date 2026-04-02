@@ -219,7 +219,8 @@ export function EditorActionBar() {
             className="flex h-14 min-w-0 items-center justify-center gap-2 rounded-full bg-text-primary px-4 text-[13px] font-semibold text-accent-contrast transition-all hover:-translate-y-0.5 hover:bg-text-secondary active:scale-[0.98] sm:text-sm"
           >
             <Download size={18} strokeWidth={2} />
-            <span className="truncate">{tEditor("saveImage")}</span>
+            <span className="truncate sm:hidden">{tEditor("saveImageShort")}</span>
+            <span className="hidden truncate sm:inline">{tEditor("saveImage")}</span>
           </button>
 
           <button
@@ -228,7 +229,8 @@ export function EditorActionBar() {
             className="flex h-14 min-w-0 items-center justify-center gap-2 rounded-full bg-text-primary px-4 text-[13px] font-semibold text-accent-contrast transition-all hover:-translate-y-0.5 hover:bg-text-secondary active:scale-[0.98] sm:text-sm"
           >
             <Link2 size={18} strokeWidth={2} />
-            <span className="truncate">{tEditor("saveAsLink")}</span>
+            <span className="truncate sm:hidden">{tEditor("saveAsLinkShort")}</span>
+            <span className="hidden truncate sm:inline">{tEditor("saveAsLink")}</span>
           </button>
 
           <button
