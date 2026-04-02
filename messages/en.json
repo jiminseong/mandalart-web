@@ -61,6 +61,7 @@
   "editor": {
     "title": "Mandalart 2026",
     "save": "Save",
+    "saveShare": "Save / Share",
     "aiCoach": "AI Coach",
     "share": "Share",
     "feedback": "Feedback",
@@ -84,13 +85,14 @@
     "saveGoal": "Save Goal"
   },
   "share": {
-    "title": "Export & Share Mandalart",
+    "title": "Save & Share Mandalart",
     "preview": "Preview",
     "settings": "Settings",
     "showTitle": "Show Title/Date",
     "showWatermark": "Show Watermark",
     "darkMode": "Background Style (Dark/Light)",
     "downloadPng": "Download PNG",
+    "copyLink": "Copy Link",
     "shareButton": "Share",
     "highQuality": "High Quality PNG",
     "mandalartTitle": "Mandalart 2026",
@@ -98,7 +100,12 @@
     "defaultCore": "Mandalart",
     "defaultSub": "Sub Goal",
     "defaultAction": "Action",
-    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file."
+    "previewDisclaimer": "Generated preview may differ slightly from the actual downloaded file.",
+    "toastDownloadPending": "Saving image...",
+    "toastDownloadSuccess": "Image saved.",
+    "toastDownloadError": "Failed to save image.",
+    "toastLinkCopied": "A link with your Mandalart has been copied.",
+    "toastLinkCopyError": "Failed to copy link."
   },
   "feedback": {
     "title": "Mandalart 2026",

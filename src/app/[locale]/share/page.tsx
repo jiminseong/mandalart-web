@@ -1,9 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { Database } from "@/types/supabase";
-import { Download, Share2, ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Link2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toBlob } from "html-to-image";
 import { Link } from "@/i18n/routing";
@@ -11,16 +11,19 @@ import { analytics } from "@/utils/gtm";
 import { useTranslations, useLocale } from "next-intl";
 import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
+import { serializeMandalartNodes } from "@/utils/mandalartLink";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
 type ShareTranslator = (key: ShareTranslationKey) => string;
+type ToastTone = "default" | "success" | "error";
 
 const PREVIEW_CARD_WIDTH = 500;
 const PREVIEW_CARD_HEIGHT = 625;
 const EXPORT_CARD_WIDTH = 2000;
 const EXPORT_CARD_HEIGHT = 2500;
 const EXPORT_SCALE = EXPORT_CARD_WIDTH / PREVIEW_CARD_WIDTH;
+const TOAST_DURATION = 2400;
 
 const waitForNextFrame = () =>
   new Promise<void>((resolve) => {
@@ -32,12 +35,30 @@ export default function SharePage() {
   const locale = useLocale();
   const exportRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
+  const toastTimerRef = useRef<number | null>(null);
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
   const [showWatermark, setShowWatermark] = useState(true);
   const [previewScale, setPreviewScale] = useState(1);
+  const [toast, setToast] = useState<{ message: string; tone: ToastTone } | null>(null);
+
+  const showToast = (message: string, tone: ToastTone = "default", duration = TOAST_DURATION) => {
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+
+    setToast({ message, tone });
+
+    if (duration > 0) {
+      toastTimerRef.current = window.setTimeout(() => {
+        setToast(null);
+        toastTimerRef.current = null;
+      }, duration);
+    }
+  };
 
   useLayoutEffect(() => {
     const container = previewContainerRef.current;
@@ -59,6 +80,14 @@ export default function SharePage() {
 
     return () => {
       resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        window.clearTimeout(toastTimerRef.current);
+      }
     };
   }, []);
 
@@ -86,8 +115,12 @@ export default function SharePage() {
     if (!exportRef.current) return;
 
     try {
+      showToast(t("toastDownloadPending"), "default", 0);
       const blob = await getExportBlob();
-      if (!blob) return;
+      if (!blob) {
+        showToast(t("toastDownloadError"), "error");
+        return;
+      }
 
       const link = document.createElement("a");
       const objectUrl = URL.createObjectURL(blob);
@@ -104,35 +137,41 @@ export default function SharePage() {
         show_watermark: showWatermark,
         filled_count_total: filledCount,
       });
+
+      showToast(t("toastDownloadSuccess"), "success");
     } catch (err) {
       console.error("Failed to save image", err);
-      alert("Failed to save image.");
+      showToast(t("toastDownloadError"), "error");
     }
   };
 
-  const handleShare = async () => {
-    if (!exportRef.current) return;
+  const handleCopyLink = async () => {
+    try {
+      const encoded = serializeMandalartNodes(nodes);
+      const shareUrl = `${window.location.origin}/${locale}/editor/${encoded}`;
 
-    if (navigator.share) {
-      try {
-        const blob = await getExportBlob();
-        if (!blob) return;
-        const file = new File([blob], "mandalart-2026.png", { type: "image/png" });
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = shareUrl;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            files: [file],
-            title: "Mandalart 2026",
-            text: "Check out my Mandalart plan!",
-          });
-        } else {
-          alert("Sharing is not supported on this device.");
+        if (!copied) {
+          throw new Error("Copy command was rejected.");
         }
-      } catch (err) {
-        console.error("Error sharing", err);
       }
-    } else {
-      alert("Sharing is not supported on this browser.");
+
+      showToast(t("toastLinkCopied"), "success");
+    } catch (err) {
+      console.error("Failed to copy link", err);
+      showToast(t("toastLinkCopyError"), "error");
     }
   };
 
@@ -226,7 +265,7 @@ export default function SharePage() {
         </div>
 
         {/* Actions */}
-        <div className="space-y-3 pt-4">
+        <div className="grid grid-cols-1 gap-3 pt-4 sm:grid-cols-2">
           <button
             onClick={handleDownload}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-growth py-4 font-bold text-accent-contrast shadow-lg shadow-growth/20 transition-all hover:scale-[1.02] hover:bg-growth/90 active:scale-95"
@@ -235,14 +274,29 @@ export default function SharePage() {
             <span>{t("downloadPng")}</span>
           </button>
           <button
-            onClick={handleShare}
-            className="w-full py-4 bg-surface text-text-primary border border-border font-bold rounded-full hover:bg-base hover:border-text-primary/50 transition-all flex items-center justify-center gap-2"
+            onClick={handleCopyLink}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface py-4 font-bold text-text-primary transition-all hover:border-text-primary/30 hover:bg-base"
           >
-            <Share2 size={20} strokeWidth={2} />
-            <span>{t("shareButton")}</span>
+            <Link2 size={20} strokeWidth={2} />
+            <span>{t("copyLink")}</span>
           </button>
         </div>
       </main>
+
+      {toast && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[60] flex justify-center px-4">
+          <div
+            className={cn(
+              "max-w-md rounded-[20px] border px-4 py-3 text-sm font-medium shadow-[0_20px_60px_-32px_rgba(0,0,0,0.35)] backdrop-blur-xl",
+              toast.tone === "success" && "border-emerald-200/70 bg-white/90 text-emerald-900",
+              toast.tone === "error" && "border-rose-200/70 bg-white/90 text-rose-900",
+              toast.tone === "default" && "border-white/70 bg-white/88 text-slate-900",
+            )}
+          >
+            {toast.message}
+          </div>
+        </div>
+      )}
 
       <div
         aria-hidden="true"

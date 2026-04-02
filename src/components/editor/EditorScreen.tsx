@@ -1,0 +1,76 @@
+import { Link } from "@/i18n/routing";
+import { Save } from "lucide-react";
+import { MandalartGrid } from "@/components/grid/MandalartGrid";
+import { NodeEditor } from "@/components/editor/NodeEditor";
+import { ProgressBar } from "@/components/editor/ProgressBar";
+import { GridSizeControls } from "@/components/editor/GridSizeControls";
+import { TextSizeControls } from "@/components/editor/TextSizeControls";
+import { EditorBackButton } from "@/components/editor/EditorBackButton";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { EditorStateHydrator } from "@/components/editor/EditorStateHydrator";
+
+export async function EditorScreen({ encoded }: { encoded?: string }) {
+  const t = await getTranslations("editor");
+  const actionLabel = t("saveShare");
+
+  return (
+    <div className="min-h-screen flex flex-col bg-base text-text-primary overflow-hidden">
+      <EditorStateHydrator encoded={encoded} />
+
+      <header className="sticky top-0 z-50 bg-base/95 backdrop-blur-sm border-b border-border transition-all">
+        <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+          <EditorBackButton backLabel={t("back")} />
+
+          <h1 className="text-xl font-serif font-bold tracking-tight text-text-primary absolute left-1/2 -translate-x-1/2">
+            Mandalart
+          </h1>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeSwitcher />
+            <LanguageSwitcher />
+
+            <div className="hidden md:flex items-center gap-3 pl-4 border-l border-border/50">
+              <Link
+                href="/share"
+                aria-label={actionLabel}
+                className="p-2 text-text-secondary hover:text-focus transition-colors"
+                title={actionLabel}
+              >
+                <Save size={20} strokeWidth={1.5} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 min-h-0 flex flex-col relative w-full overflow-hidden">
+        <div className="shrink-0 px-6 pt-5 pb-2">
+          <div className="mx-auto flex w-full max-w-[420px] items-center justify-center gap-3">
+            <ProgressBar />
+            <TextSizeControls />
+            <GridSizeControls />
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center relative w-full overflow-hidden">
+          <MandalartGrid />
+
+          <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-4">
+            <Link
+              href="/share"
+              aria-label={actionLabel}
+              title={actionLabel}
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-text-primary text-accent-contrast shadow-lg transition-transform hover:scale-105 hover:bg-text-secondary"
+            >
+              <Save size={20} strokeWidth={1.5} />
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <NodeEditor />
+    </div>
+  );
+}

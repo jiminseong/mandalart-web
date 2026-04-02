@@ -61,6 +61,7 @@
   "editor": {
     "title": "만다라트 2026",
     "save": "저장",
+    "saveShare": "저장/공유",
     "aiCoach": "AI 코치",
     "share": "공유하기",
     "feedback": "피드백",
@@ -84,13 +85,14 @@
     "saveGoal": "목표 저장"
   },
   "share": {
-    "title": "만다라트 내보내기 및 공유",
+    "title": "만다라트 저장 및 공유",
     "preview": "미리보기",
     "settings": "설정",
     "showTitle": "제목/날짜 표시",
     "showWatermark": "워터마크 표시",
     "darkMode": "배경 스타일 (Dark/Light)",
     "downloadPng": "PNG 저장",
+    "copyLink": "링크 복사",
     "shareButton": "공유하기",
     "highQuality": "고화질 PNG",
     "mandalartTitle": "만다라트 2026",
@@ -98,7 +100,12 @@
     "defaultCore": "만다라트",
     "defaultSub": "세부 목표",
     "defaultAction": "실천",
-    "previewDisclaimer": "생성된 미리보기는 실제 다운로드 파일과 약간 다를 수 있습니다."
+    "previewDisclaimer": "생성된 미리보기는 실제 다운로드 파일과 약간 다를 수 있습니다.",
+    "toastDownloadPending": "이미지가 저장중입니다.",
+    "toastDownloadSuccess": "이미지가 저장되었습니다.",
+    "toastDownloadError": "이미지 저장이 실패했습니다.",
+    "toastLinkCopied": "만다라트 내용이 담긴 링크가 복사되었습니다.",
+    "toastLinkCopyError": "링크 복사에 실패했습니다."
   },
   "feedback": {
     "title": "만다라트 2026",
