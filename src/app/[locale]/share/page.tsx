@@ -331,6 +331,7 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
           fitWidthRatio={typographyPreset.fitWidthRatio}
           fitHeightRatio={typographyPreset.fitHeightRatio}
           emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+          preserveWordBreaks
         />
       </div>
     );

@@ -54,8 +54,8 @@ function NodeEditorPanel({ node }: { node: Node }) {
     setSelectedNodeId(null);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       handleSave();
     }
@@ -63,6 +63,7 @@ function NodeEditorPanel({ node }: { node: Node }) {
 
   const isCore = node.level === 0;
   const isSub = node.level === 1;
+  const sectionLabel = isCore ? t("coreGoal") : isSub ? t("subGoal") : t("actionPlan");
 
   // Editorial Style Mapping
   const levelStyle = isCore
@@ -83,14 +84,18 @@ function NodeEditorPanel({ node }: { node: Node }) {
       <div
         className={cn(
           "fixed z-50 bg-base transition-transform duration-300 ease-out flex flex-col",
-          "bottom-0 left-0 right-0 rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-border max-h-[85vh]",
+          "bottom-0 left-0 right-0 rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] border-t border-border max-h-[88vh]",
           // Keep the same bottom-sheet interaction on larger screens.
-          "sm:left-1/2 sm:right-auto sm:w-full sm:max-w-[420px] sm:-translate-x-1/2",
+          "sm:left-1/2 sm:right-auto sm:w-full sm:max-w-[460px] sm:-translate-x-1/2",
         )}
       >
         {/* Header */}
-        <div className="flex-none flex items-center justify-between px-4 py-4 ">
-          <div className="flex flex-col"></div>
+        <div className="flex-none flex items-center justify-between px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+              {sectionLabel}
+            </p>
+          </div>
           <button
             onClick={() => setSelectedNodeId(null)}
             className="p-2 hover:bg-border/20 rounded-full transition-colors text-text-secondary"
@@ -100,22 +105,30 @@ function NodeEditorPanel({ node }: { node: Node }) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-8 pb-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-6 sm:px-7">
           {/* Main Content Input */}
-          <div className="space-y-4">
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t("goalTitlePlaceholder")}
+          <div className="space-y-3">
+            <div
               className={cn(
-                "w-full text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none py-2 placeholder:text-text-secondary/45 transition-colors font-sans",
+                "overflow-hidden rounded-[24px] border bg-surface/70 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.25)] backdrop-blur-sm transition-colors",
                 levelStyle,
-                "focus:border-text-primary",
+                "focus-within:border-text-primary",
               )}
-              autoFocus
-            />
+            >
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t("goalTitlePlaceholder")}
+                rows={6}
+                className={cn(
+                  "min-h-[176px] w-full resize-none bg-transparent px-5 py-4 font-sans text-[17px] font-medium leading-7 outline-none transition-colors md:text-[19px]",
+                  "placeholder:text-text-secondary/45",
+                  isCore ? "text-growth" : isSub ? "text-focus" : "text-text-primary",
+                )}
+                autoFocus
+              />
+            </div>
           </div>
 
           {/* Mobile Safe Area */}
