@@ -1,3 +1,4 @@
+import React from "react";
 import { cn } from "@/utils/cn";
 import { Database } from "@/types/supabase";
 import { useTranslations } from "next-intl";
@@ -5,6 +6,7 @@ import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { CELL_TEXT_SIZE_PRESETS } from "@/utils/textSize";
+import { analytics } from "@/utils/gtm";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -26,6 +28,12 @@ export const Cell = ({
 }: CellProps) => {
   const t = useTranslations("editor");
   const cellTextSizeIndex = useMandalartStore((state) => state.cellTextSizeIndex);
+  const nodes = useMandalartStore((state) => state.nodes);
+  const updateNodeContent = useMandalartStore((state) => state.updateNodeContent);
+  const setSelectedNodeId = useMandalartStore((state) => state.setSelectedNodeId);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const skipNextBlurRef = React.useRef(false);
+  const [draft, setDraft] = React.useState(() => node?.content || "");
   const displayContent =
     node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || "";
   const hasContent = displayContent.trim().length > 0;
@@ -35,6 +43,50 @@ export const Cell = ({
     isCenter,
     placeholder: !hasContent,
   });
+  const levelLabel = isCenter ? t("coreGoal") : node?.level === 1 ? t("subGoal") : t("actionPlan");
+
+  React.useEffect(() => {
+    setDraft(node?.content || "");
+  }, [node?.content, node?.id]);
+
+  React.useEffect(() => {
+    if (!isActive || !textareaRef.current) return;
+
+    textareaRef.current.focus();
+    const length = textareaRef.current.value.length;
+    textareaRef.current.setSelectionRange(length, length);
+    textareaRef.current.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [isActive]);
+
+  const commitDraft = (nextContent: string) => {
+    if (!node) return;
+
+    const normalizedContent = nextContent.trim();
+    const previousContent = node.content || "";
+    const isNewContent = previousContent !== nextContent;
+
+    if (isNewContent) {
+      const filledCountTotal = nodes.filter((n) => n.content && n.content.trim().length > 0).length;
+
+      updateNodeContent(node.id, nextContent);
+
+      analytics.cellEdit({
+        section: node.level === 0 ? "center" : node.level === 1 ? "core8" : "actions64",
+        cell_index: node.position,
+        filled: normalizedContent.length > 0,
+        filled_count_total: filledCountTotal,
+        input_len: nextContent.length,
+      });
+    }
+
+    setSelectedNodeId(null);
+  };
+
+  const handleCancel = () => {
+    skipNextBlurRef.current = true;
+    setDraft(node?.content || "");
+    setSelectedNodeId(null);
+  };
 
   return (
     <div
@@ -58,19 +110,59 @@ export const Cell = ({
         className,
       )}
     >
-      <AutoFitText
-        text={displayContent}
-        color={hasContent ? "var(--theme-color-text-primary)" : "var(--theme-color-text-secondary)"}
-        minFontSize={typographyPreset.minFontSize}
-        maxFontSize={typographyPreset.maxFontSize}
-        fontWeight={typographyPreset.fontWeight}
-        fitWidthRatio={typographyPreset.fitWidthRatio}
-        fitHeightRatio={typographyPreset.fitHeightRatio}
-        emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
-        fixedFontSize={fixedFontSize}
-        preserveWordBreaks
-        clampToContainer
-      />
+      {isActive && node ? (
+        <textarea
+          ref={textareaRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => {
+            if (skipNextBlurRef.current) {
+              skipNextBlurRef.current = false;
+              return;
+            }
+
+            commitDraft(draft);
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              e.stopPropagation();
+              handleCancel();
+              return;
+            }
+
+            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+              e.preventDefault();
+              e.stopPropagation();
+              skipNextBlurRef.current = true;
+              commitDraft(draft);
+            }
+          }}
+          placeholder={levelLabel}
+          rows={3}
+          className={cn(
+            "absolute inset-0 h-full w-full resize-none bg-surface px-3 py-3 text-center leading-snug outline-none",
+            "placeholder:text-text-secondary/45",
+            isCenter ? "font-bold text-growth" : node.level === 1 ? "font-semibold text-focus" : "font-medium text-text-primary",
+          )}
+          style={{ fontSize: `${fixedFontSize}px` }}
+        />
+      ) : (
+        <AutoFitText
+          text={displayContent}
+          color={hasContent ? "var(--theme-color-text-primary)" : "var(--theme-color-text-secondary)"}
+          minFontSize={typographyPreset.minFontSize}
+          maxFontSize={typographyPreset.maxFontSize}
+          fontWeight={typographyPreset.fontWeight}
+          fitWidthRatio={typographyPreset.fitWidthRatio}
+          fitHeightRatio={typographyPreset.fitHeightRatio}
+          emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+          fixedFontSize={fixedFontSize}
+          preserveWordBreaks
+          clampToContainer
+        />
+      )}
     </div>
   );
 };

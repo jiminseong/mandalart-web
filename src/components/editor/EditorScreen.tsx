@@ -1,7 +1,6 @@
 import { Link } from "@/i18n/routing";
 import { Save } from "lucide-react";
 import { MandalartGrid } from "@/components/grid/MandalartGrid";
-import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
 import { GridSizeControls } from "@/components/editor/GridSizeControls";
 import { TextSizeControls } from "@/components/editor/TextSizeControls";
@@ -70,7 +69,6 @@ export async function EditorScreen({ encoded }: { encoded?: string }) {
         </div>
       </main>
 
-      <NodeEditor />
     </div>
   );
 }
