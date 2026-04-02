@@ -16,9 +16,15 @@ interface CellTypographyPreset {
   emergencyMinFontSize: number;
 }
 
+interface CellTypographyBaseStyleOptions {
+  preserveWordBreaks?: boolean;
+}
+
 const getContentLength = (content?: string | null) => Array.from(content?.trim() || "").length;
 
-export const getCellTypographyBaseStyle = (): CSSProperties => ({
+export const getCellTypographyBaseStyle = ({
+  preserveWordBreaks = false,
+}: CellTypographyBaseStyleOptions = {}): CSSProperties => ({
   display: "block",
   width: "100%",
   maxWidth: "100%",
@@ -27,8 +33,8 @@ export const getCellTypographyBaseStyle = (): CSSProperties => ({
   overflow: "hidden",
   textAlign: "center",
   whiteSpace: "pre-wrap",
-  wordBreak: "break-all",
-  overflowWrap: "anywhere",
+  wordBreak: preserveWordBreaks ? "keep-all" : "break-all",
+  overflowWrap: preserveWordBreaks ? "break-word" : "anywhere",
 });
 
 export const getCellTypographyPreset = ({

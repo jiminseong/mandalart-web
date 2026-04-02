@@ -14,6 +14,9 @@ interface AutoFitTextProps {
   fitHeightRatio?: number;
   emergencyMinFontSize?: number;
   className?: string;
+  fixedFontSize?: number;
+  preserveWordBreaks?: boolean;
+  clampToContainer?: boolean;
 }
 
 const getLineHeight = (fontSize: number) => {
@@ -35,11 +38,15 @@ export function AutoFitText({
   fitHeightRatio = 1,
   emergencyMinFontSize,
   className,
+  fixedFontSize,
+  preserveWordBreaks = false,
+  clampToContainer = false,
 }: AutoFitTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const frameRef = useRef<number | null>(null);
   const [fontSize, setFontSize] = useState(maxFontSize);
+  const [maxTextHeight, setMaxTextHeight] = useState<number | null>(null);
   const [ready, setReady] = useState(false);
 
   useLayoutEffect(() => {
@@ -63,11 +70,28 @@ export function AutoFitText({
       const availableWidth = nextContainer.clientWidth * fitWidthRatio;
       const availableHeight = nextContainer.clientHeight * fitHeightRatio;
 
-      if (!availableWidth || !availableHeight) return;
+      if (!availableHeight) return;
+
+      if (fixedFontSize !== undefined) {
+        const resolvedSize = Number(fixedFontSize.toFixed(2));
+        const resolvedLineHeight = resolvedSize * getLineHeight(resolvedSize);
+        const maxVisibleLines = Math.max(1, Math.floor((availableHeight + 0.5) / resolvedLineHeight));
+
+        applySize(resolvedSize);
+        setFontSize(resolvedSize);
+        setMaxTextHeight(
+          clampToContainer ? Number((maxVisibleLines * resolvedLineHeight).toFixed(2)) : null,
+        );
+        setReady(true);
+        return;
+      }
+
+      if (!availableWidth) return;
 
       if (!text.trim()) {
         applySize(maxFontSize);
         setFontSize(maxFontSize);
+        setMaxTextHeight(null);
         setReady(true);
         return;
       }
@@ -96,6 +120,7 @@ export function AutoFitText({
       const resolvedSize = Number(best.toFixed(2));
       applySize(resolvedSize);
       setFontSize(resolvedSize);
+      setMaxTextHeight(null);
       setReady(true);
     };
 
@@ -115,7 +140,17 @@ export function AutoFitText({
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       resizeObserver.disconnect();
     };
-  }, [text, minFontSize, maxFontSize, fontWeight, fitWidthRatio, fitHeightRatio, emergencyMinFontSize]);
+  }, [
+    text,
+    minFontSize,
+    maxFontSize,
+    fontWeight,
+    fitWidthRatio,
+    fitHeightRatio,
+    emergencyMinFontSize,
+    fixedFontSize,
+    clampToContainer,
+  ]);
 
   return (
     <div
@@ -125,11 +160,12 @@ export function AutoFitText({
       <span
         ref={textRef}
         style={{
-          ...getCellTypographyBaseStyle(),
+          ...getCellTypographyBaseStyle({ preserveWordBreaks }),
           color,
           fontSize,
           lineHeight: getLineHeight(fontSize),
           fontWeight,
+          maxHeight: maxTextHeight ? `${maxTextHeight}px` : undefined,
           opacity: ready ? 1 : 0,
         }}
       >

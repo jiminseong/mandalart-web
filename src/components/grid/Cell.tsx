@@ -63,6 +63,9 @@ export const Cell = ({
         fitWidthRatio={typographyPreset.fitWidthRatio}
         fitHeightRatio={typographyPreset.fitHeightRatio}
         emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+        fixedFontSize={16}
+        preserveWordBreaks
+        clampToContainer
       />
     </div>
   );
