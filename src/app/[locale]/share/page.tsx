@@ -12,6 +12,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
 import { serializeMandalartNodes } from "@/utils/mandalartLink";
+import { CELL_TEXT_SIZE_PRESETS } from "@/utils/textSize";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
@@ -37,6 +38,7 @@ export default function SharePage() {
   const previewContainerRef = useRef<HTMLDivElement>(null);
   const toastTimerRef = useRef<number | null>(null);
   const nodes = useMandalartStore((state) => state.nodes);
+  const cellTextSizeIndex = useMandalartStore((state) => state.cellTextSizeIndex);
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
@@ -200,14 +202,7 @@ export default function SharePage() {
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-6 space-y-8 pb-20 sm:px-6 sm:py-8">
         {/* Preview Section */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-end">
-            <h2 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-              {t("preview")}
-            </h2>
-            <span className="text-xs text-text-tertiary">{t("highQuality")}</span>
-          </div>
-
+        <div>
           <div className="rounded-2xl bg-surface border border-border flex items-center justify-center overflow-hidden p-4 shadow-sm sm:p-6 md:p-8">
             <div
               ref={previewContainerRef}
@@ -225,6 +220,7 @@ export default function SharePage() {
                 <ShareCaptureCard
                   locale={locale}
                   nodes={nodes}
+                  cellTextSizeIndex={cellTextSizeIndex}
                   showTitle={showTitle}
                   showWatermark={showWatermark}
                   t={t}
@@ -232,7 +228,6 @@ export default function SharePage() {
               </div>
             </div>
           </div>
-          <p className="text-center text-xs text-text-tertiary">{t("previewDisclaimer")}</p>
         </div>
 
         {/* Settings Information */}
@@ -275,7 +270,7 @@ export default function SharePage() {
           </button>
           <button
             onClick={handleCopyLink}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface py-4 font-bold text-text-primary transition-all hover:border-text-primary/30 hover:bg-base"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-growth py-4 font-bold text-accent-contrast shadow-lg shadow-growth/20 transition-all hover:scale-[1.02] hover:bg-growth/90 active:scale-95"
           >
             <Link2 size={20} strokeWidth={2} />
             <span>{t("copyLink")}</span>
@@ -318,6 +313,7 @@ export default function SharePage() {
             <ShareCaptureCard
               locale={locale}
               nodes={nodes}
+              cellTextSizeIndex={cellTextSizeIndex}
               showTitle={showTitle}
               showWatermark={showWatermark}
               t={t}
@@ -332,12 +328,14 @@ export default function SharePage() {
 function ShareCaptureCard({
   locale,
   nodes,
+  cellTextSizeIndex,
   showTitle,
   showWatermark,
   t,
 }: {
   locale: string;
   nodes: Node[];
+  cellTextSizeIndex: number;
   showTitle: boolean;
   showWatermark: boolean;
   t: ShareTranslator;
@@ -360,7 +358,7 @@ function ShareCaptureCard({
       )}
 
       <div className="flex-1 w-full flex items-center justify-center">
-        <ExportGrid nodes={nodes} t={t} />
+        <ExportGrid nodes={nodes} cellTextSizeIndex={cellTextSizeIndex} t={t} />
       </div>
 
       {showWatermark && (
@@ -373,13 +371,22 @@ function ShareCaptureCard({
 }
 
 // Nordic Style Clean Grid Renderer
-function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
+function ExportGrid({
+  nodes,
+  cellTextSizeIndex,
+  t,
+}: {
+  nodes: Node[];
+  cellTextSizeIndex: number;
+  t: ShareTranslator;
+}) {
   // 1. Core Logic: Find Core Node
   const coreNode = nodes.find((n) => n.level === 0);
   // 2. Sub Logic: Find Sub Nodes
   const subNodes = nodes.filter((n) => n.level === 1);
   // 3. Action Logic: Find Action Nodes
   const actionNodes = nodes.filter((n) => n.level === 2);
+  const fixedFontSize = CELL_TEXT_SIZE_PRESETS[cellTextSizeIndex];
 
   const renderCell = (
     node: Node | undefined,
@@ -399,7 +406,6 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
     const typographyPreset = getCellTypographyPreset({
       content: displayContent,
       isCenter,
-      compact: true,
       placeholder: isPlaceholder,
     });
 
@@ -424,7 +430,9 @@ function ExportGrid({ nodes, t }: { nodes: Node[]; t: ShareTranslator }) {
           fitWidthRatio={typographyPreset.fitWidthRatio}
           fitHeightRatio={typographyPreset.fitHeightRatio}
           emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
+          fixedFontSize={fixedFontSize}
           preserveWordBreaks
+          clampToContainer
         />
       </div>
     );
