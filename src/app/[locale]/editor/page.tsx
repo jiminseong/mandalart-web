@@ -4,6 +4,7 @@ import { MandalartGrid } from "@/components/grid/MandalartGrid";
 import { NodeEditor } from "@/components/editor/NodeEditor";
 import { ProgressBar } from "@/components/editor/ProgressBar";
 import { GridSizeControls } from "@/components/editor/GridSizeControls";
+import { TextSizeControls } from "@/components/editor/TextSizeControls";
 import { EditorBackButton } from "@/components/editor/EditorBackButton";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 // import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
@@ -54,6 +55,7 @@ export default async function EditorPage() {
         <div className="shrink-0 px-6 pt-5 pb-2">
           <div className="mx-auto flex w-full max-w-[420px] items-center justify-center gap-3">
             <ProgressBar />
+            <TextSizeControls />
             <GridSizeControls />
           </div>
         </div>

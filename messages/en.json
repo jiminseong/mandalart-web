@@ -73,6 +73,8 @@
     "freeAiRemaining": "Free AI: {count} left",
     "decreaseGridSize": "Decrease board size",
     "increaseGridSize": "Increase board size",
+    "decreaseTextSize": "Decrease text size",
+    "increaseTextSize": "Increase text size",
     "zoomIn": "Zoom In",
     "viewAll": "View All",
     "goalTitlePlaceholder": "What is your goal?",

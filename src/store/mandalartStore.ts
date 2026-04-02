@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { Database } from "@/types/supabase";
 import { DEFAULT_GRID_SIZE_INDEX, GRID_SIZE_PRESETS } from "@/utils/gridSize";
+import { CELL_TEXT_SIZE_PRESETS, DEFAULT_CELL_TEXT_SIZE_INDEX } from "@/utils/textSize";
 
 // Define shorter types for convenience
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
@@ -17,6 +18,7 @@ interface MandalartState {
   selectedNodeId: string | null; // For the side panel / bottom sheet
   zoomedNodeId: string | null; // For mobile zoom-in view or focus mode
   gridSizeIndex: number;
+  cellTextSizeIndex: number;
 
   // Actions
   setProject: (project: Project) => void;
@@ -27,6 +29,7 @@ interface MandalartState {
   setSelectedNodeId: (id: string | null) => void;
   setZoomedNodeId: (id: string | null) => void;
   setGridSizeIndex: (index: number) => void;
+  setCellTextSizeIndex: (index: number) => void;
 
   // Computed / Selectors
   getNode: (id: string) => Node | undefined;
@@ -42,6 +45,7 @@ export const useMandalartStore = create<MandalartState>()(
         selectedNodeId: null,
         zoomedNodeId: null,
         gridSizeIndex: DEFAULT_GRID_SIZE_INDEX,
+        cellTextSizeIndex: DEFAULT_CELL_TEXT_SIZE_INDEX,
 
         setProject: (project) => set({ project }),
 
@@ -146,6 +150,11 @@ export const useMandalartStore = create<MandalartState>()(
         setGridSizeIndex: (index) =>
           set({
             gridSizeIndex: Math.max(0, Math.min(GRID_SIZE_PRESETS.length - 1, index)),
+          }),
+
+        setCellTextSizeIndex: (index) =>
+          set({
+            cellTextSizeIndex: Math.max(0, Math.min(CELL_TEXT_SIZE_PRESETS.length - 1, index)),
           }),
 
         getNode: (id) => get().nodes.find((n) => n.id === id),

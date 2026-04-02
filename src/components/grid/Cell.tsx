@@ -3,6 +3,8 @@ import { Database } from "@/types/supabase";
 import { useTranslations } from "next-intl";
 import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
+import { useMandalartStore } from "@/store/mandalartStore";
+import { CELL_TEXT_SIZE_PRESETS } from "@/utils/textSize";
 
 type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
@@ -23,9 +25,11 @@ export const Cell = ({
   className,
 }: CellProps) => {
   const t = useTranslations("editor");
+  const cellTextSizeIndex = useMandalartStore((state) => state.cellTextSizeIndex);
   const displayContent =
     node?.content?.replace("Sub Goal", t("subGoal")).replace("Action", t("actionPlan")) || "";
   const hasContent = displayContent.trim().length > 0;
+  const fixedFontSize = CELL_TEXT_SIZE_PRESETS[cellTextSizeIndex];
   const typographyPreset = getCellTypographyPreset({
     content: displayContent,
     isCenter,
@@ -63,7 +67,7 @@ export const Cell = ({
         fitWidthRatio={typographyPreset.fitWidthRatio}
         fitHeightRatio={typographyPreset.fitHeightRatio}
         emergencyMinFontSize={typographyPreset.emergencyMinFontSize}
-        fixedFontSize={16}
+        fixedFontSize={fixedFontSize}
         preserveWordBreaks
         clampToContainer
       />

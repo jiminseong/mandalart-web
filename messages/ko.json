@@ -73,6 +73,8 @@
     "freeAiRemaining": "무료 AI 잔여 {count}회",
     "decreaseGridSize": "만다라트 크기 줄이기",
     "increaseGridSize": "만다라트 크기 키우기",
+    "decreaseTextSize": "글자 크기 줄이기",
+    "increaseTextSize": "글자 크기 키우기",
     "zoomIn": "확대하기",
     "viewAll": "전체 보기",
     "goalTitlePlaceholder": "당신의 목표는 무엇인가요?",
