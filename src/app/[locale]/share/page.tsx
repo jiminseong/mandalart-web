@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { Database } from "@/types/supabase";
 import { Download, Share2, ArrowLeft } from "lucide-react";
@@ -17,6 +17,7 @@ type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
 type ShareTranslator = (key: ShareTranslationKey) => string;
 
 const PREVIEW_CARD_WIDTH = 500;
+const PREVIEW_CARD_HEIGHT = 625;
 const EXPORT_CARD_WIDTH = 2000;
 const EXPORT_CARD_HEIGHT = 2500;
 const EXPORT_SCALE = EXPORT_CARD_WIDTH / PREVIEW_CARD_WIDTH;
@@ -30,11 +31,36 @@ export default function SharePage() {
   const t = useTranslations("share");
   const locale = useLocale();
   const exportRef = useRef<HTMLDivElement>(null);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
   const nodes = useMandalartStore((state) => state.nodes);
 
   // Options
   const [showTitle, setShowTitle] = useState(true);
   const [showWatermark, setShowWatermark] = useState(true);
+  const [previewScale, setPreviewScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const container = previewContainerRef.current;
+
+    if (!container) return;
+
+    const updatePreviewScale = () => {
+      const nextWidth = container.clientWidth;
+
+      if (!nextWidth) return;
+
+      setPreviewScale(Math.min(1, nextWidth / PREVIEW_CARD_WIDTH));
+    };
+
+    updatePreviewScale();
+
+    const resizeObserver = new ResizeObserver(updatePreviewScale);
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const getExportBlob = async () => {
     if (!exportRef.current) return null;
@@ -133,7 +159,7 @@ export default function SharePage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-8 space-y-8 pb-20">
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-6 space-y-8 pb-20 sm:px-6 sm:py-8">
         {/* Preview Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-end">
@@ -143,15 +169,28 @@ export default function SharePage() {
             <span className="text-xs text-text-tertiary">{t("highQuality")}</span>
           </div>
 
-          <div className="p-8 rounded-2xl bg-surface border border-border flex items-center justify-center overflow-hidden shadow-sm">
-            <div className="w-full max-w-[500px]">
-              <ShareCaptureCard
-                locale={locale}
-                nodes={nodes}
-                showTitle={showTitle}
-                showWatermark={showWatermark}
-                t={t}
-              />
+          <div className="rounded-2xl bg-surface border border-border flex items-center justify-center overflow-hidden p-4 shadow-sm sm:p-6 md:p-8">
+            <div
+              ref={previewContainerRef}
+              className="relative w-full max-w-[500px]"
+              style={{ height: `${PREVIEW_CARD_HEIGHT * previewScale}px` }}
+            >
+              <div
+                className="absolute left-0 top-0"
+                style={{
+                  width: PREVIEW_CARD_WIDTH,
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                <ShareCaptureCard
+                  locale={locale}
+                  nodes={nodes}
+                  showTitle={showTitle}
+                  showWatermark={showWatermark}
+                  t={t}
+                />
+              </div>
             </div>
           </div>
           <p className="text-center text-xs text-text-tertiary">{t("previewDisclaimer")}</p>
