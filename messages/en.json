@@ -63,6 +63,8 @@
     "save": "Save",
     "saveShare": "Save / Share",
     "saveMandalart": "Save Mandalart",
+    "saveImage": "Save Image",
+    "saveAsLink": "Save as Link",
     "aiCoach": "AI Coach",
     "share": "Share",
     "feedback": "Feedback",
@@ -106,7 +108,9 @@
     "toastDownloadSuccess": "Image saved.",
     "toastDownloadError": "Failed to save image.",
     "toastLinkCopied": "A link with your Mandalart has been copied.",
-    "toastLinkCopyError": "Failed to copy link."
+    "toastLinkCopyError": "Failed to copy link.",
+    "toastShareUnavailable": "Sharing is not supported in this browser.",
+    "toastShareError": "Failed to share."
   },
   "feedback": {
     "title": "Mandalart 2026",
