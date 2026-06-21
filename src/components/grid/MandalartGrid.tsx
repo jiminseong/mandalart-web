@@ -4,10 +4,10 @@ import React, { useMemo } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
 import { Cell } from "./Cell";
 import { cn } from "@/utils/cn";
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 import { GRID_SIZE_PRESETS } from "@/utils/gridSize";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 
 // Helper to get nodes mapped by position 0-8
 const getNodesByPosition = (nodes: Node[]) => {

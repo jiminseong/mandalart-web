@@ -6,9 +6,9 @@ import { X, ArrowRight } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { analytics } from "@/utils/gtm";
 import { useTranslations } from "next-intl";
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 
 const getNodeSection = (level: number) => {
   if (level === 0) return "center";

@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMandalartStore } from "@/store/mandalartStore";
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 import { ArrowLeft, Download, Link2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { toBlob } from "html-to-image";
@@ -14,7 +14,7 @@ import { AutoFitText } from "@/components/AutoFitText";
 import { serializeMandalartNodes } from "@/utils/mandalartLink";
 import { CELL_TEXT_SIZE_PRESETS } from "@/utils/textSize";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 type ShareTranslationKey = "defaultCore" | "defaultSub" | "defaultAction";
 type ShareTranslator = (key: ShareTranslationKey) => string;
 type ToastTone = "default" | "success" | "error";

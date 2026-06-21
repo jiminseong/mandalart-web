@@ -1,6 +1,6 @@
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 
 const OUTER_POSITIONS = [0, 1, 2, 3, 5, 6, 7, 8] as const;
 const LINK_VERSION = 1;

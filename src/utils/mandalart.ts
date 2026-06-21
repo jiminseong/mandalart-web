@@ -1,6 +1,6 @@
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 
 export function createDefaultNodes(projectId: string): Node[] {
   const nodes: Node[] = [];

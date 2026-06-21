@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/utils/cn";
-import { Database } from "@/types/supabase";
+import { MandalartNode } from "@/types/mandalart";
 import { useTranslations } from "next-intl";
 import { getCellTypographyPreset } from "@/utils/cellTypography";
 import { AutoFitText } from "@/components/AutoFitText";
@@ -8,7 +8,7 @@ import { useMandalartStore } from "@/store/mandalartStore";
 import { CELL_TEXT_SIZE_PRESETS } from "@/utils/textSize";
 import { analytics } from "@/utils/gtm";
 
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+type Node = MandalartNode;
 
 interface CellProps {
   node?: Node;

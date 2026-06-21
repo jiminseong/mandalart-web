@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { Database } from "@/types/supabase";
+import { MandalartNode, MandalartProject } from "@/types/mandalart";
 import { DEFAULT_GRID_SIZE_INDEX, GRID_SIZE_PRESETS } from "@/utils/gridSize";
 import { CELL_TEXT_SIZE_PRESETS, DEFAULT_CELL_TEXT_SIZE_INDEX } from "@/utils/textSize";
 import { createEmptyMandalartNodes } from "@/utils/mandalartLink";
 
 // Define shorter types for convenience
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
-type Project = Database["public"]["Tables"]["projects"]["Row"];
+type Node = MandalartNode;
+type Project = MandalartProject;
 
 interface MandalartState {
   // Data
